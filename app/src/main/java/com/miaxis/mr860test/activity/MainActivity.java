@@ -1,0 +1,226 @@
+package com.miaxis.mr860test.activity;
+
+import android.content.Intent;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.WindowManager;
+
+import com.miaxis.mr860test.Constants.Constants;
+import com.miaxis.mr860test.R;
+import com.miaxis.mr860test.adapter.ItemAdapter;
+import com.miaxis.mr860test.domain.ResultEvent;
+import com.miaxis.mr860test.domain.TestItem;
+import com.miaxis.mr860test.utils.DateUtil;
+import com.miaxis.mr860test.utils.FileUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.ViewInject;
+import org.xutils.x;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@ContentView(R.layout.activity_main)
+public class MainActivity extends AppCompatActivity {
+
+    private List<TestItem> itemList;
+    private ItemAdapter adapter;
+
+    @ViewInject(R.id.rv_items)
+    private RecyclerView rv_items;
+
+    @Override
+        protected void onCreate(Bundle savedInstanceState) {
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
+        super.onCreate(savedInstanceState);
+
+        x.view().inject(this);
+
+        EventBus.getDefault().register(this);
+
+        initList();
+
+        adapter = new ItemAdapter(itemList, this);
+        rv_items.setLayoutManager(new GridLayoutManager(this, 4));
+        rv_items.setAdapter(adapter);
+        adapter.setListener(new ItemAdapter.TestClickListenenr() {
+            @Override
+            public void onItemClick(View view, int position) {
+                TestItem item = itemList.get(position);
+                if (item == null) {
+                    return;
+                }
+                startTestById(item.getId());
+            }
+        });
+
+    }
+
+    private void initList() {
+        File file = new File(Environment.getExternalStorageDirectory(), Constants.RESULT_PATH_NAME);
+        if (file.exists()) {
+            String str = FileUtil.readFile(file);
+            itemList = FileUtil.parseFromString(str);
+        } else {
+            createNewList();
+        }
+    }
+
+    private void createNewList() {
+        itemList = new ArrayList<>();
+        TestItem item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_LCD);
+        item.setName("液晶显示屏");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_TOUCH);
+        item.setName("触摸屏");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_CAMERA);
+        item.setName("摄像头");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_LED);
+        item.setName("LED补光灯");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_BODY);
+        item.setName("人体感应");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_FINGER);
+        item.setName("指纹仪");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_IDCARD);
+        item.setName("二代证模块");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_VOICE);
+        item.setName("喇叭");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_HDMI);
+        item.setName("HDMI");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_NET);
+        item.setName("网口");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_TF);
+        item.setName("TF卡");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_4G);
+        item.setName("4G模块");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_OLD);
+        item.setName("老化测试");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_UPDATE);
+        item.setName("升级功能");
+        itemList.add(item);
+
+        String str = FileUtil.parseToString(itemList);
+        FileUtil.writeFile(Constants.RESULT_PATH_NAME, str);
+
+    }
+
+    private void startTestById(int id) {
+        switch (id) {
+            case Constants.ID_LCD:
+                startActivityForResult(new Intent(MainActivity.this, LCDActivity.class), Constants.ID_LCD);
+                break;
+            case Constants.ID_TOUCH:
+                startActivityForResult(new Intent(MainActivity.this, TouchActivity.class), Constants.ID_TOUCH);
+                break;
+            case Constants.ID_CAMERA:
+                startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), Constants.ID_CAMERA);
+                break;
+
+            case Constants.ID_IDCARD:
+                startActivityForResult(new Intent(MainActivity.this, IdActivity.class), Constants.ID_IDCARD);
+                break;
+            case Constants.ID_VOICE:
+                startActivityForResult(new Intent(MainActivity.this, VoiceActivity.class), Constants.ID_VOICE);
+                break;
+            case Constants.ID_HDMI:
+                startActivityForResult(new Intent(MainActivity.this, HDMIActivity.class), Constants.ID_HDMI);
+                break;
+            case Constants.ID_NET:
+                startActivityForResult(new Intent(MainActivity.this, NetActivity.class), Constants.ID_NET);
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void passEvent(ResultEvent event) {
+        TestItem item = itemList.get(event.getId() - 1);
+        if (item != null) {
+            item.setStatus(event.getStatus());
+            item.setOpdate(DateUtil.format(new Date()));
+            adapter.notifyDataSetChanged();
+            FileUtil.writeFile(Constants.RESULT_PATH_NAME, FileUtil.parseToString(itemList));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+}
