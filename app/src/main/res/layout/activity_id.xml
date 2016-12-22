@@ -1,120 +1,240 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
-
-    <!-- 标题 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_lcd"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.miaxis.mr860test.activity.LCDActivity">
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:background="@color/gray_bg"
+        android:layout_below="@+id/tv_title"
+        android:layout_above="@+id/ll_buttons1"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:text="二代证"
-            android:textColor="#00f"
-            android:textSize="24sp" />
-    </LinearLayout>
-
-    <!-- 提示信息 -->
-    <ScrollView
-        android:id="@+id/scrollView_show_msg"
-        android:layout_width="fill_parent"
-        android:layout_height="1300px"
-        android:layout_marginBottom="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:layout_marginTop="1dp"
-        android:background="#0f000000"
-        android:scrollbarStyle="outsideOverlay" >
-
-        <LinearLayout
+        <View
+            android:background="@color/gray_light"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#00000000"
-            android:orientation="vertical" >
-
-            <EditText
-                android:id="@+id/edit_show_msg"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="13dip"
-                android:layout_marginRight="13dip"
-                android:background="@null"
-                android:clickable="true"
-                android:enabled="true"
-                android:focusable="false"
-                android:gravity="top"
-                android:scrollbars="vertical"
-                android:singleLine="false"
-                android:text=""
-                android:textColor="#fff"
-                android:textSize="16sp" >
-            </EditText>
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- 功能区 -->
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="0dip"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="0dip" >
+            android:layout_height="1dp"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dip"
-            android:orientation="vertical"
-            android:padding="10dip" >
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:textSize="25sp"
+                android:text="版本号："
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:textColor="@color/dark"
+                android:textSize="25sp"
+                android:id="@+id/tv_id_version"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:textSize="25sp"
+                android:text="身份证ID"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:textColor="@color/dark"
+                android:textSize="25sp"
+                android:id="@+id/tv_id_card_id"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:textSize="25sp"
+                android:text="身份证信息"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:textColor="@color/dark"
+                android:textSize="25sp"
+                android:id="@+id/tv_id_info"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
 
             <ImageView
-                android:id="@+id/image_idcard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="身份证" />
+                android:layout_gravity="center_vertical"
+                android:id="@+id/iv_id_photo"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="0dip"
-            android:orientation="vertical" >
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
 
-            <Button
-                android:id="@+id/btn_devVersion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="OnClickDevVersion"
-                android:text="版本号"/>
-
-            <Button
-                android:id="@+id/btn_cardId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="OnClickCardId"
-                android:text="身份证id"/>
-
-            <Button
-                android:id="@+id/btn_cardFullInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="OnClickCardFullInfo"
-                android:text="获取信息" />
-        </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_buttons1"
+        android:layout_above="@+id/ll_buttons"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_height="50dp">
 
-</LinearLayout>
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="读版本"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_read_version" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="读身份证ID"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_read_id" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="读信息"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_read_info" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_height="50dp">
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="通过"
+            android:textSize="18sp"
+            android:textColor="@color/green_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_pass" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="不通过"
+            android:textSize="18sp"
+            android:textColor="@color/red"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_deny" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_marginLeft="20dp"
+        android:layout_alignLeft="@+id/ll_buttons"
+        android:text="二代证测试"
+        android:textSize="35sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
+
+</RelativeLayout>

@@ -4,7 +4,7 @@
     android:id="@+id/activity_lcd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.miaxis.mr860test.activity.HDMIActivity">
+    tools:context="com.miaxis.mr860test.activity.LEDActivity">
 
     <View
         android:translationZ="1dp"
@@ -19,6 +19,34 @@
         android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="打开"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_led_on" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="关闭"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_led_off" />
 
         <TextView
             android:clickable="true"
@@ -53,7 +81,7 @@
     <TextView
         android:layout_marginLeft="20dp"
         android:layout_alignLeft="@+id/ll_buttons"
-        android:text="HDMI测试"
+        android:text="LED测试"
         android:textSize="35sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

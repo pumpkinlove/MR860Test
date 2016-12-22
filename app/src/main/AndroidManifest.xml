@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.miaxis.mr860test">
 
+    <uses-feature android:name="android.hardware.usb.host" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -66,7 +68,10 @@
         </receiver>
 
         <activity android:name=".activity.TFActivity" />
-        <activity android:name=".activity.IdActivity"></activity>
+        <activity android:name=".activity.IdActivity" />
+        <activity android:name=".activity.FingerActivity" />
+        <activity android:name=".activity.GPRSActivity" />
+        <activity android:name=".activity.LEDActivity"></activity>
     </application>
 
 </manifest>

@@ -192,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), Constants.ID_CAMERA);
                 break;
 
+            case Constants.ID_FINGER:
+                startActivityForResult(new Intent(MainActivity.this, FingerActivity.class), Constants.ID_FINGER);
+                break;
             case Constants.ID_IDCARD:
                 startActivityForResult(new Intent(MainActivity.this, IdActivity.class), Constants.ID_IDCARD);
                 break;
