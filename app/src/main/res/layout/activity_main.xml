@@ -12,10 +12,75 @@
     tools:context="com.miaxis.mr860test.activity.MainActivity">
 
     <android.support.v7.widget.RecyclerView
+        android:layout_above="@id/ll_buttons"
         android:id="@+id/rv_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="老化前测试"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_before" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="老化后测试"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_after" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="成品抽检"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_inspection" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="测试历史"
+            android:textSize="18sp"
+            android:textColor="@color/blue_band_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_history" />
+
+    </LinearLayout>
 
 </RelativeLayout>

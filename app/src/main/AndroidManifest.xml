@@ -71,7 +71,9 @@
         <activity android:name=".activity.IdActivity" />
         <activity android:name=".activity.FingerActivity" />
         <activity android:name=".activity.GPRSActivity" />
-        <activity android:name=".activity.LEDActivity"></activity>
+        <activity android:name=".activity.LEDActivity" />
+        <activity android:name=".activity.HistoryActivity" />
+        <activity android:name=".activity.BodyActivity"></activity>
     </application>
 
 </manifest>

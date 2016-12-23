@@ -1,6 +1,8 @@
 package com.miaxis.mr860test.utils;
 
 import android.os.Environment;
+
+import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.domain.TestItem;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,6 +18,15 @@ import java.util.List;
  */
 
 public class FileUtil {
+
+    public static final String HISTORY_PATH = "MR860Test_history.txt";
+    public static final String BEFORE_PATH = "MR860Test_before.txt";
+    public static final String AFTER_PATH = "MR860Test_after.txt";
+    public static final String INSPECTION_PATH = "MR860Test_inspection.txt";
+
+    public static void addRecord(TestItem item) throws IOException {
+        writeFile(HISTORY_PATH, parseItemToString(item), true);
+    }
 
     public static List<TestItem> parseFromString(String str) {
         List<TestItem> list = new ArrayList<>();
@@ -53,12 +64,23 @@ public class FileUtil {
         return sb.toString();
     }
 
-    public static void writeFile(String path, String content) {
+    public static String parseItemToString(TestItem item) {
+        StringBuilder sb = new StringBuilder("");
+        sb.append(item.getId() + "_");
+        sb.append(item.getName() + "_");
+        sb.append(item.getStatus() + "_");
+        sb.append(item.getOpdate() + "_");
+        sb.append(item.getRemark());
+        sb.append("\r\n");
+        return sb.toString();
+    }
+
+    public static void writeFile(String path, String content, boolean isAdd) {
         BufferedWriter bw = null;
         try {
             File file = new File(Environment.getExternalStorageDirectory(), path);
             //第二个参数意义是说是否以append方式添加内容
-            bw = new BufferedWriter(new FileWriter(file, false));
+            bw = new BufferedWriter(new FileWriter(file, isAdd));
             bw.write(content);
             bw.flush();
         } catch (Exception e) {

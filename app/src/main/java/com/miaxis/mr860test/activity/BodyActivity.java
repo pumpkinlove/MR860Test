@@ -15,8 +15,8 @@ import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.x;
 
-@ContentView(R.layout.activity_led)
-public class LEDActivity extends BaseTestActivity {
+@ContentView(R.layout.activity_body)
+public class BodyActivity extends BaseTestActivity {
 
     private SmdtManager manager;
 
@@ -28,7 +28,7 @@ public class LEDActivity extends BaseTestActivity {
 
         initData();
         initView();
-        manager.smdtSetExtrnalGpioValue(3, false);
+
     }
 
     @Override
@@ -43,23 +43,21 @@ public class LEDActivity extends BaseTestActivity {
 
     @Event(R.id.tv_led_on)
     private void onTurnOn(View view) {
-        Toast.makeText(getApplicationContext(), manager.smdtSetExtrnalGpioValue(3, true) + "", Toast.LENGTH_SHORT).show();
     }
 
     @Event(R.id.tv_led_off)
     private void onTurnOff(View view) {
-        Toast.makeText(getApplicationContext(), manager.smdtSetExtrnalGpioValue(3, false) + "", Toast.LENGTH_SHORT).show();
     }
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_LED, Constants.STATUS_PASS));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_BODY, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_LED, Constants.STAUTS_DENIED));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_BODY, Constants.STAUTS_DENIED));
         finish();
     }
 }

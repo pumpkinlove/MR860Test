@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         itemList.add(item);
 
         String str = FileUtil.parseToString(itemList);
-        FileUtil.writeFile(Constants.RESULT_PATH_NAME, str);
+        FileUtil.writeFile(Constants.RESULT_PATH_NAME, str, false);
 
     }
 
@@ -191,7 +191,12 @@ public class MainActivity extends AppCompatActivity {
             case Constants.ID_CAMERA:
                 startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), Constants.ID_CAMERA);
                 break;
-
+            case Constants.ID_LED:
+                startActivityForResult(new Intent(MainActivity.this, LEDActivity.class), Constants.ID_LED);
+                break;
+            case Constants.ID_BODY:
+                startActivityForResult(new Intent(MainActivity.this, BodyActivity.class), Constants.ID_BODY);
+                break;
             case Constants.ID_FINGER:
                 startActivityForResult(new Intent(MainActivity.this, FingerActivity.class), Constants.ID_FINGER);
                 break;
@@ -207,6 +212,12 @@ public class MainActivity extends AppCompatActivity {
             case Constants.ID_NET:
                 startActivityForResult(new Intent(MainActivity.this, NetActivity.class), Constants.ID_NET);
                 break;
+            case Constants.ID_TF:
+                startActivityForResult(new Intent(MainActivity.this, TFActivity.class), Constants.ID_TF);
+                break;
+            case Constants.ID_4G:
+                startActivityForResult(new Intent(MainActivity.this, GPRSActivity.class), Constants.ID_4G);
+                break;
         }
     }
 
@@ -217,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             item.setStatus(event.getStatus());
             item.setOpdate(DateUtil.format(new Date()));
             adapter.notifyDataSetChanged();
-            FileUtil.writeFile(Constants.RESULT_PATH_NAME, FileUtil.parseToString(itemList));
+            FileUtil.writeFile(Constants.RESULT_PATH_NAME, FileUtil.parseToString(itemList), false);
         }
     }
 

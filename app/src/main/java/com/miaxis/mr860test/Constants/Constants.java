@@ -25,4 +25,5 @@ public class Constants {
     public static final int STAUTS_DENIED = 2;
 
     public static final String RESULT_PATH_NAME = "MR860Test.txt";
+
 }

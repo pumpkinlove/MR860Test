@@ -27,6 +27,7 @@ android {
 }
 
 dependencies {
+    compile files('src/main/libs/smdt.jar')
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -38,4 +39,5 @@ dependencies {
     compile 'com.android.support:design:24.2.0'
     compile files('libs/IDCard_HID_Driver.jar')
     compile files('libs/MXFingerDriver.jar')
+
 }

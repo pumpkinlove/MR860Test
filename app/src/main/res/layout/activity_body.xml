@@ -4,7 +4,7 @@
     android:id="@+id/activity_lcd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.miaxis.mr860test.activity.LEDActivity">
+    tools:context="com.miaxis.mr860test.activity.BodyActivity">
 
     <LinearLayout
         android:id="@+id/ll_buttons"
@@ -18,7 +18,7 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/band_stroke_bg"
             android:gravity="center"
-            android:text="打开"
+            android:text="开始测试"
             android:textSize="18sp"
             android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
@@ -32,7 +32,7 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/band_stroke_bg"
             android:gravity="center"
-            android:text="关闭"
+            android:text="停止测试"
             android:textSize="18sp"
             android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
@@ -73,7 +73,7 @@
     <TextView
         android:layout_marginLeft="20dp"
         android:layout_alignLeft="@+id/ll_buttons"
-        android:text="LED测试"
+        android:text="人体感应测试"
         android:textSize="35sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

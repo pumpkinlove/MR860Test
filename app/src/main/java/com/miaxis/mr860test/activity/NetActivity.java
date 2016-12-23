@@ -1,5 +1,6 @@
 package com.miaxis.mr860test.activity;
 
+import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
@@ -46,6 +48,8 @@ public class NetActivity extends BaseTestActivity {
     private WifiManager wifiManager;
     private ConnectivityManager connManager;
 
+    private SmdtManager smdtManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
@@ -64,6 +68,7 @@ public class NetActivity extends BaseTestActivity {
     protected void initData() {
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        smdtManager = SmdtManager.create(this);
     }
 
     @Override
@@ -76,9 +81,12 @@ public class NetActivity extends BaseTestActivity {
 //        if (wifiManager.isWifiEnabled()) {
 //            wifiManager.setWifiEnabled(false);
 //        }
-        StringBuffer buffer = new StringBuffer();
-        ping("192.168.6.39", 5, buffer);
-        EventBus.getDefault().post(new PingEvent(buffer.toString()));
+
+        Toast.makeText(this,smdtManager.getCurrentNetType(), Toast.LENGTH_SHORT).show();
+
+//        StringBuffer buffer = new StringBuffer();
+//        ping("192.168.6.39", 5, buffer);
+//        EventBus.getDefault().post(new PingEvent(buffer.toString()));
     }
 
     @Event(R.id.tv_pass)
@@ -125,48 +133,6 @@ public class NetActivity extends BaseTestActivity {
         }
 
         return false;
-    }
-
-    public boolean ping(String host, int pingCount, StringBuffer stringBuffer) {
-        String line = null;
-        Process process = null;
-        BufferedReader successReader = null;
-//        String command = "ping -c " + pingCount + " -w 5 " + host;
-        String command = "ping -c " + pingCount + " " + host;
-        boolean isSuccess = false;
-        try {
-            process = Runtime.getRuntime().exec(command);
-            if (process == null) {
-                append(stringBuffer, "ping fail:process is null.");
-                return false;
-            }
-            successReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            while ((line = successReader.readLine()) != null) {
-                append(stringBuffer, line);
-            }
-            int status = process.waitFor();
-            if (status == 0) {
-                append(stringBuffer, "exec cmd success:" + command);
-                isSuccess = true;
-            } else {
-                append(stringBuffer, "exec cmd fail.");
-                isSuccess = false;
-            }
-            append(stringBuffer, "exec finished.");
-        } catch (IOException e) {
-        } catch (InterruptedException e) {
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
-            if (successReader != null) {
-                try {
-                    successReader.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        return isSuccess;
     }
 
     private void append(StringBuffer stringBuffer, String text) {
