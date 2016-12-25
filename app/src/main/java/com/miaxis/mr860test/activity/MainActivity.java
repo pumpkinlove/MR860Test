@@ -8,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
@@ -21,10 +22,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.xutils.view.annotation.ContentView;
+import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,16 +69,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initList() {
-        File file = new File(Environment.getExternalStorageDirectory(), Constants.RESULT_PATH_NAME);
-        if (file.exists()) {
-            String str = FileUtil.readFile(file);
-            itemList = FileUtil.parseFromString(str);
-        } else {
-            createNewList();
-        }
-    }
-
-    private void createNewList() {
         itemList = new ArrayList<>();
         TestItem item = new TestItem();
         item.setOpdate(DateUtil.format(new Date()));
@@ -175,9 +168,6 @@ public class MainActivity extends AppCompatActivity {
         item.setName("升级功能");
         itemList.add(item);
 
-        String str = FileUtil.parseToString(itemList);
-        FileUtil.writeFile(Constants.RESULT_PATH_NAME, str, false);
-
     }
 
     private void startTestById(int id) {
@@ -222,14 +212,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void passEvent(ResultEvent event) {
+    public void onResultEvent(ResultEvent event) {
         TestItem item = itemList.get(event.getId() - 1);
         if (item != null) {
             item.setStatus(event.getStatus());
             item.setOpdate(DateUtil.format(new Date()));
             adapter.notifyDataSetChanged();
-            FileUtil.writeFile(Constants.RESULT_PATH_NAME, FileUtil.parseToString(itemList), false);
+            try {
+                FileUtil.addRecord(FileUtil.HISTORY_PATH, item);
+            } catch (IOException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
         }
+    }
+
+    @Event(R.id.tv_history)
+    private void onHistoryClick(View view) {
+        startActivity(new Intent(this, HistoryActivity.class));
     }
 
     @Override

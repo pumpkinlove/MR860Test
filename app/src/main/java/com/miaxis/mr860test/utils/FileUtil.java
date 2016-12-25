@@ -19,13 +19,13 @@ import java.util.List;
 
 public class FileUtil {
 
-    public static final String HISTORY_PATH = "MR860Test_history.txt";
-    public static final String BEFORE_PATH = "MR860Test_before.txt";
-    public static final String AFTER_PATH = "MR860Test_after.txt";
-    public static final String INSPECTION_PATH = "MR860Test_inspection.txt";
+    public static final String HISTORY_PATH     = "MR860Test_history.txt";
+    public static final String BEFORE_PATH      = "MR860Test_before.txt";
+    public static final String AFTER_PATH       = "MR860Test_after.txt";
+    public static final String INSPECTION_PATH  = "MR860Test_inspection.txt";
 
-    public static void addRecord(TestItem item) throws IOException {
-        writeFile(HISTORY_PATH, parseItemToString(item), true);
+    public static void addRecord(String path, TestItem item) throws IOException {
+        writeFile(path, parseItemToString(item) + "=", true);
     }
 
     public static List<TestItem> parseFromString(String str) {
@@ -40,21 +40,19 @@ public class FileUtil {
     public static TestItem parseItemFromString(String str) {
         TestItem item = new TestItem();
         String[] fields = str.split("_");
-        item.setId(Integer.valueOf(fields[0]));
+        item.setOpdate(fields[0]);
         item.setName(fields[1]);
         item.setStatus(Integer.valueOf(fields[2]));
-        item.setOpdate(fields[3]);
-        item.setRemark(fields[4]);
+        item.setRemark(fields[3]);
         return item;
     }
 
     public static String parseToString(List<TestItem> list) {
         StringBuilder sb = new StringBuilder("");
         for (int i=0; i<list.size(); i++) {
-            sb.append(list.get(i).getId() + "_");
+            sb.append(list.get(i).getOpdate() + "_");
             sb.append(list.get(i).getName() + "_");
             sb.append(list.get(i).getStatus() + "_");
-            sb.append(list.get(i).getOpdate() + "_");
             sb.append(list.get(i).getRemark());
             if (i < list.size() - 1) {
                 sb.append("=");
@@ -66,10 +64,9 @@ public class FileUtil {
 
     public static String parseItemToString(TestItem item) {
         StringBuilder sb = new StringBuilder("");
-        sb.append(item.getId() + "_");
+        sb.append(item.getOpdate() + "_");
         sb.append(item.getName() + "_");
         sb.append(item.getStatus() + "_");
-        sb.append(item.getOpdate() + "_");
         sb.append(item.getRemark());
         sb.append("\r\n");
         return sb.toString();
@@ -79,6 +76,9 @@ public class FileUtil {
         BufferedWriter bw = null;
         try {
             File file = new File(Environment.getExternalStorageDirectory(), path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             //第二个参数意义是说是否以append方式添加内容
             bw = new BufferedWriter(new FileWriter(file, isAdd));
             bw.write(content);
@@ -101,9 +101,9 @@ public class FileUtil {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(file));
-            String readline = "";
-            while ((readline = br.readLine()) != null) {
-                sb.append(readline);
+            String readLine;
+            while ((readLine = br.readLine()) != null) {
+                sb.append(readLine);
             }
             br.close();
         } catch (Exception e) {
@@ -119,4 +119,5 @@ public class FileUtil {
         }
         return sb.toString();
     }
+
 }
