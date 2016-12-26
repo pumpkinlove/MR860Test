@@ -2,6 +2,9 @@ package com.miaxis.mr860test.activity;
 
 import java.util.Calendar;
 
+import org.greenrobot.eventbus.EventBus;
+import org.xutils.view.annotation.Event;
+import org.xutils.x;
 import org.zz.mxhidfingerdriver.MXFingerDriver;
 import org.zz.tool.BMP;
 import org.zz.tool.ToolUnit;
@@ -13,13 +16,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
+import com.miaxis.mr860test.domain.ResultEvent;
 
 public class FingerActivity extends Activity {
 
@@ -44,10 +50,12 @@ public class FingerActivity extends Activity {
     // 定义一个负责更新的进度的Handler
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE); // 设置无标题
         setContentView(R.layout.activity_finger);
         fingerDriver = new MXFingerDriver(this,true);
+        x.view().inject(this);
     }
 
     /* Toast控件显示提示信息 */
@@ -223,5 +231,17 @@ public class FingerActivity extends Activity {
 
     public void OnClickCancel(View view) {
         fingerDriver.mxCancelGetImage();
+    }
+
+    @Event(R.id.tv_pass)
+    private void onPass(View view) {
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_FINGER, Constants.STATUS_PASS));
+        finish();
+    }
+
+    @Event(R.id.tv_deny)
+    private void onDeny(View view) {
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_FINGER, Constants.STAUTS_DENIED));
+        finish();
     }
 }

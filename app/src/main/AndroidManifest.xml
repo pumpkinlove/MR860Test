@@ -72,7 +72,7 @@
         <activity android:name=".activity.FingerActivity" />
         <activity android:name=".activity.GPRSActivity" />
         <activity android:name=".activity.LEDActivity" />
-        <activity android:name=".activity.HistoryActivity" />
+        <activity android:name=".activity.RecordsActivity" />
         <activity android:name=".activity.BodyActivity"></activity>
     </application>
 

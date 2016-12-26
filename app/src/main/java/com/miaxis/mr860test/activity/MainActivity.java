@@ -1,11 +1,11 @@
 package com.miaxis.mr860test.activity;
 
 import android.content.Intent;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -14,9 +14,11 @@ import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.adapter.ItemAdapter;
 import com.miaxis.mr860test.domain.ResultEvent;
+import com.miaxis.mr860test.domain.SubmitEvent;
 import com.miaxis.mr860test.domain.TestItem;
 import com.miaxis.mr860test.utils.DateUtil;
 import com.miaxis.mr860test.utils.FileUtil;
+import com.miaxis.mr860test.view.ConfirmDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -26,7 +28,6 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,12 +35,16 @@ import java.util.List;
 
 @ContentView(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
-
+    private long mExitTime;
     private List<TestItem> itemList;
     private ItemAdapter adapter;
 
     @ViewInject(R.id.rv_items)
     private RecyclerView rv_items;
+
+    private ConfirmDialog confirmDialog;
+
+    private EventBus bus;
 
     @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
 
         initList();
-
+        bus = EventBus.getDefault();
+        bus.register(this);
+        confirmDialog = new ConfirmDialog();
         adapter = new ItemAdapter(itemList, this);
         rv_items.setLayoutManager(new GridLayoutManager(this, 4));
         rv_items.setAdapter(adapter);
@@ -154,19 +161,19 @@ public class MainActivity extends AppCompatActivity {
         item.setName("4G模块");
         itemList.add(item);
 
-        item = new TestItem();
-        item.setOpdate(DateUtil.format(new Date()));
-        item.setRemark("无");
-        item.setId(Constants.ID_OLD);
-        item.setName("老化测试");
-        itemList.add(item);
-
-        item = new TestItem();
-        item.setOpdate(DateUtil.format(new Date()));
-        item.setRemark("无");
-        item.setId(Constants.ID_UPDATE);
-        item.setName("升级功能");
-        itemList.add(item);
+//        item = new TestItem();
+//        item.setOpdate(DateUtil.format(new Date()));
+//        item.setRemark("无");
+//        item.setId(Constants.ID_OLD);
+//        item.setName("老化测试");
+//        itemList.add(item);
+//
+//        item = new TestItem();
+//        item.setOpdate(DateUtil.format(new Date()));
+//        item.setRemark("无");
+//        item.setId(Constants.ID_UPDATE);
+//        item.setName("升级功能");
+//        itemList.add(item);
 
     }
 
@@ -226,14 +233,99 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSubmitEvent(SubmitEvent e) {
+        FileUtil.writeFile(e.getPath(), FileUtil.parseToString(e.getItemList()), false);
+    }
+
     @Event(R.id.tv_history)
     private void onHistoryClick(View view) {
-        startActivity(new Intent(this, HistoryActivity.class));
+        startActivity(new Intent(this, RecordsActivity.class));
     }
+
+    @Event(R.id.tv_before)
+    private void onBeforeClick(View view) {
+
+        confirmDialog.setContent("您确定将测试结果保存到 老化前测试 吗？");
+        confirmDialog.setCancelListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirmDialog.dismiss();
+            }
+        });
+
+        confirmDialog.setConfirmListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bus.post(new SubmitEvent(itemList, FileUtil.BEFORE_PATH));
+                confirmDialog.dismiss();
+            }
+        });
+    }
+
+    @Event(R.id.tv_after)
+    private void onAfterClick(View view) {
+
+        confirmDialog.setContent("您确定将测试结果保存到 老化后测试 吗？");
+        confirmDialog.setCancelListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirmDialog.dismiss();
+            }
+        });
+
+        confirmDialog.setConfirmListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bus.post(new SubmitEvent(itemList, FileUtil.AFTER_PATH));
+                confirmDialog.dismiss();
+            }
+        });
+    }
+
+    @Event(R.id.tv_before)
+    private void onInspectionClick(View view) {
+
+        confirmDialog.setContent("您确定将测试结果保存到 成品抽检 吗？");
+        confirmDialog.setCancelListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirmDialog.dismiss();
+            }
+        });
+
+        confirmDialog.setConfirmListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bus.post(new SubmitEvent(itemList, FileUtil.INSPECTION_PATH));
+                confirmDialog.dismiss();
+            }
+        });
+    }
+
+
+
+
 
     @Override
     protected void onDestroy() {
         EventBus.getDefault().unregister(this);
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+
+            if((System.currentTimeMillis() - mExitTime) > 2000) {
+                Toast.makeText(getApplicationContext(), "再按一次退出程序",Toast.LENGTH_SHORT).show();
+                mExitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

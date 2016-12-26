@@ -73,7 +73,7 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/band_stroke_bg"
             android:gravity="center"
-            android:text="测试历史"
+            android:text="测试记录"
             android:textSize="18sp"
             android:textColor="@color/blue_band_dark"
             android:layout_weight="1"

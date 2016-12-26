@@ -125,5 +125,40 @@
                 android:onClick="OnClickCancel"/>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+        android:layout_marginBottom="20dp"
+        android:id="@+id/ll_buttons"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
 
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="通过"
+            android:textSize="18sp"
+            android:textColor="@color/green_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_pass" />
+
+        <TextView
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/band_stroke_bg"
+            android:gravity="center"
+            android:text="不通过"
+            android:textSize="18sp"
+            android:textColor="@color/red"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_deny" />
+
+    </LinearLayout>
 </LinearLayout>
