@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     @ViewInject(R.id.rv_items)
     private RecyclerView rv_items;
 
-    private ConfirmDialog confirmDialog;
+    private ConfirmDialog beforeDialog;
+    private ConfirmDialog afterDialog;
+    private ConfirmDialog inspectionDialog;
 
     private EventBus bus;
 
@@ -53,15 +55,24 @@ public class MainActivity extends AppCompatActivity {
 
         x.view().inject(this);
 
-        EventBus.getDefault().register(this);
+        initData();
+        initView();
+
+
+
+        bus.register(this);
+    }
+
+    private void initData() {
+        bus = EventBus.getDefault();
+
+        beforeDialog = new ConfirmDialog();
+        afterDialog = new ConfirmDialog();
+        inspectionDialog = new ConfirmDialog();
 
         initList();
-        bus = EventBus.getDefault();
-        bus.register(this);
-        confirmDialog = new ConfirmDialog();
+
         adapter = new ItemAdapter(itemList, this);
-        rv_items.setLayoutManager(new GridLayoutManager(this, 4));
-        rv_items.setAdapter(adapter);
         adapter.setListener(new ItemAdapter.TestClickListenenr() {
             @Override
             public void onItemClick(View view, int position) {
@@ -73,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void initView() {
+        rv_items.setLayoutManager(new GridLayoutManager(this, 4));
+        rv_items.setAdapter(adapter);
     }
 
     private void initList() {
@@ -246,66 +262,65 @@ public class MainActivity extends AppCompatActivity {
     @Event(R.id.tv_before)
     private void onBeforeClick(View view) {
 
-        confirmDialog.setContent("您确定将测试结果保存到 老化前测试 吗？");
-        confirmDialog.setCancelListener(new View.OnClickListener() {
+        beforeDialog.setContent("您确定将测试结果保存到 老化前测试 吗？");
+        beforeDialog.setCancelListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmDialog.dismiss();
+                beforeDialog.dismiss();
             }
         });
 
-        confirmDialog.setConfirmListener(new View.OnClickListener() {
+        beforeDialog.setConfirmListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 bus.post(new SubmitEvent(itemList, FileUtil.BEFORE_PATH));
-                confirmDialog.dismiss();
+                beforeDialog.dismiss();
             }
         });
+        beforeDialog.show(getFragmentManager(), "onBeforeClick");
     }
 
     @Event(R.id.tv_after)
     private void onAfterClick(View view) {
 
-        confirmDialog.setContent("您确定将测试结果保存到 老化后测试 吗？");
-        confirmDialog.setCancelListener(new View.OnClickListener() {
+        afterDialog.setContent("您确定将测试结果保存到 老化后测试 吗？");
+        afterDialog.setCancelListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmDialog.dismiss();
+                afterDialog.dismiss();
             }
         });
 
-        confirmDialog.setConfirmListener(new View.OnClickListener() {
+        afterDialog.setConfirmListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 bus.post(new SubmitEvent(itemList, FileUtil.AFTER_PATH));
-                confirmDialog.dismiss();
+                afterDialog.dismiss();
             }
         });
+        afterDialog.show(getFragmentManager(), "onAfterClick");
     }
 
-    @Event(R.id.tv_before)
+    @Event(R.id.tv_inspection)
     private void onInspectionClick(View view) {
 
-        confirmDialog.setContent("您确定将测试结果保存到 成品抽检 吗？");
-        confirmDialog.setCancelListener(new View.OnClickListener() {
+        inspectionDialog.setContent("您确定将测试结果保存到 成品抽检 吗？");
+        inspectionDialog.setCancelListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmDialog.dismiss();
+                inspectionDialog.dismiss();
             }
         });
 
-        confirmDialog.setConfirmListener(new View.OnClickListener() {
+        inspectionDialog.setConfirmListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 bus.post(new SubmitEvent(itemList, FileUtil.INSPECTION_PATH));
-                confirmDialog.dismiss();
+                inspectionDialog.dismiss();
             }
         });
+        inspectionDialog.show(getFragmentManager(), "onInspectionClick");
     }
-
-
-
-
 
     @Override
     protected void onDestroy() {

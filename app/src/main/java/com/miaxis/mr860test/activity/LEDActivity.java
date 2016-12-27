@@ -18,7 +18,7 @@ import org.xutils.x;
 @ContentView(R.layout.activity_led)
 public class LEDActivity extends BaseTestActivity {
 
-    private SmdtManager manager;
+    private SmdtManager smdt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +28,12 @@ public class LEDActivity extends BaseTestActivity {
 
         initData();
         initView();
-        manager.smdtSetExtrnalGpioValue(3, false);
     }
 
     @Override
     protected void initData() {
-        manager = SmdtManager.create(this);
+        smdt = SmdtManager.create(this);
+        smdt.smdtSetExtrnalGpioValue(3, true);
     }
 
     @Override
@@ -43,12 +43,12 @@ public class LEDActivity extends BaseTestActivity {
 
     @Event(R.id.tv_led_on)
     private void onTurnOn(View view) {
-        Toast.makeText(getApplicationContext(), manager.smdtSetExtrnalGpioValue(3, true) + "", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), smdt.smdtSetExtrnalGpioValue(3, true) + "", Toast.LENGTH_SHORT).show();
     }
 
     @Event(R.id.tv_led_off)
     private void onTurnOff(View view) {
-        Toast.makeText(getApplicationContext(), manager.smdtSetExtrnalGpioValue(3, false) + "", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), smdt.smdtSetExtrnalGpioValue(3, false) + "", Toast.LENGTH_SHORT).show();
     }
 
     @Event(R.id.tv_pass)

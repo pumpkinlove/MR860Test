@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.miaxis.mr860test"
         minSdkVersion 22
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,18 +27,17 @@ android {
 }
 
 dependencies {
-    compile files('src/main/libs/smdt.jar')
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile files('libs/IDCard_HID_Driver.jar')
     compile files('libs/MXFingerDriver.jar')
-
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'org.xutils:xutils:3.3.36'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
     testCompile 'junit:junit:4.12'
+    compile files('libs/smdt.jar')
 }
