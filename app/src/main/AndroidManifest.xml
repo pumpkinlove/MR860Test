@@ -54,7 +54,8 @@
         <activity android:name=".activity.CameraActivity" />
         <activity android:name=".activity.VoiceActivity" />
         <activity android:name=".activity.HDMIActivity" />
-        <activity android:name=".activity.NetActivity" />
+        <activity android:name=".activity.NetActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
 
         <receiver
             android:name=".receiver.NetworkReceiver"
@@ -62,15 +63,16 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.TFActivity" />
+        <activity android:name=".activity.TFActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity android:name=".activity.IdActivity" />
         <activity android:name=".activity.FingerActivity" />
-        <activity android:name=".activity.GPRSActivity" />
+        <activity android:name=".activity.GPRSActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity android:name=".activity.LEDActivity" />
         <activity android:name=".activity.RecordsActivity" />
         <activity android:name=".activity.BodyActivity"></activity>

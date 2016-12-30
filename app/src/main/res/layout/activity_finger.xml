@@ -60,7 +60,7 @@
                 android:scrollbars="vertical"
                 android:singleLine="false"
                 android:text=""
-                android:textColor="#fff"
+                android:textColor="@color/dark"
                 android:textSize="16sp" >
             </EditText>
         </LinearLayout>

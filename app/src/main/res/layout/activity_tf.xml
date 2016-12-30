@@ -6,9 +6,111 @@
     android:layout_height="match_parent"
     tools:context="com.miaxis.mr860test.activity.TFActivity">
 
+    <TextView
+        android:id="@id/tv_title"
+        android:layout_marginLeft="20dp"
+        android:layout_alignLeft="@+id/ll_buttons"
+        android:text="TF卡读写测试"
+        android:textSize="35sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
+
     <LinearLayout
+        android:orientation="vertical"
+        android:layout_margin="20dp"
+        android:layout_below="@+id/tv_title"
+        android:layout_above="@+id/ll_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:text="外部存储SD卡绝对路径"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_sd_path"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:text="写入内容"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <EditText
+                android:text="ABCDEFG"
+                android:id="@+id/et_write"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <TextView
+                android:text="读出内容"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_read"
+                android:textColor="@color/dark"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginBottom="20dp"
         android:id="@+id/ll_buttons"
-        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
@@ -55,16 +157,5 @@
             android:id="@+id/tv_deny" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_marginLeft="20dp"
-        android:layout_alignLeft="@+id/ll_buttons"
-        android:text="TF卡读写测试"
-        android:textSize="35sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp" />
 
 </RelativeLayout>

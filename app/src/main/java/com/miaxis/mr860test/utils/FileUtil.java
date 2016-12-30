@@ -72,14 +72,36 @@ public class FileUtil {
         return sb.toString();
     }
 
-    public static void writeFile(String path, String content, boolean isAdd) {
+    public static void writeFilePath(String path, String name, String content, boolean isAdd) {
         BufferedWriter bw = null;
         try {
-            File file = new File(Environment.getExternalStorageDirectory(), path);
+            File file = new File(path, name);
             if (!file.exists()) {
                 file.createNewFile();
             }
-            //第二个参数意义是说是否以append方式添加内容
+            bw = new BufferedWriter(new FileWriter(file, isAdd));
+            bw.write(content);
+            bw.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(bw != null) {
+                    bw.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void writeFile(String name, String content, boolean isAdd) {
+        BufferedWriter bw = null;
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), name);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             bw = new BufferedWriter(new FileWriter(file, isAdd));
             bw.write(content);
             bw.flush();

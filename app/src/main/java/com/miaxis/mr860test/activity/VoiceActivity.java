@@ -42,11 +42,16 @@ public class VoiceActivity extends BaseTestActivity {
 
     @Event(R.id.tv_test)
     private void onTest(View view) {
-        NotificationManager manger = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new Notification();
-        notification.defaults=Notification.DEFAULT_SOUND;
-        manger.notify(1, notification);
+        try {
+            NotificationManager manger = (NotificationManager)
+                    getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new Notification();
+            notification.defaults=Notification.DEFAULT_SOUND;
+            manger.notify(1, notification);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Event(R.id.tv_pass)
