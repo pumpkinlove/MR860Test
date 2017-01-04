@@ -4,16 +4,16 @@ package com.miaxis.mr860test.domain;
  * Created by xu.nan on 2016/12/22.
  */
 
-public class IdEvent {
+public class CommonEvent {
 
     private int code;
     private int result;
     private String content;
 
-    public IdEvent() {
+    public CommonEvent() {
     }
 
-    public IdEvent(int code, int result, String content) {
+    public CommonEvent(int code, int result, String content) {
         this.code = code;
         this.result = result;
         this.content = content;

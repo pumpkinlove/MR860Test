@@ -18,12 +18,16 @@ public class Constants {
     public static final int ID_NET      = 10;
     public static final int ID_TF       = 11;
     public static final int ID_4G       = 12;
-    public static final int ID_OLD      = 13;
-    public static final int ID_UPDATE   = 14;
+    public static final int ID_USB      = 13;
+    public static final int ID_OLD      = 14;
+
 
     public static final int STATUS_PASS   = 1;
     public static final int STAUTS_DENIED = 2;
 
     public static final String RESULT_PATH_NAME = "MR860Test.txt";
+
+    public static final String ID_VERSION = "MR-SAM100 V1.0.2U";
+    public static final String FINGER_VERSION = "SM-80_High_HIDV101";
 
 }

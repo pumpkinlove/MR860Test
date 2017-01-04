@@ -2,24 +2,21 @@ package com.miaxis.mr860test.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Environment;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
+import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.domain.IdCardPhotoEvent;
-import com.miaxis.mr860test.domain.IdEvent;
+import com.miaxis.mr860test.domain.CommonEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
-import com.miaxis.mr860test.utils.JNIUtil;
+import com.miaxis.mr860test.utils.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -30,6 +27,9 @@ import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 import org.zz.idcard_hid_driver.IdCardDriver;
 
+import java.io.File;
+import java.util.List;
+
 @ContentView(R.layout.activity_id)
 public class IdActivity extends BaseTestActivity {
 
@@ -39,23 +39,26 @@ public class IdActivity extends BaseTestActivity {
 
     private static final int READ_VERSION = 1001;
     private static final int READ_CARD_ID = 1002;
-    private static final int READ_INFO = 1003;
+    private static final int READ_INFO    = 1003;
 
-    @ViewInject(R.id.tv_id_version)
-    private TextView tv_id_version;
+    @ViewInject(R.id.tv_id_version_need)    private TextView tv_id_version_need;
 
-    @ViewInject(R.id.tv_id_card_id)
-    private TextView tv_id_card_id;
+    @ViewInject(R.id.tv_id_version)         private TextView tv_id_version;
+    @ViewInject(R.id.tv_id_card_id)         private TextView tv_id_card_id;
+    @ViewInject(R.id.tv_id_info)            private TextView tv_id_info;
 
-    @ViewInject(R.id.tv_id_info)
-    private TextView tv_id_info;
+    @ViewInject(R.id.iv_id_photo)           private ImageView iv_id_photo;
 
-    @ViewInject(R.id.iv_id_photo)
-    private ImageView iv_id_photo;
+    @ViewInject(R.id.btn_read_version)      private Button btn_read_version;
+    @ViewInject(R.id.btn_read_id)           private Button btn_read_id;
+    @ViewInject(R.id.btn_read_info)         private Button btn_read_info;
+
+    @ViewInject(R.id.tv_pass)               private TextView tv_pass;
+    @ViewInject(R.id.tv_deny)               private TextView tv_deny;
 
     private EventBus bus;
-    // 中正驱动
-    IdCardDriver idCardDriver;
+
+    private IdCardDriver idCardDriver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +69,7 @@ public class IdActivity extends BaseTestActivity {
 
         initData();
         initView();
-
+        initVersion();
     }
 
     @Override
@@ -81,79 +84,116 @@ public class IdActivity extends BaseTestActivity {
 
     }
 
+    private void initVersion() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
+            if (!file.exists()) {
+                tv_id_version_need.setText("版本配置文件缺失");
+            } else {
+                List<String> stringList = FileUtil.readFileToList(file);
+                if (stringList != null) {
+                    tv_id_version_need.setText(stringList.get(0));
+                }
+            }
+            OnClickDevVersion(null);
 
-    @Event(R.id.tv_read_version)
-    private void OnClickDevVersion(View view) {
-        byte[] bDevVersion = new byte[64];
-        int nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
-        if (nRet != 0) {
-            if (nRet==-100) {
-                bus.post(new IdEvent(READ_VERSION, nRet, "无设备"));
-            }
-            else {
-                bus.post(new IdEvent(READ_VERSION, nRet, "失败"));
-            }
-        } else {
-            bus.post(new IdEvent(READ_VERSION, nRet, new String(bDevVersion)));
+        } catch (Exception e) {
+
         }
     }
 
-    @Event(R.id.tv_read_id)
-    private void OnClickCardId(View view) {
-        byte[] bCardId = new byte[64];
-        int nRet = idCardDriver.mxReadCardId(bCardId);
-        if (nRet != 0) {
-            if (nRet==-100) {
-                bus.post(new IdEvent(READ_CARD_ID, nRet, "无设备"));
-            } else {
-                bus.post(new IdEvent(READ_CARD_ID, nRet, "失败"));
-            }
-        } else {
-            String strTmp = null;
-            for (int i = 0; i < bCardId.length; i++) {
-                if(bCardId[i] == 0x00)
-                    break;
-                if (i == 0) {
-                    strTmp = String.format("%02x ", bCardId[i]);
+
+    @Event(R.id.btn_read_version)
+    private void OnClickDevVersion(View view) {
+        onDisableEvent(new DisableEvent(false));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] bDevVersion = new byte[64];
+                int nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                if (nRet != 0) {
+                    if (nRet == -100) {
+                        bus.post(new CommonEvent(READ_VERSION, nRet, "无设备"));
+                    }
+                    else {
+                        bus.post(new CommonEvent(READ_VERSION, nRet, "失败"));
+                    }
                 } else {
-                    strTmp += String.format("%02x ", bCardId[i]);
+                    bus.post(new CommonEvent(READ_VERSION, nRet, new String(bDevVersion)));
                 }
+                bus.post(new DisableEvent(true));
             }
-            bus.post(new IdEvent(READ_CARD_ID, nRet, new String(strTmp)));
-        }
+        }).start();
+
+    }
+
+    @Event(R.id.btn_read_id)
+    private void OnClickCardId(View view) {
+        onDisableEvent(new DisableEvent(false));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] bCardId = new byte[64];
+                int nRet = idCardDriver.mxReadCardId(bCardId);
+                if (nRet != 0) {
+                    if (nRet == -100) {
+                        bus.post(new CommonEvent(READ_CARD_ID, nRet, "无设备"));
+                    } else {
+                        bus.post(new CommonEvent(READ_CARD_ID, nRet, "失败"));
+                    }
+                } else {
+                    String strTmp = null;
+                    for (int i = 0; i < bCardId.length; i++) {
+                        if(bCardId[i] == 0x00)
+                            break;
+                        if (i == 0) {
+                            strTmp = String.format("%02x ", bCardId[i]);
+                        } else {
+                            strTmp += String.format("%02x ", bCardId[i]);
+                        }
+                    }
+                    bus.post(new CommonEvent(READ_CARD_ID, nRet, new String(strTmp)));
+                }
+                bus.post(new DisableEvent(true));
+            }
+        }).start();
     }
 
     public void GetCardInfo() {
         byte[] bCardInfo = new byte[256 + 1024];
         int nRet = idCardDriver.mxReadCardInfo(bCardInfo);
         if (nRet != 0) {
-            if(nRet==-100){
-                bus.post(new IdEvent(READ_INFO, nRet, "无设备"));
+            if (nRet == -100) {
+                bus.post(new CommonEvent(READ_INFO, nRet, "无设备"));
             }
             else {
-                bus.post(new IdEvent(READ_INFO, nRet, "失败"));
+                bus.post(new CommonEvent(READ_INFO, nRet, "失败"));
             }
         } else {
-            bus.post(new IdEvent(READ_INFO, nRet, "成功" + bCardInfo.length));
+            bus.post(new CommonEvent(READ_INFO, nRet, "成功" + bCardInfo.length));
             showIdCardInfo(bCardInfo, true);
         }
     }
 
-    @Event(R.id.tv_read_info)
+    @Event(R.id.btn_read_info)
     private void OnClickCardFullInfo(View view) {
-        try {
-            byte[] bCardFullInfo = new byte[256 + 1024+1024];
-            int nRet = idCardDriver.mxReadCardFullInfo(bCardFullInfo);
-            if (nRet != 0) {
-                if (nRet == -14) {
-                    GetCardInfo();
-                } else if (nRet == -100) {
-                    bus.post(new IdEvent(READ_INFO, nRet, "无设备"));
-                } else {
-                    bus.post(new IdEvent(READ_INFO, nRet, "失败"));
-                }
-            } else {
-//                showIdCardInfo(bCardFullInfo, true);
+        onDisableEvent(new DisableEvent(false));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    byte[] bCardFullInfo = new byte[256 + 1024 + 1024];
+                    int nRet = idCardDriver.mxReadCardFullInfo(bCardFullInfo);
+                    if (nRet != 0) {
+                        if (nRet == -14) {
+                            GetCardInfo();
+                        } else if (nRet == -100) {
+                            bus.post(new CommonEvent(READ_INFO, nRet, "无设备"));
+                        } else {
+                            bus.post(new CommonEvent(READ_INFO, nRet, "失败"));
+                        }
+                    } else {
+                        showIdCardInfo(bCardFullInfo, true);
 //                byte[] bFingerData1 = new byte[mFingerDataSize];
 //                byte[] bFingerData2 = new byte[mFingerDataSize];
 //                byte[] bFingerData1_B64 = new byte[mFingerDataB64Size];
@@ -168,10 +208,13 @@ public class IdActivity extends BaseTestActivity {
 //                idCardDriver.Base64Encode(bFingerData2,mFingerDataSize,bFingerData2_B64,mFingerDataB64Size);
 //                ShowMessage("指纹数据1(Base64编码显示)：" + new String(bFingerData1_B64), true);
 //                ShowMessage("指纹数据2(Base64编码显示)：" + new String(bFingerData1_B64), true);
-            }
-        } catch (Exception e) {
+                    }
+                } catch (Exception e) {
 
-        }
+                }
+            bus.post(new DisableEvent(true));
+            }
+        }).start();
     }
 
     // ////////////////////////////////////////////////////////////////////////
@@ -221,7 +264,7 @@ public class IdActivity extends BaseTestActivity {
                 id_Name[i] = bCardInfo[i + iLen];
             }
             iLen = iLen + id_Name.length;
-            sb.append("用户名:" + unicode2String(id_Name));
+            sb.append("姓名: " + unicode2String(id_Name));
 
             for (int i = 0; i < id_Sex.length; i++) {
                 id_Sex[i] = bCardInfo[iLen + i];
@@ -280,7 +323,7 @@ public class IdActivity extends BaseTestActivity {
                 id_NewAddr[i] = bCardInfo[iLen + i];
             }
             iLen = iLen + id_NewAddr.length;
-            bus.post(new IdEvent(READ_INFO, 0, sb.toString()));
+            bus.post(new CommonEvent(READ_INFO, 0, sb.toString()));
             if (bShowImage == true) {
                 for (int i = 0; i < id_pImage.length; i++) {
                     id_pImage[i] = bCardInfo[i + iLen];
@@ -288,13 +331,13 @@ public class IdActivity extends BaseTestActivity {
                 iLen = iLen + id_pImage.length;
 
                 byte[] bmp = new byte[mPhotoSize];
-                int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
-                if (re == 0) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-                    bus.post(new IdCardPhotoEvent(bitmap));
-                } else {
-                    bus.post(new IdCardPhotoEvent(null));
-                }
+//                int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
+//                if (re == 0) {
+//                    Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+//                    bus.post(new IdCardPhotoEvent(bitmap));
+//                } else {
+//                    bus.post(new IdCardPhotoEvent(null));
+//                }
             }
 
         } catch (Exception e) {
@@ -303,11 +346,22 @@ public class IdActivity extends BaseTestActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIdEvent(IdEvent event) {
+    public void onIdEvent(CommonEvent event) {
         TextView tv = null;
         switch (event.getCode()) {
             case READ_VERSION:
                 tv = tv_id_version;
+                if (event.getResult() == 0) {
+                    String v_need = tv_id_version_need.getText().toString().trim();
+                    String v = event.getContent().trim();
+                    if (!v.equals(v_need)) {
+                        tv_id_version.setTextColor(getResources().getColor(R.color.red));
+                        bus.post(new DisableEvent(false));
+                    } else {
+                        tv_id_version.setTextColor(getResources().getColor(R.color.green_dark));
+                        bus.post(new DisableEvent(true));
+                    }
+                }
                 break;
             case READ_CARD_ID:
                 tv = tv_id_card_id;
@@ -334,6 +388,26 @@ public class IdActivity extends BaseTestActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDisableEvent(DisableEvent e) {
+        if (e.isFlag()) {
+            tv_pass.            setTextColor(getResources().getColor(R.color.green_dark));
+            btn_read_version.   setTextColor(getResources().getColor(R.color.dark));
+            btn_read_id.        setTextColor(getResources().getColor(R.color.dark));
+            btn_read_info.      setTextColor(getResources().getColor(R.color.dark));
+        } else {
+            tv_pass.            setTextColor(getResources().getColor(R.color.gray_dark));
+            btn_read_version.   setTextColor(getResources().getColor(R.color.gray_dark));
+            btn_read_id.        setTextColor(getResources().getColor(R.color.gray_dark));
+            btn_read_info.      setTextColor(getResources().getColor(R.color.gray_dark));
+        }
+        tv_pass.            setClickable(e.isFlag());
+        tv_pass.            setEnabled(e.isFlag());
+        btn_read_version.   setEnabled(e.isFlag());
+        btn_read_id.        setEnabled(e.isFlag());
+        btn_read_info.      setEnabled(e.isFlag());
+    }
+
     @Override
     protected void onDestroy() {
         bus.unregister(this);
@@ -351,4 +425,7 @@ public class IdActivity extends BaseTestActivity {
         EventBus.getDefault().post(new ResultEvent(Constants.ID_IDCARD, Constants.STAUTS_DENIED));
         finish();
     }
+
+
+
 }

@@ -54,10 +54,11 @@ public class RecordsActivity extends BaseTestActivity {
         historyFragment = new HistoryFragment();
 
         fragmentList = new ArrayList<>();
+        fragmentList.add(historyFragment);
         fragmentList.add(beforeFragment);
         fragmentList.add(afterFragment);
         fragmentList.add(inspectionFragment);
-        fragmentList.add(historyFragment);
+
 
         adapter = new MyFragmentAdapter(getSupportFragmentManager(), fragmentList);
 
@@ -65,7 +66,7 @@ public class RecordsActivity extends BaseTestActivity {
 
     @Override
     protected void initView() {
-        String[] titles = {"老化前测试", "老化后测试", "成品抽检", "测试历史"};
+        String[] titles = {"测试历史", "老化后测试", "成品抽检", "老化前测试"};
         vp_records.setAdapter(adapter);
         ViewPager.OnPageChangeListener l = new TabLayout.TabLayoutOnPageChangeListener(tl_records);
         vp_records.addOnPageChangeListener(l);

@@ -23,6 +23,7 @@ public class FileUtil {
     public static final String BEFORE_PATH      = "MR860Test_before.txt";
     public static final String AFTER_PATH       = "MR860Test_after.txt";
     public static final String INSPECTION_PATH  = "MR860Test_inspection.txt";
+    public static final String VERSION_CONFIG_PATH  = "MR860Test_versions.txt";
 
     public static void addRecord(String path, TestItem item) throws IOException {
         writeFile(path, parseItemToString(item) + "=", true);
@@ -70,6 +71,25 @@ public class FileUtil {
         sb.append(item.getRemark());
         sb.append("\r\n");
         return sb.toString();
+    }
+
+    public static void writeFile(File file, String content, boolean isAdd) {
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(file, isAdd));
+            bw.write(content);
+            bw.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(bw != null) {
+                    bw.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void writeFilePath(String path, String name, String content, boolean isAdd) {
@@ -140,6 +160,30 @@ public class FileUtil {
             }
         }
         return sb.toString();
+    }
+
+    public static List<String> readFileToList(File file) {
+        List<String> stringList = new ArrayList<>();
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String readLine;
+            while ((readLine = br.readLine()) != null) {
+                stringList.add(readLine);
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return stringList;
     }
 
 }

@@ -58,14 +58,11 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initView();
 
-
-
-        bus.register(this);
     }
 
     private void initData() {
         bus = EventBus.getDefault();
-
+        bus.register(this);
         beforeDialog = new ConfirmDialog();
         afterDialog = new ConfirmDialog();
         inspectionDialog = new ConfirmDialog();
@@ -177,19 +174,19 @@ public class MainActivity extends AppCompatActivity {
         item.setName("4G模块");
         itemList.add(item);
 
-//        item = new TestItem();
-//        item.setOpdate(DateUtil.format(new Date()));
-//        item.setRemark("无");
-//        item.setId(Constants.ID_OLD);
-//        item.setName("老化测试");
-//        itemList.add(item);
-//
-//        item = new TestItem();
-//        item.setOpdate(DateUtil.format(new Date()));
-//        item.setRemark("无");
-//        item.setId(Constants.ID_UPDATE);
-//        item.setName("升级功能");
-//        itemList.add(item);
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_USB);
+        item.setName("USB测试");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_OLD);
+        item.setName("老化测试");
+        itemList.add(item);
 
     }
 
@@ -230,6 +227,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case Constants.ID_4G:
                 startActivityForResult(new Intent(MainActivity.this, GPRSActivity.class), Constants.ID_4G);
+                break;
+            case Constants.ID_USB:
+                startActivityForResult(new Intent(MainActivity.this, USBActivity.class), Constants.ID_USB);
+                break;
+            case Constants.ID_OLD:
+                startActivityForResult(new Intent(MainActivity.this, OldActivity.class), Constants.ID_OLD);
                 break;
         }
     }

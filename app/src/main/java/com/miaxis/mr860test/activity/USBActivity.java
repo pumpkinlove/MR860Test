@@ -1,10 +1,8 @@
 package com.miaxis.mr860test.activity;
 
-import android.app.smdt.SmdtManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
@@ -15,10 +13,8 @@ import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.x;
 
-@ContentView(R.layout.activity_body)
-public class BodyActivity extends BaseTestActivity {
-
-    private SmdtManager manager;
+@ContentView(R.layout.activity_usb)
+public class USBActivity extends BaseTestActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +29,7 @@ public class BodyActivity extends BaseTestActivity {
 
     @Override
     protected void initData() {
-        manager = SmdtManager.create(this);
+
     }
 
     @Override
@@ -41,26 +37,15 @@ public class BodyActivity extends BaseTestActivity {
 
     }
 
-    @Event(R.id.tv_led_on)
-    private void onTurnOn(View view) {
-
-        Toast.makeText(this, "" + manager.smdtReadGpioValue(1), Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Event(R.id.tv_led_off)
-    private void onTurnOff(View view) {
-    }
-
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_BODY, Constants.STATUS_PASS));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_USB, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_BODY, Constants.STAUTS_DENIED));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_USB, Constants.STAUTS_DENIED));
         finish();
     }
 }

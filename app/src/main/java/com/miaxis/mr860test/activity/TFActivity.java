@@ -61,8 +61,8 @@ public class TFActivity extends BaseTestActivity {
         }
         FileUtil.writeFilePath(path , "tfTest.txt", et_write.getText().toString(), false);
 
-//        String read = FileUtil.readFile(new File(path + "tfTest.txt"));
-//        tv_read.setText(read);
+        String read = FileUtil.readFile(new File(path + "tfTest.txt"));
+        tv_read.setText(read);
     }
 
     @Event(R.id.tv_pass)

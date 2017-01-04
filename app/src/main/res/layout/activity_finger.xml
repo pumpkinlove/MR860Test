@@ -7,128 +7,239 @@
     <!-- 标题 -->
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center" >
 
         <TextView
-            android:id="@+id/text_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:text="titlename" />
-    </LinearLayout>
-
-    <!-- 扫描结果 -->
-    <TextView
-        android:id="@+id/text_scan_result"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:layout_marginTop="10dp"
-        android:text="结果" />
-
-    <ScrollView
-        android:id="@+id/scrollView_show_msg"
-        android:layout_width="fill_parent"
-        android:layout_height="200px"
-        android:layout_marginBottom="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:layout_marginTop="1dp"
-        android:background="#0f000000"
-        android:scrollbarStyle="outsideOverlay" >
-
-        <LinearLayout
+            android:translationZ="1dp"
+            android:layout_marginLeft="20dp"
+            android:text="指纹仪测试"
+            android:textSize="35sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#00000000"
-            android:orientation="vertical" >
-
-            <EditText
-                android:id="@+id/edit_show_msg"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="13dip"
-                android:layout_marginRight="13dip"
-                android:background="@null"
-                android:clickable="true"
-                android:enabled="true"
-                android:focusable="false"
-                android:gravity="top"
-                android:scrollbars="vertical"
-                android:singleLine="false"
-                android:text=""
-                android:textColor="@color/dark"
-                android:textSize="16sp" >
-            </EditText>
-        </LinearLayout>
-    </ScrollView>
-    <!-- 功能区 -->
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="0dip"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="0dip" >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:layout_margin="10dip"
-            android:padding="10dip" >
-
-            <ImageView
-                android:id="@+id/image_open"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/finger192_270" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="0dip"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/btn_getImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="采集图像"
-                android:onClick="OnClickGetImage"/>
-
-            <Button
-                android:id="@+id/btn_getDevVersion"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="设备版本"
-                android:onClick="OnClickGetDevVersion"/>
-
-            <Button
-                android:id="@+id/btn_getDriverVersion"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="驱动版本"
-                android:onClick="OnClickGetDriverVersion"/>
-
-            <Button
-                android:id="@+id/btn_cancel"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="取消"
-                android:onClick="OnClickCancel"/>
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight="5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <!-- 版本校对 -->
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:textSize="25sp"
+                        android:text="配置设备版本："
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:textColor="@color/dark"
+                        android:textSize="25sp"
+                        android:id="@+id/tv_f_device_version_need"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="3"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:textSize="25sp"
+                        android:text="实际设备版本："
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:textColor="@color/dark"
+                        android:textSize="25sp"
+                        android:id="@+id/tv_f_device_version"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="3"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <TextView
+                        android:textSize="25sp"
+                        android:text="驱动版本："
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:textColor="@color/dark"
+                        android:textSize="25sp"
+                        android:id="@+id/tv_f_driver_version"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="3"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 测试内容 -->
+            <ScrollView
+                android:background="@color/gold"
+                android:layout_margin="20dp"
+                android:id="@+id/scrollView_show_msg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarStyle="outsideOverlay" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/tv_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:background="@null"
+                        android:scrollbars="vertical"
+                        android:textColor="@color/dark"
+                        android:textSize="20sp" >
+                    </TextView>
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+        <!-- 功能区 -->
+        <LinearLayout
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="20dp" >
+
+            <LinearLayout
+                android:background="@drawable/band_strke_white_bg"
+                android:layout_weight="3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:layout_margin="10dip"
+                android:padding="10dip" >
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:id="@+id/iv_finger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <Button
+                    android:id="@+id/btn_getImage"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="采集图像"
+                    android:onClick="OnClickGetImage"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btn_getDevVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="设备版本"
+                    android:onClick="OnClickGetDevVersion"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <Button
+                    android:id="@+id/btn_getDriverVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="驱动版本"
+                    android:onClick="OnClickGetDriverVersion"
+                    android:textSize="18sp" />
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="取消"
+                    android:onClick="OnClickCancel"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
     <LinearLayout
         android:layout_marginBottom="20dp"
         android:id="@+id/ll_buttons"
-        android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
