@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.miaxis.mr860test.activity.HDMIActivity">
 
-    <View
-        android:translationZ="1dp"
-        android:visibility="gone"
-        android:id="@+id/lcd"
-        android:background="@color/red"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
         android:id="@+id/ll_buttons"
         android:layout_centerInParent="true"
@@ -21,13 +13,10 @@
         android:layout_height="50dp">
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="通过"
-            android:textSize="18sp"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -35,13 +24,10 @@
             android:id="@+id/tv_pass" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="不通过"
-            android:textSize="18sp"
             android:textColor="@color/red"
             android:layout_weight="1"
             android:layout_width="0dp"

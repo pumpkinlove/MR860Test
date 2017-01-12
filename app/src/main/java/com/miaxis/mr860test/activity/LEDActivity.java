@@ -33,7 +33,6 @@ public class LEDActivity extends BaseTestActivity {
     @Override
     protected void initData() {
         smdt = SmdtManager.create(this);
-        smdt.smdtSetExtrnalGpioValue(3, true);
     }
 
     @Override

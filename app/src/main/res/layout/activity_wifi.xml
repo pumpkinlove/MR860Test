@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.miaxis.mr860test.activity.WifiActivity">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_marginLeft="20dp"
+        android:layout_alignLeft="@+id/ll_buttons"
+        android:text="Wifi测试"
+        android:textSize="35sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="测试"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_test" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="通过"
+            android:textColor="@color/green_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_pass" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="不通过"
+            android:textColor="@color/red"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_deny" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_above="@+id/ll_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tv_title"
+        android:layout_alignParentStart="true">
+
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <LinearLayout
+
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="当前网络类型"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:textColor="@color/red"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:id="@+id/tv_net_type"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="以太网状态"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:id="@+id/tv_eth_status"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="以太网MAC地址"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:id="@+id/tv_eth_mac"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="以太网IP地址"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:id="@+id/tv_eth_ip"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="测试网页地址"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <EditText
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="http://www.baidu.com"
+                    android:textColor="@color/dark"
+                    android:textSize="18sp"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:id="@+id/et_url"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <WebView
+                android:layout_margin="20dp"
+                android:id="@+id/wv_test"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

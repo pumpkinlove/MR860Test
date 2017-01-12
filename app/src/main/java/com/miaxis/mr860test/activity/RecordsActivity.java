@@ -66,10 +66,10 @@ public class RecordsActivity extends BaseTestActivity {
 
     @Override
     protected void initView() {
-        String[] titles = {"测试历史", "老化后测试", "成品抽检", "老化前测试"};
+        String[] titles = {"测试历史", "老化前测试", "老化后测试", "成品抽检"};
         vp_records.setAdapter(adapter);
-        ViewPager.OnPageChangeListener l = new TabLayout.TabLayoutOnPageChangeListener(tl_records);
-        vp_records.addOnPageChangeListener(l);
+        ViewPager.OnPageChangeListener listener = new TabLayout.TabLayoutOnPageChangeListener(tl_records);
+        vp_records.addOnPageChangeListener(listener);
         tl_records.setupWithViewPager(vp_records);
         vp_records.setOffscreenPageLimit(20);
         for (int i=0; i< tl_records.getTabCount(); i++) {

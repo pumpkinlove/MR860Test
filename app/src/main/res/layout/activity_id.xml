@@ -37,6 +37,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
 
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
+
             <TextView
                 android:textColor="@color/dark"
                 android:textSize="25sp"
@@ -48,6 +53,11 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
+
+        <View
+            android:background="@color/gray_light"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -96,6 +106,11 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
 
             <TextView
                 android:textColor="@color/dark"
@@ -259,13 +274,10 @@
         android:layout_height="50dp">
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="通过"
-            android:textSize="18sp"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -273,13 +285,10 @@
             android:id="@+id/tv_pass" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="不通过"
-            android:textSize="18sp"
             android:textColor="@color/red"
             android:layout_weight="1"
             android:layout_width="0dp"

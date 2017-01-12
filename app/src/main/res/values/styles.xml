@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="stroke_button">
+
+        <item name="android:background">@drawable/stroke_button_bg</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/blue_band_dark</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+
+    </style>
+
 </resources>

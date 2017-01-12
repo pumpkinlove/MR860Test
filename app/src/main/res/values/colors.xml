@@ -20,14 +20,18 @@
     <color name="red_dark">#871c21</color>
     <color name="gray_bg">#f0eff5</color>
     <color name="gray_dark">#969696</color>
-    <color name="gray_light">#e6e6e6</color>
+    <color name="gray_light">#bababa</color>
     <color name="dark">#333</color>
     <color name="pink">#ffb0e8</color>
     <color name="red_light">#ffe7e7</color>
+    <color name="red_light_aero">#5cffa9a9</color>
     <color name="green">#0f0</color>
     <color name="green_dark">#217821</color>
     <color name="green_dark2">#4BA575</color>
     <color name="green_light">#E9FFE7</color>
+    <color name="green_light_aero">#4fb6ffb1</color>
     <color name="blue_theme_normal">#00b4ff</color>
     <color name="blue_theme_dark">#0096ff</color>
+    <color name="control_background">#cc4285f4</color>
+    <color name="aero">#00ffffff</color>
 </resources>

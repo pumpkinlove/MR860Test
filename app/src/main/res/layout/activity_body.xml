@@ -13,41 +13,30 @@
         android:layout_height="50dp">
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="开始测试"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_led_on" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="停止测试"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_led_off" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="通过"
-            android:textSize="18sp"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -55,13 +44,10 @@
             android:id="@+id/tv_pass" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="不通过"
-            android:textSize="18sp"
             android:textColor="@color/red"
             android:layout_weight="1"
             android:layout_width="0dp"

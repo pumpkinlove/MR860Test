@@ -1,62 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="120dp">
 
-    <View
-        android:background="@color/gray_dark"
-        android:layout_width="0.5px"
-        android:layout_height="match_parent"/>
-
     <LinearLayout
-        android:clickable="true"
-        android:id="@+id/ll_item"
-        android:background="@drawable/white_bg_gray_ripple"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <View
-            android:background="@color/gray_dark"
-            android:layout_width="match_parent"
-            android:layout_height="0.5px"/>
+            android:background="@color/gray_light"
+            android:layout_width="1px"
+            android:layout_height="match_parent"/>
 
-        <TextView
-            android:id="@+id/tv_name"
-            android:textColor="@color/blue_band_dark"
-            android:gravity="center"
-            android:layout_weight="1"
+        <LinearLayout
+            android:clickable="true"
+            android:id="@+id/ll_item"
+            android:background="@drawable/item_bg"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_status"
-            android:textColor="@color/blue_band_dark"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
 
-        <TextView
-            android:id="@+id/tv_opdate"
-            android:textColor="@color/blue_band_dark"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            <TextView
+                android:id="@+id/tv_name"
+                android:textColor="@color/dark"
+                android:gravity="start|center_vertical"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_height="0dp" />
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:textColor="@color/blue_band_dark2"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:textSize="21sp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <TextView
+                android:id="@+id/tv_opdate"
+                android:textColor="@color/blue_band_dark2"
+                android:gravity="end|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+        </LinearLayout>
 
         <View
-            android:background="@color/gray_dark"
-            android:layout_width="match_parent"
-            android:layout_height="0.5px"/>
+            android:background="@color/gray_light"
+            android:layout_width="1px"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
     <View
-        android:background="@color/gray_dark"
-        android:layout_width="0.5px"
+        android:id="@+id/v_aero"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+</RelativeLayout>

@@ -19,10 +19,10 @@ import java.util.List;
 
 public class FileUtil {
 
-    public static final String HISTORY_PATH     = "MR860Test_history.txt";
-    public static final String BEFORE_PATH      = "MR860Test_before.txt";
-    public static final String AFTER_PATH       = "MR860Test_after.txt";
-    public static final String INSPECTION_PATH  = "MR860Test_inspection.txt";
+    public static final String HISTORY_PATH         = "MR860Test_history.txt";
+    public static final String BEFORE_PATH          = "MR860Test_before.txt";
+    public static final String AFTER_PATH           = "MR860Test_after.txt";
+    public static final String INSPECTION_PATH      = "MR860Test_inspection.txt";
     public static final String VERSION_CONFIG_PATH  = "MR860Test_versions.txt";
 
     public static void addRecord(String path, TestItem item) throws IOException {

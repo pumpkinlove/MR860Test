@@ -13,9 +13,8 @@
 
     <TextView
         android:id="@+id/tv_title"
-        android:translationZ="1dp"
         android:layout_alignLeft="@+id/ll_buttons"
-        android:text="MR-860 生产测试工具"
+        android:text="MR-860 生产测试工具 "
         android:textSize="45sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -23,17 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="20dp" />
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/tv_title"
-        android:layout_above="@id/ll_buttons"
-        android:id="@+id/rv_items"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </android.support.v7.widget.RecyclerView>
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"/>
 
     <LinearLayout
         android:id="@+id/ll_buttons"
@@ -42,59 +32,53 @@
         android:layout_height="50dp">
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="老化前测试"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_before" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="老化后测试"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_after" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="成品抽检"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_inspection" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="测试记录"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_history" />
 
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_items"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tv_title"
+        android:layout_above="@+id/ll_buttons"
+        android:layout_alignParentStart="true">
+
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

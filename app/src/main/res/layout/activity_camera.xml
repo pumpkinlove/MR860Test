@@ -4,9 +4,10 @@
     android:id="@+id/activity_lcd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.miaxis.mr860test.activity.LCDActivity">
+    tools:context="com.miaxis.mr860test.activity.CameraActivity">
 
     <TextView
+        android:id="@+id/tv_title"
         android:translationZ="1dp"
         android:layout_marginLeft="20dp"
         android:layout_alignLeft="@+id/ll_buttons"
@@ -18,10 +19,18 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="20dp" />
 
-    <SurfaceView
-        android:id="@+id/sv_camera"
+    <FrameLayout
+        android:layout_below="@id/tv_title"
+        android:layout_above="@id/ll_buttons"
+        android:layout_margin="20dp"
+        android:id="@+id/fl_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+
+
+    </FrameLayout>
+
 
     <LinearLayout
         android:id="@+id/ll_buttons"
@@ -32,41 +41,30 @@
         android:layout_height="50dp">
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="测试"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_test" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="停止测试"
-            android:textSize="18sp"
-            android:textColor="@color/blue_band_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_stop_test" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="通过"
-            android:textSize="18sp"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -74,13 +72,10 @@
             android:id="@+id/tv_pass" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="不通过"
-            android:textSize="18sp"
             android:textColor="@color/red"
             android:layout_weight="1"
             android:layout_width="0dp"

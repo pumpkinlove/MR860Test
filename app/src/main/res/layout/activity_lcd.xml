@@ -1,78 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/activity_lcd"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context="com.miaxis.mr860test.activity.LCDActivity">
-
-<View
-    android:translationZ="1dp"
-    android:visibility="gone"
-    android:id="@+id/lcd"
-    android:background="@color/red"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_lcd"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"
+    tools:context="com.miaxis.mr860test.activity.LCDActivity">
 
-<LinearLayout
-    android:id="@+id/ll_buttons"
-    android:layout_centerInParent="true"
-    android:layout_width="match_parent"
-    android:layout_height="50dp">
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="测试"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_test" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="通过"
+            android:textColor="@color/green_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_pass" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="不通过"
+            android:textColor="@color/red"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_deny" />
+
+    </LinearLayout>
 
     <TextView
-        android:clickable="true"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/band_stroke_bg"
-        android:gravity="center"
-        android:text="测试"
-        android:textSize="18sp"
-        android:textColor="@color/blue_band_dark"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:id="@+id/tv_test" />
+        android:layout_alignLeft="@+id/ll_buttons"
+        android:text="液晶显示屏测试"
+        android:textSize="35sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
 
-    <TextView
-        android:clickable="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/band_stroke_bg"
-        android:gravity="center"
-        android:text="通过"
-        android:textSize="18sp"
-        android:textColor="@color/green_dark"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:id="@+id/tv_pass" />
-
-    <TextView
-        android:clickable="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/band_stroke_bg"
-        android:gravity="center"
-        android:text="不通过"
-        android:textSize="18sp"
-        android:textColor="@color/red"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:id="@+id/tv_deny" />
-
-</LinearLayout>
-
-<TextView
-    android:layout_marginLeft="20dp"
-    android:layout_alignLeft="@+id/ll_buttons"
-    android:text="液晶显示屏测试"
-    android:textSize="35sp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentStart="true"
-    android:layout_marginTop="20dp" />
+    <View
+        android:visibility="gone"
+        android:id="@+id/lcd"
+        android:background="@color/red"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

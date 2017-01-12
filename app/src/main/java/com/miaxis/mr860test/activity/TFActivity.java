@@ -25,9 +25,9 @@ public class TFActivity extends BaseTestActivity {
 
     private SmdtManager manager;
 
-    @ViewInject(R.id.et_write) private EditText et_write;
-    @ViewInject(R.id.tv_sd_path) private TextView tv_sd_path;
-    @ViewInject(R.id.tv_read) private TextView tv_read;
+    @ViewInject(R.id.et_write)      private EditText et_write;
+    @ViewInject(R.id.tv_sd_path)    private TextView tv_sd_path;
+    @ViewInject(R.id.tv_read)       private TextView tv_read;
 
 
     @Override
@@ -54,7 +54,6 @@ public class TFActivity extends BaseTestActivity {
 
     @Event(R.id.tv_test)
     private void onTest(View view) {
-
         String path = manager.smdtGetSDcardPath(this);
         if (path != null) {
             tv_sd_path.setText(path);

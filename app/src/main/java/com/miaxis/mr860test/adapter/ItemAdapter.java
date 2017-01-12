@@ -52,16 +52,19 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
         switch (item.getStatus()) {
             case Constants.STATUS_PASS:
-                holder.ll_item.setBackground(context.getDrawable(R.drawable.green_bg_gray_ripple));
+                holder.tv_status.setTextColor(context.getResources().getColor(R.color.green_dark));
                 holder.tv_status.setText("通过");
+                holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.green_light_aero));
                 break;
             case Constants.STAUTS_DENIED:
-                holder.ll_item.setBackground(context.getDrawable(R.drawable.red_bg_gray_ripple));
+                holder.tv_status.setTextColor(context.getResources().getColor(R.color.red));
                 holder.tv_status.setText("不通过");
+                holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.red_light_aero));
                 break;
             default:
-                holder.ll_item.setBackground(context.getDrawable(R.drawable.white_bg_gray_ripple));
+                holder.tv_status.setTextColor(context.getResources().getColor(R.color.blue_band_dark2));
                 holder.tv_status.setText("未测试");
+                holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.aero));
                 break;
         }
 
@@ -78,17 +81,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        @ViewInject(R.id.tv_name)
-        private TextView tv_name;
-
-        @ViewInject(R.id.tv_status)
-        private TextView tv_status;
-
-        @ViewInject(R.id.tv_opdate)
-        private TextView tv_opdate;
-
-        @ViewInject(R.id.ll_item)
-        private LinearLayout ll_item;
+        @ViewInject(R.id.tv_name)       private TextView tv_name;
+        @ViewInject(R.id.tv_status)     private TextView tv_status;
+        @ViewInject(R.id.tv_opdate)     private TextView tv_opdate;
+        @ViewInject(R.id.v_aero)        private View v_aero;
 
         private TestClickListenenr listener;
 

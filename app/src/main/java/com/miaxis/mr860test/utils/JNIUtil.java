@@ -7,8 +7,8 @@ package com.miaxis.mr860test.utils;
 public class JNIUtil {
 
     static {
-        System.loadLibrary("dewlt2-jni");
+        System.loadLibrary("wlt2bmp");
     }
 
-    public static native int wlt2bmp(byte[] var0, byte[] var1, int var2);
+    public static native int unpack(byte[] var0, byte[] var1, int var2);
 }

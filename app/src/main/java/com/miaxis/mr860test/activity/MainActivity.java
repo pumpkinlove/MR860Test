@@ -1,13 +1,17 @@
 package com.miaxis.mr860test.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
@@ -39,8 +43,9 @@ public class MainActivity extends AppCompatActivity {
     private List<TestItem> itemList;
     private ItemAdapter adapter;
 
-    @ViewInject(R.id.rv_items)
-    private RecyclerView rv_items;
+    @ViewInject(R.id.rv_items)  private RecyclerView rv_items;
+    @ViewInject(R.id.tv_title)  private TextView tv_tiltle;
+
 
     private ConfirmDialog beforeDialog;
     private ConfirmDialog afterDialog;
@@ -86,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         rv_items.setLayoutManager(new GridLayoutManager(this, 4));
         rv_items.setAdapter(adapter);
+        tv_tiltle.append("v " + getVersion());
     }
 
     private void initList() {
@@ -156,15 +162,15 @@ public class MainActivity extends AppCompatActivity {
         item = new TestItem();
         item.setOpdate(DateUtil.format(new Date()));
         item.setRemark("无");
-        item.setId(Constants.ID_NET);
-        item.setName("网口");
+        item.setId(Constants.ID_WIFI);
+        item.setName("Wifi");
         itemList.add(item);
 
         item = new TestItem();
         item.setOpdate(DateUtil.format(new Date()));
         item.setRemark("无");
-        item.setId(Constants.ID_TF);
-        item.setName("TF卡");
+        item.setId(Constants.ID_NET);
+        item.setName("网口");
         itemList.add(item);
 
         item = new TestItem();
@@ -184,6 +190,20 @@ public class MainActivity extends AppCompatActivity {
         item = new TestItem();
         item.setOpdate(DateUtil.format(new Date()));
         item.setRemark("无");
+        item.setId(Constants.ID_TF);
+        item.setName("TF卡");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
+        item.setId(Constants.ID_BT);
+        item.setName("蓝牙");
+        itemList.add(item);
+
+        item = new TestItem();
+        item.setOpdate(DateUtil.format(new Date()));
+        item.setRemark("无");
         item.setId(Constants.ID_OLD);
         item.setName("老化测试");
         itemList.add(item);
@@ -193,46 +213,52 @@ public class MainActivity extends AppCompatActivity {
     private void startTestById(int id) {
         switch (id) {
             case Constants.ID_LCD:
-                startActivityForResult(new Intent(MainActivity.this, LCDActivity.class), Constants.ID_LCD);
+                startActivity(new Intent(MainActivity.this, LCDActivity.class));
                 break;
             case Constants.ID_TOUCH:
-                startActivityForResult(new Intent(MainActivity.this, TouchActivity.class), Constants.ID_TOUCH);
+                startActivity(new Intent(MainActivity.this, TouchActivity.class));
                 break;
             case Constants.ID_CAMERA:
-                startActivityForResult(new Intent(MainActivity.this, CameraActivity.class), Constants.ID_CAMERA);
+                startActivity(new Intent(MainActivity.this, CameraActivity.class));
                 break;
             case Constants.ID_LED:
-                startActivityForResult(new Intent(MainActivity.this, LEDActivity.class), Constants.ID_LED);
+                startActivity(new Intent(MainActivity.this, LEDActivity.class));
                 break;
             case Constants.ID_BODY:
-                startActivityForResult(new Intent(MainActivity.this, BodyActivity.class), Constants.ID_BODY);
+                startActivity(new Intent(MainActivity.this, BodyActivity.class));
                 break;
             case Constants.ID_FINGER:
-                startActivityForResult(new Intent(MainActivity.this, FingerActivity.class), Constants.ID_FINGER);
+                startActivity(new Intent(MainActivity.this, FingerActivity.class));
                 break;
             case Constants.ID_IDCARD:
-                startActivityForResult(new Intent(MainActivity.this, IdActivity.class), Constants.ID_IDCARD);
+                startActivity(new Intent(MainActivity.this, IdActivity.class));
                 break;
             case Constants.ID_VOICE:
-                startActivityForResult(new Intent(MainActivity.this, VoiceActivity.class), Constants.ID_VOICE);
+                startActivity(new Intent(MainActivity.this, VoiceActivity.class));
                 break;
             case Constants.ID_HDMI:
-                startActivityForResult(new Intent(MainActivity.this, HDMIActivity.class), Constants.ID_HDMI);
+                startActivity(new Intent(MainActivity.this, HDMIActivity.class));
+                break;
+            case Constants.ID_WIFI:
+                startActivity(new Intent(MainActivity.this, WifiActivity.class));
                 break;
             case Constants.ID_NET:
-                startActivityForResult(new Intent(MainActivity.this, NetActivity.class), Constants.ID_NET);
-                break;
-            case Constants.ID_TF:
-                startActivityForResult(new Intent(MainActivity.this, TFActivity.class), Constants.ID_TF);
+                startActivity(new Intent(MainActivity.this, NetActivity.class));
                 break;
             case Constants.ID_4G:
-                startActivityForResult(new Intent(MainActivity.this, GPRSActivity.class), Constants.ID_4G);
+                startActivity(new Intent(MainActivity.this, GPRSActivity.class));
+                break;
+            case Constants.ID_TF:
+                startActivity(new Intent(MainActivity.this, TFActivity.class));
                 break;
             case Constants.ID_USB:
-                startActivityForResult(new Intent(MainActivity.this, USBActivity.class), Constants.ID_USB);
+                startActivity(new Intent(MainActivity.this, USBActivity.class));
+                break;
+            case Constants.ID_BT:
+                startActivity(new Intent(MainActivity.this, BlueToothActivity.class));
                 break;
             case Constants.ID_OLD:
-                startActivityForResult(new Intent(MainActivity.this, OldActivity.class), Constants.ID_OLD);
+                startActivity(new Intent(MainActivity.this, OldActivity.class));
                 break;
         }
     }
@@ -334,8 +360,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-
-            if((System.currentTimeMillis() - mExitTime) > 2000) {
+            if ((System.currentTimeMillis() - mExitTime) > 2000) {
                 Toast.makeText(getApplicationContext(), "再按一次退出程序",Toast.LENGTH_SHORT).show();
                 mExitTime = System.currentTimeMillis();
             } else {
@@ -346,4 +371,21 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    private String getVersion() {
+        String versionName = "";
+        try {
+            // ---get the package info---
+            PackageManager pm = getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
+            versionName = pi.versionName;
+            if (versionName == null || versionName.length() <= 0) {
+                return "";
+            }
+        } catch (Exception e) {
+            Log.e("VersionInfo", "Exception", e);
+        }
+        return versionName;
+    }
+
 }

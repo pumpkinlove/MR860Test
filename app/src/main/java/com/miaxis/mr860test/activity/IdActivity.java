@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
@@ -17,6 +18,7 @@ import com.miaxis.mr860test.domain.IdCardPhotoEvent;
 import com.miaxis.mr860test.domain.CommonEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
 import com.miaxis.mr860test.utils.FileUtil;
+import com.miaxis.mr860test.utils.JNIUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -331,13 +333,14 @@ public class IdActivity extends BaseTestActivity {
                 iLen = iLen + id_pImage.length;
 
                 byte[] bmp = new byte[mPhotoSize];
-//                int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
-//                if (re == 0) {
-//                    Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-//                    bus.post(new IdCardPhotoEvent(bitmap));
-//                } else {
-//                    bus.post(new IdCardPhotoEvent(null));
-//                }
+                int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
+//                int re = JNIUtil.unpack(id_pImage, bmp, 708);
+                if (re == 0) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+                    bus.post(new IdCardPhotoEvent(bitmap));
+                } else {
+                    bus.post(new IdCardPhotoEvent(null));
+                }
             }
 
         } catch (Exception e) {

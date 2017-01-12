@@ -31,12 +31,12 @@ import org.xutils.x;
 @ContentView(R.layout.activity_net)
 public class NetActivity extends BaseTestActivity {
 
-    @ViewInject(R.id.tv_net_type) private TextView tv_net_type;
-    @ViewInject(R.id.tv_eth_mac) private TextView tv_eth_mac;
-    @ViewInject(R.id.tv_eth_ip) private TextView tv_eth_ip;
-    @ViewInject(R.id.tv_eth_status) private TextView tv_eth_state;
-    @ViewInject(R.id.wv_test) private WebView wv_test;
-    @ViewInject(R.id.et_url) private EditText et_url;
+    @ViewInject(R.id.tv_net_type)       private TextView tv_net_type;
+    @ViewInject(R.id.tv_eth_mac)        private TextView tv_eth_mac;
+    @ViewInject(R.id.tv_eth_ip)         private TextView tv_eth_ip;
+    @ViewInject(R.id.tv_eth_status)     private TextView tv_eth_state;
+    @ViewInject(R.id.wv_test)           private WebView wv_test;
+    @ViewInject(R.id.et_url)            private EditText et_url;
 
     private WifiManager wifiManager;
     private ConnectivityManager connManager;

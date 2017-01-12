@@ -53,10 +53,8 @@ public class TouchActivity extends BaseTestActivity {
 
     @Override
     protected void initData() {
-        iv_touch.setBackgroundColor(Color.GRAY);
-        bitmap = Bitmap.createBitmap(getWindowManager().getDefaultDisplay().getWidth(), getWindowManager().getDefaultDisplay().getHeight(), Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(getWindowManager().getDefaultDisplay().getWidth(), getWindowManager().getDefaultDisplay().getHeight(), Bitmap.Config.ARGB_4444);
         canvas = new Canvas(bitmap);
-        canvas.drawColor(Color.GRAY);
 
         paint = new Paint();
         paint.setColor(Color.RED);

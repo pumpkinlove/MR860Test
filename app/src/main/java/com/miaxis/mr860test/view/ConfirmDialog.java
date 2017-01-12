@@ -43,7 +43,7 @@ public class ConfirmDialog extends DialogFragment {
         if (dialog != null) {
             DisplayMetrics dm = new DisplayMetrics();
             getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-            dialog.getWindow().setLayout((int) (dm.widthPixels * 0.77), (int) (dm.heightPixels * 0.17));
+            dialog.getWindow().setLayout((int) (dm.widthPixels * 0.57), (int) (dm.heightPixels * 0.25));
         }
     }
 

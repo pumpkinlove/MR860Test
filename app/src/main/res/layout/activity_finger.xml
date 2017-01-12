@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="16dp"
     android:orientation="vertical" >
 
     <!-- 标题 -->
@@ -13,7 +14,6 @@
 
         <TextView
             android:translationZ="1dp"
-            android:layout_marginLeft="20dp"
             android:text="指纹仪测试"
             android:textSize="35sp"
             android:layout_width="match_parent"
@@ -32,6 +32,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent">
 
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
             <!-- 版本校对 -->
             <LinearLayout
                 android:orientation="vertical"
@@ -48,36 +53,56 @@
                         android:layout_height="match_parent"/>
 
                     <TextView
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:text="配置设备版本："
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
 
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
                     <TextView
                         android:textColor="@color/dark"
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:id="@+id/tv_f_device_version_need"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_weight="3"
+                        android:layout_weight="5"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
 
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
                 </LinearLayout>
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp">
 
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
                     <TextView
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:text="实际设备版本："
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
 
@@ -88,26 +113,41 @@
 
                     <TextView
                         android:textColor="@color/dark"
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:id="@+id/tv_f_device_version"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_weight="3"
+                        android:layout_weight="5"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
 
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
                 </LinearLayout>
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp">
 
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
                     <TextView
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:text="驱动版本："
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
 
@@ -118,22 +158,33 @@
 
                     <TextView
                         android:textColor="@color/dark"
-                        android:textSize="25sp"
+                        android:textSize="18sp"
                         android:id="@+id/tv_f_driver_version"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_weight="3"
+                        android:layout_weight="5"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
 
+                    <View
+                        android:background="@color/gray_light"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"/>
+
                 </LinearLayout>
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
 
             </LinearLayout>
 
             <!-- 测试内容 -->
             <ScrollView
                 android:background="@color/gold"
-                android:layout_margin="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
                 android:id="@+id/scrollView_show_msg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -166,18 +217,20 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="vertical"
-            android:padding="20dp" >
+            android:orientation="vertical">
 
             <LinearLayout
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="0dp"
+                android:padding="5dp"
                 android:background="@drawable/band_strke_white_bg"
-                android:layout_weight="3"
+                android:layout_weight="3.5"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
-                android:orientation="vertical"
-                android:layout_margin="10dip"
-                android:padding="10dip" >
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_gravity="center"
@@ -188,6 +241,8 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
@@ -201,16 +256,20 @@
                     android:textSize="18sp" />
 
                 <Button
-                    android:id="@+id/btn_getDevVersion"
+                    android:id="@+id/btn_getMB"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="设备版本"
-                    android:onClick="OnClickGetDevVersion"
+                    android:text="采集模板"
+                    android:onClick="OnClickGetDriverVersion"
                     android:textSize="18sp" />
+
+
             </LinearLayout>
 
             <LinearLayout
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
@@ -222,35 +281,57 @@
                     android:text="驱动版本"
                     android:onClick="OnClickGetDriverVersion"
                     android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btn_getDevVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="设备版本"
+                    android:onClick="OnClickGetDevVersion"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <Button
+                    android:id="@+id/btn_verify"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="指纹比对"
+                    android:textSize="18sp" />
+
                 <Button
                     android:id="@+id/btn_cancel"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="取消"
-                    android:onClick="OnClickCancel"
                     android:textSize="18sp" />
-            </LinearLayout>
-        </LinearLayout>
 
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-
     <LinearLayout
-        android:layout_marginBottom="20dp"
         android:id="@+id/ll_buttons"
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
         <TextView
-            android:clickable="true"
-            android:layout_marginLeft="20dp"
+            style="@style/stroke_button"
             android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="通过"
-            android:textSize="18sp"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -258,13 +339,9 @@
             android:id="@+id/tv_pass" />
 
         <TextView
-            android:clickable="true"
+            style="@style/stroke_button"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/band_stroke_bg"
-            android:gravity="center"
             android:text="不通过"
-            android:textSize="18sp"
             android:textColor="@color/red"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -272,4 +349,5 @@
             android:id="@+id/tv_deny" />
 
     </LinearLayout>
+
 </LinearLayout>
