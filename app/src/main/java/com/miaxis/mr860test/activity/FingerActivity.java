@@ -163,8 +163,6 @@ public class FingerActivity extends BaseTestActivity {
             try {
                 GetDevVersion();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
     }

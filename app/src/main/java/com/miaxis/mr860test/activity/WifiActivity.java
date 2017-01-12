@@ -131,13 +131,13 @@ public class WifiActivity extends BaseTestActivity {
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_4G, Constants.STATUS_PASS));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_WIFI, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_4G, Constants.STAUTS_DENIED));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_WIFI, Constants.STAUTS_DENIED));
         finish();
     }
 

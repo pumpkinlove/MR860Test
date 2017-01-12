@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
@@ -54,14 +55,20 @@ public class TFActivity extends BaseTestActivity {
 
     @Event(R.id.tv_test)
     private void onTest(View view) {
-        String path = manager.smdtGetSDcardPath(this);
-        if (path != null) {
-            tv_sd_path.setText(path);
-        }
-        FileUtil.writeFilePath(path , "tfTest.txt", et_write.getText().toString(), false);
+        try {
+            String path = manager.smdtGetSDcardPath(this);
+            if (path != null) {
+                tv_sd_path.setText(path);
+            }
+            FileUtil.writeFilePath(path , "tfTest.txt", et_write.getText().toString(), false);
 
-        String read = FileUtil.readFile(new File(path + "tfTest.txt"));
-        tv_read.setText(read);
+            String read = FileUtil.readFile(new File(path + "tfTest.txt"));
+            tv_read.setText(read);
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            onDeny(null);
+        }
+
     }
 
     @Event(R.id.tv_pass)

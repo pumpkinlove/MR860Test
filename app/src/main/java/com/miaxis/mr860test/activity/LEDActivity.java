@@ -42,12 +42,23 @@ public class LEDActivity extends BaseTestActivity {
 
     @Event(R.id.tv_led_on)
     private void onTurnOn(View view) {
-        Toast.makeText(getApplicationContext(), smdt.smdtSetExtrnalGpioValue(3, true) + "", Toast.LENGTH_SHORT).show();
+        try {
+            Toast.makeText(getApplicationContext(), smdt.smdtSetExtrnalGpioValue(3, true) + "", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            onDeny(null);
+        }
     }
 
     @Event(R.id.tv_led_off)
     private void onTurnOff(View view) {
-        Toast.makeText(getApplicationContext(), smdt.smdtSetExtrnalGpioValue(3, false) + "", Toast.LENGTH_SHORT).show();
+        try {
+            Toast.makeText(getApplicationContext(), smdt.smdtSetExtrnalGpioValue(3, false) + "", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            onDeny(null);
+        }
+
     }
 
     @Event(R.id.tv_pass)
