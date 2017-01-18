@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.domain.IdCardPhotoEvent;
 import com.miaxis.mr860test.domain.CommonEvent;
+import com.miaxis.mr860test.domain.IdFingerEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
 import com.miaxis.mr860test.utils.FileUtil;
 import com.miaxis.mr860test.utils.JNIUtil;
@@ -39,21 +41,25 @@ public class IdActivity extends BaseTestActivity {
     private static final int mFingerDataSize    = 512;   //指纹数据长度
     private static final int mFingerDataB64Size = 684;   //指纹数据Base64编码后的长度
 
-    private static final int READ_VERSION = 1001;
-    private static final int READ_CARD_ID = 1002;
-    private static final int READ_INFO    = 1003;
+    private static final int READ_VERSION       = 1001;
+    private static final int READ_CARD_ID       = 1002;
+    private static final int READ_INFO          = 1003;
 
     @ViewInject(R.id.tv_id_version_need)    private TextView tv_id_version_need;
 
     @ViewInject(R.id.tv_id_version)         private TextView tv_id_version;
     @ViewInject(R.id.tv_id_card_id)         private TextView tv_id_card_id;
     @ViewInject(R.id.tv_id_info)            private TextView tv_id_info;
+    @ViewInject(R.id.tv_id_finger)          private TextView tv_id_finger;
+
+    @ViewInject(R.id.ll_finger_info)        private LinearLayout ll_finger_info;
 
     @ViewInject(R.id.iv_id_photo)           private ImageView iv_id_photo;
 
     @ViewInject(R.id.btn_read_version)      private Button btn_read_version;
     @ViewInject(R.id.btn_read_id)           private Button btn_read_id;
     @ViewInject(R.id.btn_read_info)         private Button btn_read_info;
+    @ViewInject(R.id.btn_read_full_info)    private Button btn_read_full_info;
 
     @ViewInject(R.id.tv_pass)               private TextView tv_pass;
     @ViewInject(R.id.tv_deny)               private TextView tv_deny;
@@ -104,10 +110,10 @@ public class IdActivity extends BaseTestActivity {
         }
     }
 
-
     @Event(R.id.btn_read_version)
     private void OnClickDevVersion(View view) {
         onDisableEvent(new DisableEvent(false));
+        tv_id_version.setText("");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -132,6 +138,7 @@ public class IdActivity extends BaseTestActivity {
     @Event(R.id.btn_read_id)
     private void OnClickCardId(View view) {
         onDisableEvent(new DisableEvent(false));
+        tv_id_card_id.setText("");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -175,10 +182,28 @@ public class IdActivity extends BaseTestActivity {
             bus.post(new CommonEvent(READ_INFO, nRet, "成功" + bCardInfo.length));
             showIdCardInfo(bCardInfo, true);
         }
+        bus.post(new DisableEvent(true));
     }
 
     @Event(R.id.btn_read_info)
+    private void onReadInfoClicked(View view) {
+        tv_id_info.setText("");
+        tv_id_finger.setText("");
+        ll_finger_info.setVisibility(View.GONE);
+        onDisableEvent(new DisableEvent(false));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GetCardInfo();
+            }
+        }).start();
+    }
+
+    @Event(R.id.btn_read_full_info)
     private void OnClickCardFullInfo(View view) {
+        tv_id_info.setText("");
+        tv_id_finger.setText("");
+        ll_finger_info.setVisibility(View.GONE);
         onDisableEvent(new DisableEvent(false));
         new Thread(new Runnable() {
             @Override
@@ -196,20 +221,19 @@ public class IdActivity extends BaseTestActivity {
                         }
                     } else {
                         showIdCardInfo(bCardFullInfo, true);
-//                byte[] bFingerData1 = new byte[mFingerDataSize];
-//                byte[] bFingerData2 = new byte[mFingerDataSize];
-//                byte[] bFingerData1_B64 = new byte[mFingerDataB64Size];
-//                byte[] bFingerData2_B64 = new byte[mFingerDataB64Size];
-//                for (int i = 0; i < bFingerData1.length; i++) {
-//                    bFingerData1[i]=bCardFullInfo[256+1024+i];
-//                }
-//                for (int i = 0; i < bFingerData1.length; i++) {
-//                    bFingerData2[i]=bCardFullInfo[256+1024+512+i];
-//                }
-//                idCardDriver.Base64Encode(bFingerData1,mFingerDataSize,bFingerData1_B64,mFingerDataB64Size);
-//                idCardDriver.Base64Encode(bFingerData2,mFingerDataSize,bFingerData2_B64,mFingerDataB64Size);
-//                ShowMessage("指纹数据1(Base64编码显示)：" + new String(bFingerData1_B64), true);
-//                ShowMessage("指纹数据2(Base64编码显示)：" + new String(bFingerData1_B64), true);
+                        byte[] bFingerData1 = new byte[mFingerDataSize];
+                        byte[] bFingerData2 = new byte[mFingerDataSize];
+                        byte[] bFingerData1_B64 = new byte[mFingerDataB64Size];
+                        byte[] bFingerData2_B64 = new byte[mFingerDataB64Size];
+                        for (int i = 0; i < bFingerData1.length; i++) {
+                            bFingerData1[i]=bCardFullInfo[256+1024+i];
+                        }
+                        for (int i = 0; i < bFingerData1.length; i++) {
+                            bFingerData2[i]=bCardFullInfo[256+1024+512+i];
+                        }
+                        idCardDriver.Base64Encode(bFingerData1,mFingerDataSize,bFingerData1_B64,mFingerDataB64Size);
+                        idCardDriver.Base64Encode(bFingerData2,mFingerDataSize,bFingerData2_B64,mFingerDataB64Size);
+                        bus.post(new IdFingerEvent(new String(bFingerData1_B64),  new String(bFingerData2_B64)));
                     }
                 } catch (Exception e) {
 
@@ -324,6 +348,7 @@ public class IdActivity extends BaseTestActivity {
             for (int i = 0; i < id_NewAddr.length; i++) {
                 id_NewAddr[i] = bCardInfo[iLen + i];
             }
+
             iLen = iLen + id_NewAddr.length;
             bus.post(new CommonEvent(READ_INFO, 0, sb.toString()));
             if (bShowImage == true) {
@@ -334,7 +359,6 @@ public class IdActivity extends BaseTestActivity {
 
                 byte[] bmp = new byte[mPhotoSize];
                 int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
-//                int re = JNIUtil.unpack(id_pImage, bmp, 708);
                 if (re == 0) {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
                     bus.post(new IdCardPhotoEvent(bitmap));
@@ -342,7 +366,6 @@ public class IdActivity extends BaseTestActivity {
                     bus.post(new IdCardPhotoEvent(null));
                 }
             }
-
         } catch (Exception e) {
 
         }
@@ -398,17 +421,27 @@ public class IdActivity extends BaseTestActivity {
             btn_read_version.   setTextColor(getResources().getColor(R.color.dark));
             btn_read_id.        setTextColor(getResources().getColor(R.color.dark));
             btn_read_info.      setTextColor(getResources().getColor(R.color.dark));
+            btn_read_full_info. setTextColor(getResources().getColor(R.color.dark));
         } else {
             tv_pass.            setTextColor(getResources().getColor(R.color.gray_dark));
             btn_read_version.   setTextColor(getResources().getColor(R.color.gray_dark));
             btn_read_id.        setTextColor(getResources().getColor(R.color.gray_dark));
             btn_read_info.      setTextColor(getResources().getColor(R.color.gray_dark));
+            btn_read_full_info. setTextColor(getResources().getColor(R.color.gray_dark));
         }
         tv_pass.            setClickable(e.isFlag());
         tv_pass.            setEnabled(e.isFlag());
         btn_read_version.   setEnabled(e.isFlag());
         btn_read_id.        setEnabled(e.isFlag());
         btn_read_info.      setEnabled(e.isFlag());
+        btn_read_full_info. setEnabled(e.isFlag());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onIdFingerEvent(IdFingerEvent e) {
+        ll_finger_info.setVisibility(View.VISIBLE);
+        tv_id_finger.setText(e.getFinger0() + "\r\n" + e.getFinger1());
+
     }
 
     @Override

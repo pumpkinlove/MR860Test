@@ -6,215 +6,221 @@
     android:layout_height="match_parent"
     tools:context="com.miaxis.mr860test.activity.LCDActivity">
 
-    <LinearLayout
-        android:background="@color/gray_bg"
+    <ScrollView
         android:layout_below="@+id/tv_title"
         android:layout_above="@+id/ll_buttons1"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <View
-            android:background="@color/gray_light"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-
         <LinearLayout
+            android:background="@color/gray_bg"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="match_parent">
 
             <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
+                android:background="@color/gray_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
 
-            <TextView
-                android:textSize="25sp"
-                android:text="配置版本号："
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:textSize="25sp"
+                    android:text="配置版本号："
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="25sp"
+                    android:id="@+id/tv_id_version_need"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
 
             <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
+                android:background="@color/gray_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
 
-            <TextView
-                android:textColor="@color/dark"
-                android:textSize="25sp"
-                android:id="@+id/tv_id_version_need"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+                <TextView
+                    android:textSize="25sp"
+                    android:text="实际版本号："
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="25sp"
+                    android:id="@+id/tv_id_version"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+                <TextView
+                    android:textSize="25sp"
+                    android:text="身份证ID："
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="25sp"
+                    android:id="@+id/tv_id_card_id"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <TextView
+                    android:textSize="25sp"
+                    android:text="身份证信息："
+                    android:gravity="start"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:textColor="@color/dark"
+                    android:textSize="20sp"
+                    android:id="@+id/tv_id_info"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/iv_id_photo"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:id="@+id/ll_finger_info"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textSize="25sp"
+                    android:text="指纹信息："
+                    android:gravity="start"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/tv_id_finger"
+                    android:textColor="@color/dark"
+                    android:textSize="20sp"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
 
         </LinearLayout>
 
-        <View
-            android:background="@color/gray_light"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <TextView
-                android:textSize="25sp"
-                android:text="实际版本号："
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:textColor="@color/dark"
-                android:textSize="25sp"
-                android:id="@+id/tv_id_version"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
-
-        <View
-            android:background="@color/gray_light"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <TextView
-                android:textSize="25sp"
-                android:text="身份证ID："
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:textColor="@color/dark"
-                android:textSize="25sp"
-                android:id="@+id/tv_id_card_id"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-        </LinearLayout>
-
-        <View
-            android:background="@color/gray_light"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-
-        <LinearLayout
-            android:layout_weight="2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp">
-
-            <TextView
-                android:textSize="25sp"
-                android:text="身份证信息："
-                android:gravity="start"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:textColor="@color/dark"
-                android:textSize="25sp"
-                android:id="@+id/tv_id_info"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <ImageView
-                android:layout_gravity="center_vertical"
-                android:id="@+id/iv_id_photo"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <View
-            android:background="@color/gray_light"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-
-        <LinearLayout
-            android:visibility="gone"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp">
-
-            <TextView
-                android:textSize="25sp"
-                android:text="指纹信息"
-                android:gravity="start"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <View
-                android:background="@color/gray_light"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:textColor="@color/dark"
-                android:textSize="25sp"
-                android:gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-
-            <ImageView
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/ll_buttons1"
@@ -234,7 +240,7 @@
             android:textColor="@color/dark"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:id="@+id/btn_read_version" />
 
         <Button
@@ -247,7 +253,7 @@
             android:textColor="@color/dark"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:id="@+id/btn_read_id" />
 
         <Button
@@ -260,8 +266,21 @@
             android:textColor="@color/dark"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:id="@+id/btn_read_info" />
+
+        <Button
+            android:clickable="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:text="读全部信息"
+            android:textSize="18sp"
+            android:textColor="@color/dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:id="@+id/btn_read_full_info" />
 
     </LinearLayout>
 

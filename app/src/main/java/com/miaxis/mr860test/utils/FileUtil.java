@@ -41,16 +41,18 @@ public class FileUtil {
     public static TestItem parseItemFromString(String str) {
         TestItem item = new TestItem();
         String[] fields = str.split("_");
-        item.setOpdate(fields[0]);
-        item.setName(fields[1]);
-        item.setStatus(Integer.valueOf(fields[2]));
-        item.setRemark(fields[3]);
+        item.setId(Integer.valueOf(fields[0]));
+        item.setOpdate(fields[1]);
+        item.setName(fields[2]);
+        item.setStatus(Integer.valueOf(fields[3]));
+        item.setRemark(fields[4]);
         return item;
     }
 
     public static String parseToString(List<TestItem> list) {
         StringBuilder sb = new StringBuilder("");
         for (int i=0; i<list.size(); i++) {
+            sb.append(list.get(i).getId() + "_");
             sb.append(list.get(i).getOpdate() + "_");
             sb.append(list.get(i).getName() + "_");
             sb.append(list.get(i).getStatus() + "_");
@@ -65,6 +67,7 @@ public class FileUtil {
 
     public static String parseItemToString(TestItem item) {
         StringBuilder sb = new StringBuilder("");
+        sb.append(item.getId() + "_");
         sb.append(item.getOpdate() + "_");
         sb.append(item.getName() + "_");
         sb.append(item.getStatus() + "_");

@@ -1,7 +1,9 @@
 package com.miaxis.mr860test.fragment;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.activity.RecordsActivity;
 import com.miaxis.mr860test.adapter.HistoryItemAdapter;
@@ -20,6 +23,7 @@ import com.miaxis.mr860test.domain.DismissEvent;
 import com.miaxis.mr860test.domain.TestItem;
 import com.miaxis.mr860test.domain.ToastEvent;
 import com.miaxis.mr860test.utils.FileUtil;
+import com.miaxis.mr860test.view.OldDetailDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -43,6 +47,8 @@ public class HistoryFragment extends Fragment {
 
     private HistoryItemAdapter adapter;
     private EventBus bus;
+    private OldDetailDialog detailDialog = new OldDetailDialog();
+    private Activity context;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -59,6 +65,7 @@ public class HistoryFragment extends Fragment {
 
         initData();
         initView();
+        initListener();
 
         dialog.show();
         readHistory();
@@ -73,10 +80,26 @@ public class HistoryFragment extends Fragment {
         adapter = new HistoryItemAdapter(itemList, getContext());
         rv_history.setLayoutManager(new LinearLayoutManager(getContext()));
         rv_history.setAdapter(adapter);
+        context = getActivity();
     }
 
     protected void initView() {
         dialog.setMessage("正在加载测试记录...");
+    }
+
+    private void initListener() {
+        adapter.setListener(new HistoryItemAdapter.TestClickListenenr() {
+            @Override
+            public void onItemClick(View view, int position) {
+                TestItem i = itemList.get(itemList.size() - position - 1);
+                if (i.getId() == Constants.ID_OLD) {
+                    if (i != null) {
+                        detailDialog.setContent(i.getRemark());
+                        detailDialog.show(context.getFragmentManager(), "DETAIL_DIALOG");
+                    }
+                }
+            }
+        });
     }
 
     private void readHistory() {
@@ -107,7 +130,6 @@ public class HistoryFragment extends Fragment {
         adapter.notifyDataSetChanged();
         dialog.dismiss();
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onToastEvent(ToastEvent event) {

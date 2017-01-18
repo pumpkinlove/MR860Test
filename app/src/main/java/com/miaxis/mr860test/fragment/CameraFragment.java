@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.miaxis.mr860test.R;
 
@@ -55,12 +56,17 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
         try {
             camera = Camera.open(0);
-            camera.setPreviewDisplay(surfaceHolder);
-        } catch (IOException e) {
+            if (camera != null) {
+                camera.setPreviewDisplay(surfaceHolder);
+            } else {
+                Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
             if (null != camera) {
                 camera.release();
                 camera = null;
             }
+            Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -68,13 +74,15 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        camera.startPreview();
+        if (camera != null) camera.startPreview();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        camera.stopPreview();
-        camera.release();
-        camera = null;
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
     }
 }

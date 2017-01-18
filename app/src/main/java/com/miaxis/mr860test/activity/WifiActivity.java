@@ -74,14 +74,13 @@ public class WifiActivity extends BaseTestActivity {
         s.setJavaScriptEnabled(true);
         s.setGeolocationEnabled(true);
         s.setDomStorageEnabled(true);
-
     }
 
     @Event(R.id.tv_test)
     private void test(View view) {
-        if (wifiManager.isWifiEnabled()) {
-            Toast.makeText(this, "禁用WIFI", Toast.LENGTH_LONG).show();
-            wifiManager.setWifiEnabled(false);
+        if (!wifiManager.isWifiEnabled()) {
+            Toast.makeText(this, "正在打开WIFI", Toast.LENGTH_LONG).show();
+            wifiManager.setWifiEnabled(true);
         }
         try {
             String type = smdtManager.getCurrentNetType();
@@ -93,9 +92,9 @@ public class WifiActivity extends BaseTestActivity {
             } else if ("3G".equals(type)) {
                 tv_net_type.setText("WCDM/EVDO网络 (3G)");
             } else if ("4G".equals(type)) {
-                tv_net_type.setTextColor(getResources().getColor(R.color.green_dark));
                 tv_net_type.setText("FDD网络 (4G)");
             } else if ("WIFI".equals(type)) {
+                tv_net_type.setTextColor(getResources().getColor(R.color.green_dark));
                 tv_net_type.setText("WIFI无线网络");
             } else if ("ETH".equals(type)) {
                 tv_net_type.setText("以太网有线网络");
@@ -131,13 +130,13 @@ public class WifiActivity extends BaseTestActivity {
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_4G, Constants.STATUS_PASS));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_WIFI, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_4G, Constants.STAUTS_DENIED));
+        EventBus.getDefault().post(new ResultEvent(Constants.ID_WIFI, Constants.STAUTS_DENIED));
         finish();
     }
 
@@ -181,8 +180,6 @@ public class WifiActivity extends BaseTestActivity {
         }
 
     }
-
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNetChangeEvent(NetStatusEvent event) {

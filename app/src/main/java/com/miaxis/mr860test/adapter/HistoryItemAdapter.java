@@ -48,6 +48,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         }
 
         holder.tv_history_name.setText(item.getName());
+
         if (item.getOpdate() != null)
             holder.tv_history_opdate.setText(item.getOpdate());
 
@@ -64,6 +65,9 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
                 holder.tv_history_status.setTextColor(context.getResources().getColor(R.color.dark));
                 break;
         }
+        if (null != item.getRemark() && !"null".equals(item.getRemark())) {
+            holder.tv_history_remark.setText(item.getRemark());
+        }
 
     }
 
@@ -78,14 +82,10 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     class HitoryItemViewHolder extends RecyclerView.ViewHolder {
 
-        @ViewInject(R.id.tv_history_opdate)
-        private TextView tv_history_opdate;
-
-        @ViewInject(R.id.tv_history_name)
-        private TextView tv_history_name;
-
-        @ViewInject(R.id.tv_history_status)
-        private TextView tv_history_status;
+        @ViewInject(R.id.tv_history_opdate)     private TextView tv_history_opdate;
+        @ViewInject(R.id.tv_history_name)       private TextView tv_history_name;
+        @ViewInject(R.id.tv_history_status)     private TextView tv_history_status;
+        @ViewInject(R.id.tv_history_remark)     private TextView tv_history_remark;
 
         private TestClickListenenr listener;
 
@@ -95,7 +95,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             x.view().inject(this, itemView);
         }
 
-        @Event(R.id.ll_item)
+        @Event(R.id.ll_item_history)
         private void onClick(View view) {
             if(listener != null) {
                 listener.onItemClick(view, getPosition());

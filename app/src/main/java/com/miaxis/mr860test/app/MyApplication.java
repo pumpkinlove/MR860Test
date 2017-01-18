@@ -5,9 +5,12 @@ import android.os.Environment;
 import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
+import com.miaxis.mr860test.domain.CommonEvent;
+import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.utils.FileUtil;
 
 import org.xutils.x;
+import org.zz.idcard_hid_driver.IdCardDriver;
 
 import java.io.File;
 
@@ -17,13 +20,16 @@ import java.io.File;
 
 public class MyApplication extends Application {
 
+    private IdCardDriver idCardDriver;
+
     @Override
     public void onCreate() {
         x.Ext.init(this);
         super.onCreate();
+        idCardDriver = new IdCardDriver(this);
 
         initVersionConfig();
-
+        preReadIdDevVersion();
     }
 
     private void initVersionConfig() {
@@ -40,5 +46,29 @@ public class MyApplication extends Application {
             Toast.makeText(this, "初始化配置文件失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    /**
+     * 预读二代证模块版本， 解决 断电后 调用二代证模块 失败几次返回-1000 后 才能正常使用的问题
+     */
+    private void preReadIdDevVersion() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    byte[] bDevVersion;
+                    int re;
+                    for (int i=0; i<10; i++) {
+                        bDevVersion = new byte[64];
+                        re = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                        if (re != -1000) {
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
+            }
+        }).start();
     }
 }

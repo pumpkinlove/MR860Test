@@ -62,17 +62,6 @@
         <activity
             android:name=".activity.NetActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-
-        <receiver
-            android:name=".receiver.NetworkReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".activity.TFActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
@@ -87,7 +76,30 @@
         <activity android:name=".activity.USBActivity" />
         <activity android:name=".activity.OldActivity" />
         <activity android:name=".activity.BlueToothActivity" />
-        <activity android:name=".activity.WifiActivity"></activity>
+        <activity
+            android:name=".activity.WifiActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+
+        <receiver
+            android:name=".receiver.NetworkReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".receiver.BlueToothReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.BluetoothAdapter.ACTION_STATE_CHANGED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".activity.TestActivity"></activity>
     </application>
 
 </manifest>
