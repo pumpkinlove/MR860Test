@@ -267,8 +267,10 @@ public class MainActivity extends AppCompatActivity {
     public void onResultEvent(ResultEvent event) {
         TestItem item = itemList.get(event.getId() - 1);
         if (item != null) {
+            item.setId(event.getId());
             item.setStatus(event.getStatus());
             item.setOpdate(DateUtil.format(new Date()));
+            item.setRemark(event.getRemark());
             adapter.notifyDataSetChanged();
             try {
                 FileUtil.addRecord(FileUtil.HISTORY_PATH, item);

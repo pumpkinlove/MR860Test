@@ -9,9 +9,25 @@ public class ResultEvent {
 
     private int status;
 
+    private String remark;
+
     public ResultEvent(int id, int status) {
         this.id = id;
         this.status = status;
+    }
+
+    public ResultEvent(int id, int status, String remark) {
+        this.id = id;
+        this.status = status;
+        this.remark = remark;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public int getId() {

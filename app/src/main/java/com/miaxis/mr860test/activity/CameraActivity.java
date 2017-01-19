@@ -51,7 +51,6 @@ public class CameraActivity extends BaseTestActivity {
         tv_stop_test.setTextColor(Color.GRAY);
     }
 
-
     @Event(R.id.tv_test)
     private void onTest(View view) {
         try {

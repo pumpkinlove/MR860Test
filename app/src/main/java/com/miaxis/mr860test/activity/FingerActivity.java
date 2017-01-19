@@ -233,6 +233,8 @@ public class FingerActivity extends BaseTestActivity {
 
                 Date d1 = new Date();
                 int re = -1;
+                byte[] version = new byte[100];
+                re = alg.mxGetVersion(version);
                 switch (mbFlag) {
                     case 1:
                         re = alg.mxGetTzBase64(bImgBuf, tzBuffer1);

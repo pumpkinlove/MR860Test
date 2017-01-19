@@ -19,16 +19,199 @@
         android:layout_marginTop="20dp" />
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
         android:layout_below="@+id/tv_title"
-        android:layout_above="@+id/ll_buttons"
+        android:layout_above="@id/ll_buttons"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <View
+            android:background="@color/gray_dark"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:gravity="center"
+                android:text="蓝牙状态"
+                android:textSize="20sp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <View
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+
+            <RadioGroup
+                android:orientation="horizontal"
+                android:id="@+id/rg_open"
+                android:contentDescription="蓝牙状态"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+                <RadioButton
+                    android:id="@+id/rb_open_y"
+                    android:gravity="center"
+                    android:text="开"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <RadioButton
+                    android:id="@+id/rb_open_n"
+                    android:gravity="center"
+                    android:text="关"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </RadioGroup>
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/gray_dark"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:gravity="center"
+                android:text="是否可以被其它设备搜索到"
+                android:textSize="20sp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <View
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+
+            <RadioGroup
+                android:orientation="horizontal"
+                android:id="@+id/rg_discover"
+                android:contentDescription="是否可以被其它设备搜索到"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+                <RadioButton
+                    android:id="@+id/rb_discover_y"
+                    android:gravity="center"
+                    android:text="是"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <RadioButton
+                    android:id="@+id/rb_discover_n"
+                    android:gravity="center"
+                    android:text="否"
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </RadioGroup>
+
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+
+        <View
+            android:background="@color/gray_dark"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:gravity="center"
+                android:text="搜索"
+                android:textSize="20sp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+
+            <Button
+                android:id="@+id/btn_start_discovery"
+                android:text="开始搜索"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:enabled="false"
+                android:id="@+id/btn_cancel_discovery"
+                android:text="取消搜索"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_bt_device"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
+            </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -43,12 +226,12 @@
             style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:text="打开"
+            android:text="测试"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:id="@+id/tv_test" />
+            android:id="@+id/tv_test"/>
 
         <TextView
             style="@style/stroke_button"
