@@ -1,12 +1,13 @@
 package com.miaxis.mr860test.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
@@ -25,8 +26,10 @@ public class CameraActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_test)       private TextView tv_test;
     @ViewInject(R.id.tv_stop_test)  private TextView tv_stop_test;
 
-    @ViewInject(R.id.fl_preview)    private FrameLayout fl_preview;
+    @ViewInject(R.id.tv_pass)       private TextView tv_pass;
+    @ViewInject(R.id.tv_deny)       private TextView tv_deny;
 
+    @ViewInject(R.id.fl_preview)    private FrameLayout fl_preview;
     private CameraFragment fragment;
 
     @Override
@@ -53,20 +56,19 @@ public class CameraActivity extends BaseTestActivity {
 
     @Event(R.id.tv_test)
     private void onTest(View view) {
-        try {
-            fl_preview.setVisibility(View.VISIBLE);
-            tv_test.setClickable(false);
-            tv_test.setTextColor(Color.GRAY);
-            tv_stop_test.setClickable(true);
-            tv_stop_test.setTextColor(getResources().getColor(R.color.blue_band_dark));
-            fragment = CameraFragment.newInstance();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fl_preview, fragment)
-                    .commit();
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            onDeny(null);
-        }
+        fl_preview.setVisibility(View.VISIBLE);
+        tv_test.setClickable(false);
+        tv_test.setTextColor(Color.GRAY);
+        tv_stop_test.setClickable(true);
+        tv_stop_test.setTextColor(getResources().getColor(R.color.blue_band_dark));
+        fragment = CameraFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fl_preview, fragment)
+                .commit();
+
+        /**调用系统摄像头*/
+//        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(i, 1);
     }
 
     @Event(R.id.tv_stop_test)

@@ -206,6 +206,7 @@
                         android:textColor="@color/dark"
                         android:textSize="20sp" >
                     </TextView>
+
                 </LinearLayout>
             </ScrollView>
 
@@ -232,11 +233,56 @@
                 android:layout_gravity="center"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:layout_gravity="center"
-                    android:id="@+id/iv_finger"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:id="@+id/iv_finger"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_gravity="center"
+                        android:id="@+id/tv_score"
+                        android:layout_weight="1"
+                        android:textSize="50sp"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:textColor="@color/dark"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"/>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/iv_mb1"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp" />
+
+                        <ImageView
+                            android:id="@+id/iv_mb2"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp" />
+
+                        <ImageView
+                            android:id="@+id/iv_mb3"
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 
