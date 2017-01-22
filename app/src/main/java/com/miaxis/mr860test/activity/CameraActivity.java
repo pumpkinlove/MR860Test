@@ -1,7 +1,9 @@
 package com.miaxis.mr860test.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -63,6 +65,10 @@ public class CameraActivity extends BaseTestActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_preview, fragment)
                 .commit();
+
+        /**调用系统摄像头*/
+//        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(i, 1);
     }
 
     @Event(R.id.tv_stop_test)

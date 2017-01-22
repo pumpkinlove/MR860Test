@@ -46,7 +46,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
         surfaceHolder = sv_camera.getHolder();
         surfaceHolder.addCallback(this);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         return v;
     }
@@ -57,6 +56,13 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
         try {
             camera = Camera.open(0);
             if (camera != null) {
+
+                camera.setDisplayOrientation(180);
+
+//                List<Camera.Size> sizeList = camera.getParameters().getSupportedPreviewSizes();
+//                for (int i=0; i<sizeList.size(); i++) {
+//
+//                }
                 camera.setPreviewDisplay(surfaceHolder);
             } else {
                 Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();

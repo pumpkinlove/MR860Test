@@ -17,12 +17,14 @@ import org.zz.tool.BMP;
 import org.zz.tool.ToolUnit;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +32,10 @@ import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.domain.CommonEvent;
 import com.miaxis.mr860test.domain.DisableEvent;
+import com.miaxis.mr860test.domain.FingerEvent;
+import com.miaxis.mr860test.domain.MbEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
+import com.miaxis.mr860test.domain.ScrollMessageEvent;
 import com.miaxis.mr860test.utils.FileUtil;
 import org.zz.jni.zzFingerAlg;
 
@@ -43,14 +48,23 @@ public class FingerActivity extends BaseTestActivity {
     private static final int GET_MB             = 10004;
     private static final int VERIFY             = 10005;
     private static final int CANCEL             = 10006;
+    private static final int GET_MB_1           = 10007;
+    private static final int GET_MB_2           = 10008;
+    private static final int GET_MB_3           = 10009;
 
+    private static final int LEVEL              = 2;
     // 图像
     private static final int TIME_OUT           = 15 * 1000; // 等待按手指的超时时间，单位：毫
     private static final int IMAGE_X_BIG        = 256;
     private static final int IMAGE_Y_BIG        = 360;
     private static final int IMAGE_SIZE_BIG     = IMAGE_X_BIG * IMAGE_Y_BIG;
+    private static final int TZ_SIZE            = 512;
 
     private byte[] bImgBuf                      = new byte[IMAGE_SIZE_BIG];
+    private byte[] bImgBuf1                     = new byte[IMAGE_SIZE_BIG];
+    private byte[] bImgBuf2                     = new byte[IMAGE_SIZE_BIG];
+    private byte[] bImgBuf3                     = new byte[IMAGE_SIZE_BIG];
+
     private Bitmap m_bitmap                     = null;
 
     // 线程
@@ -60,12 +74,13 @@ public class FingerActivity extends BaseTestActivity {
     // 中正指纹仪驱动
     private MXFingerDriver fingerDriver;
     private zzFingerAlg alg;
-    private int mbFlag = 0;
+    private int mbFlag = GET_MB_1;
 
-    private byte[] tzBuffer1 = new byte[1024];
-    private byte[] tzBuffer2 = new byte[1024];
-    private byte[] tzBuffer3 = new byte[1024];
-    private byte[] mbBuffer;
+    private byte[] tzBuffer1 = new byte[TZ_SIZE];
+    private byte[] tzBuffer2 = new byte[TZ_SIZE];
+    private byte[] tzBuffer3 = new byte[TZ_SIZE];
+    private byte[] mbBuffer  = new byte[TZ_SIZE];
+    private byte[] vBuffer   = new byte[TZ_SIZE];
 
     private EventBus bus;
 
@@ -77,10 +92,15 @@ public class FingerActivity extends BaseTestActivity {
     @ViewInject(R.id.btn_verify)                private Button btn_verify;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
+    @ViewInject(R.id.scrollView_show_msg)       private ScrollView scrollView_show_msg;
 
     @ViewInject(R.id.iv_finger)                 private ImageView iv_finger;
+    @ViewInject(R.id.iv_mb1)                    private ImageView iv_mb1;
+    @ViewInject(R.id.iv_mb2)                    private ImageView iv_mb2;
+    @ViewInject(R.id.iv_mb3)                    private ImageView iv_mb3;
 
     @ViewInject(R.id.tv_message)                private TextView tv_message;
+    @ViewInject(R.id.tv_score)                  private TextView tv_score;
 
     @ViewInject(R.id.tv_f_device_version_need)  private TextView tv_f_device_version_need;
     @ViewInject(R.id.tv_f_device_version)       private TextView tv_f_device_version;
@@ -217,50 +237,125 @@ public class FingerActivity extends BaseTestActivity {
 
     @Event(R.id.btn_cancel)
     private void onCancelClicked(View view) {
+        continueFlag = false;
         fingerDriver.mxCancelGetImage();
+        bus.post(new DisableEvent(true));
     }
+
+    boolean continueFlag = true;
 
     @Event(R.id.btn_getMB)
     private void onGetMBClicked(View view) {
-        mbFlag ++;
+        mbFlag = GET_MB_1;
         onDisableEvent(new DisableEvent(false));
+        continueFlag = true;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
-                if (ret != 0) {
-                    bus.post(new CommonEvent(GET_IMAGE, ret, "获取图像失败"));
-                    return;
+                int re = -10;
+                while (continueFlag) {
+                    appendMessage("请按手指...");
+                    re = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+                    if (0 != re) {
+                        appendMessage("图像采集失败 " + re);
+                    } else {
+                        getTzByMbFlag();
+                    }
                 }
-
-                Date d1 = new Date();
-                int re = -1;
-                byte[] version = new byte[100];
-                re = alg.mxGetVersion(version);
-                switch (mbFlag) {
-                    case 1:
-                        re = alg.mxGetTzBase64(bImgBuf, tzBuffer1);
-                        break;
-                    case 2:
-                        re = alg.mxGetTzBase64(bImgBuf, tzBuffer2);
-                        break;
-                    case 3:
-                        re = alg.mxGetTzBase64(bImgBuf, tzBuffer3);
-                        break;
-                }
-                long bt_time =  new Date().getTime() - d1.getTime();
-                if (re == 0) {
-                    bus.post(new CommonEvent(GET_MB, re, "特征提取成功，耗时：" + bt_time + "ms"));
+                re = alg.mxGetMB512(tzBuffer1, tzBuffer2, tzBuffer3, mbBuffer);
+                if (re > 0) {
+                    appendMessage("合成模板成功,得分 " + re);
                 } else {
-                    bus.post(new CommonEvent(GET_MB, re, "特征提取失败 " + re));
+                    appendMessage("合成模板失败 " + re);
                 }
-
             }
         }).start();
     }
 
+    private void getTzByMbFlag() {
+        switch (mbFlag) {
+            case GET_MB_1:
+                bImgBuf1 = bImgBuf;
+                bus.post(new FingerEvent(R.id.iv_finger, bImgBuf1));
+                appendMessage("图像采集成功");
+                int re1 = alg.mxGetTz512(bImgBuf1, tzBuffer1);
+                if (re1 == 1) {
+                    appendMessage("特征 1 提取成功");
+                    bus.post(new FingerEvent(R.id.iv_mb1, bImgBuf1));
+                    mbFlag = GET_MB_2;
+                } else {
+                    appendMessage("特征 1 提取失败" + re1);
+                }
+                break;
+            case GET_MB_2:
+                bImgBuf2 = bImgBuf;
+                bus.post(new FingerEvent(R.id.iv_finger, bImgBuf2));
+                appendMessage("图像采集成功");
+                int re2 = alg.mxGetTz512(bImgBuf2, tzBuffer2);
+                if (re2 == 1) {
+                    appendMessage("特征 2 提取成功");
+                    bus.post(new FingerEvent(R.id.iv_mb2, bImgBuf2));
+                    mbFlag = GET_MB_3;
+                } else {
+                    appendMessage("特征 2 提取失败" + re2);
+                }
+                break;
+            case GET_MB_3:
+                bImgBuf3 = bImgBuf;
+                bus.post(new FingerEvent(R.id.iv_finger, bImgBuf3));
+                appendMessage("图像采集成功");
+                int re3 = alg.mxGetTz512(bImgBuf3, tzBuffer3);
+                if (re3 == 1) {
+                    appendMessage("特征 3 提取成功");
+                    bus.post(new FingerEvent(R.id.iv_mb3, bImgBuf3));
+                    mbFlag = GET_MB_1;
+                    continueFlag = false;
+                    bus.post(new DisableEvent(true));
+                } else {
+                    appendMessage("特征 3 提取失败" + re3);
+                }
+                break;
+
+        }
+    }
+
+    private void appendMessage(String message) {
+        bus.post(new ScrollMessageEvent(message));
+    }
+
     @Event(R.id.btn_verify)
     private void onVerifyClicked(View view) {
+        onDisableEvent(new DisableEvent(false));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                appendMessage("请按手指...");
+                bImgBuf = new byte[IMAGE_SIZE_BIG];
+                int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+                if (0 != ret) {
+                    appendMessage("指纹图像采集失败");
+                    return;
+                } else {
+                    appendMessage("指纹图像采集成功");
+                    bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
+                    ret = alg.mxGetTz512(bImgBuf, vBuffer);
+                    if (ret == 1) {
+                        appendMessage("提取特征成功");
+                        ret = alg.mxFingerMatch512(mbBuffer, vBuffer, LEVEL);
+                        if (ret == 0) {
+                            appendMessage("比对成功");
+                        } else {
+                            appendMessage("比对失败 " + ret);
+                        }
+                    } else {
+                        appendMessage("提取特征失败 " + ret);
+                    }
+                }
+                bus.post(new DisableEvent(true));
+            }
+        }).start();
+
 
     }
 
@@ -294,21 +389,14 @@ public class FingerActivity extends BaseTestActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFingerEvent(CommonEvent e) {
+    public void onCommonEvent(CommonEvent e) {
         switch (e.getCode()) {
             case GET_IMAGE :
                 if (e.getResult() == 0) {
-                    if (m_bitmap != null) {
-                        if (!m_bitmap.isRecycled()) {
-                            m_bitmap.recycle();
-                        }
-                    }
-                    m_bitmap = fingerDriver.Raw2Bimap(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG);
-                    if (m_bitmap != null) {
-                        iv_finger.setImageBitmap(m_bitmap);
-                    }
+                    bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
                 }
-                tv_message.append( "\r\n" + e.getContent());
+                bus.post(new ScrollMessageEvent(e.getContent()));
+                bus.post(new DisableEvent(true));
                 break;
             case GET_DEVICE_VERSION :
                 tv_f_device_version.setText(e.getContent());
@@ -316,6 +404,7 @@ public class FingerActivity extends BaseTestActivity {
                 String v = e.getContent().trim();
                 if (v.equals(v_need)) {
                     tv_f_device_version.setTextColor(getResources().getColor(R.color.green_dark));
+                    bus.post(new DisableEvent(true));
                 } else {
                     tv_f_device_version.setTextColor(getResources().getColor(R.color.red));
                     bus.post(new DisableEvent(false));
@@ -323,11 +412,43 @@ public class FingerActivity extends BaseTestActivity {
                 break;
             case GET_DRIVER_VERSION :
                 tv_f_driver_version.setText(e.getContent());
-                break;
-            case GET_MB :
-                tv_message.append( "\r\n" + e.getContent());
+                bus.post(new DisableEvent(true));
                 break;
         }
-        bus.post(new DisableEvent(true));
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMbEvent(MbEvent e) {
+        switch (e.getMbFlag()) {
+            case GET_MB_1 :
+
+                break;
+            case GET_MB_2 :
+
+                break;
+            case GET_MB_3 :
+
+                break;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFingerEvent(FingerEvent e) {
+        if (m_bitmap != null) {
+            if (!m_bitmap.isRecycled()) {
+                m_bitmap.recycle();
+            }
+        }
+        m_bitmap = fingerDriver.Raw2Bimap(e.getImgBuff(), IMAGE_X_BIG, IMAGE_Y_BIG);
+        if (m_bitmap != null) {
+            ((ImageView)findViewById(e.getIvId())).setImageBitmap(m_bitmap);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onScrollMessageevent(ScrollMessageEvent e){
+        tv_message.append(e.getMessage() + "\r\n");
+        scrollView_show_msg.fullScroll(ScrollView.FOCUS_DOWN);
     }
 }

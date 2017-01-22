@@ -32,6 +32,6 @@ public class Constants {
     public static final String RESULT_PATH_NAME = "MR860Test.txt";
 
     public static final String ID_VERSION       = "MR-SAM100 V1.0.2U";
-    public static final String FINGER_VERSION   = "SM-80_High_HIDV101";
+    public static final String FINGER_VERSION   = "SM-80_High_HIDV1.0.3";
 
 }

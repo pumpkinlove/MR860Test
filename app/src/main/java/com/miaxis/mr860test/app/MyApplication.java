@@ -11,6 +11,7 @@ import com.miaxis.mr860test.utils.FileUtil;
 
 import org.xutils.x;
 import org.zz.idcard_hid_driver.IdCardDriver;
+import org.zz.mxhidfingerdriver.MXFingerDriver;
 
 import java.io.File;
 
@@ -21,12 +22,14 @@ import java.io.File;
 public class MyApplication extends Application {
 
     private IdCardDriver idCardDriver;
+    private MXFingerDriver mxFingerDriver;
 
     @Override
     public void onCreate() {
         x.Ext.init(this);
         super.onCreate();
         idCardDriver = new IdCardDriver(this);
+        mxFingerDriver = new MXFingerDriver(this);
 
         initVersionConfig();
         preReadIdDevVersion();
@@ -57,11 +60,14 @@ public class MyApplication extends Application {
             public void run() {
                 try {
                     byte[] bDevVersion;
-                    int re;
+                    int re1;
+                    int re2;
                     for (int i=0; i<10; i++) {
                         bDevVersion = new byte[64];
-                        re = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
-                        if (re != -1000) {
+                        re1 = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                        byte[] bVersion = new byte[120];
+                        re2 = mxFingerDriver.mxGetDevVersion(bVersion);
+                        if (re1 != -1000 && re2 != -1000) {
                             break;
                         }
                     }
