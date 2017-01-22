@@ -162,20 +162,15 @@ public class FingerActivity extends BaseTestActivity {
     }
 
     public void GetImage() {
-        Calendar time1 = Calendar.getInstance();
+        bImgBuf = new byte[IMAGE_SIZE_BIG];
         int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
         if (ret == 0) {
-            String strSDCardPath = ToolUnit.getSDCardPath();
-            String strFileName = strSDCardPath +"/finger.bmp";
-            BMP.SaveBMP(strFileName, bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG);
-        }
-        Calendar time2 = Calendar.getInstance();
-        long bt_time = time2.getTimeInMillis() - time1.getTimeInMillis();
-        if (ret == 0) {
-            bus.post(new CommonEvent(GET_IMAGE, ret, "获取图像成功，耗时：" + bt_time + "ms"));
+            bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
+            bus.post(new ScrollMessageEvent("采集图像成功"));
         } else {
-            bus.post(new CommonEvent(GET_IMAGE, ret, "获取图像失败"));
+            bus.post(new ScrollMessageEvent("采集图像失败"));
         }
+        bus.post(new DisableEvent(true));
     }
 
     private class GetDevVersionThread extends Thread {
@@ -254,6 +249,7 @@ public class FingerActivity extends BaseTestActivity {
                 int re = -10;
                 while (continueFlag) {
                     appendMessage("请按手指...");
+                    bImgBuf = new byte[IMAGE_SIZE_BIG];
                     re = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
                     if (0 != re) {
                         appendMessage("图像采集失败 " + re);
