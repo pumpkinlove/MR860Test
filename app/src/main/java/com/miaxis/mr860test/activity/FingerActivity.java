@@ -1,8 +1,6 @@
 package com.miaxis.mr860test.activity;
 
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.greenrobot.eventbus.EventBus;
@@ -13,11 +11,8 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 import org.zz.mxhidfingerdriver.MXFingerDriver;
-import org.zz.tool.BMP;
-import org.zz.tool.ToolUnit;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -26,14 +21,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.domain.CommonEvent;
 import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.domain.FingerEvent;
-import com.miaxis.mr860test.domain.MbEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
 import com.miaxis.mr860test.domain.ScrollMessageEvent;
 import com.miaxis.mr860test.utils.FileUtil;
@@ -75,12 +68,16 @@ public class FingerActivity extends BaseTestActivity {
     private MXFingerDriver fingerDriver;
     private zzFingerAlg alg;
     private int mbFlag = GET_MB_1;
+    private boolean hasMb = false;
+    private boolean hasTest = false;
 
     private byte[] tzBuffer1 = new byte[TZ_SIZE];
     private byte[] tzBuffer2 = new byte[TZ_SIZE];
     private byte[] tzBuffer3 = new byte[TZ_SIZE];
     private byte[] mbBuffer  = new byte[TZ_SIZE];
     private byte[] vBuffer   = new byte[TZ_SIZE];
+
+
 
     private EventBus bus;
 
@@ -92,7 +89,7 @@ public class FingerActivity extends BaseTestActivity {
     @ViewInject(R.id.btn_verify)                private Button btn_verify;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
-    @ViewInject(R.id.scrollView_show_msg)       private ScrollView scrollView_show_msg;
+    @ViewInject(R.id.sv_show_msg)               private ScrollView sv_show_msg;
 
     @ViewInject(R.id.iv_finger)                 private ImageView iv_finger;
     @ViewInject(R.id.iv_mb1)                    private ImageView iv_mb1;
@@ -116,7 +113,10 @@ public class FingerActivity extends BaseTestActivity {
         initData();
         initView();
         initVersion();
+
+        onGetDriverVersionClicked(null);
         onGetDevVersionClicked(null);
+
     }
 
     @Override
@@ -155,8 +155,7 @@ public class FingerActivity extends BaseTestActivity {
             try {
                 GetImage();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                appendMessage("采集图像异常" + e.getMessage());
             }
         }
     }
@@ -166,9 +165,9 @@ public class FingerActivity extends BaseTestActivity {
         int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
         if (ret == 0) {
             bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
-            bus.post(new ScrollMessageEvent("采集图像成功"));
+            appendMessage("采集图像成功");
         } else {
-            bus.post(new ScrollMessageEvent("采集图像失败"));
+            appendMessage("采集图像失败 " + ret);
         }
         bus.post(new DisableEvent(true));
     }
@@ -185,7 +184,18 @@ public class FingerActivity extends BaseTestActivity {
     public void GetDevVersion() {
         int iRet = -1;
         byte[] bVersion = new byte[120];
-        iRet = fingerDriver.mxGetDevVersion(bVersion);
+        bus.post(new CommonEvent(GET_DEVICE_VERSION, iRet, ""));
+        for (int i=0; i<20; i++) {
+            iRet = fingerDriver.mxGetDevVersion(bVersion);
+            if (iRet == 0) {
+                break;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         if (iRet == 0) {
             bus.post(new CommonEvent(GET_DEVICE_VERSION, iRet, new String(bVersion)));
         } else {
@@ -195,7 +205,8 @@ public class FingerActivity extends BaseTestActivity {
 
     @Event(R.id.btn_getImage)
     private void onGetImageClicked(View view) {
-        tv_message.append("\r\n请按手指....");
+        hasTest = true;
+        appendMessage("请按手指...");
         onDisableEvent(new DisableEvent(false));
         if (m_GetImageThread != null) {
             m_GetImageThread.interrupt();
@@ -219,6 +230,7 @@ public class FingerActivity extends BaseTestActivity {
     @Event(R.id.btn_getDriverVersion)
     private void onGetDriverVersionClicked(View view) {
         onDisableEvent(new DisableEvent(false));
+        bus.post(new CommonEvent(GET_DRIVER_VERSION, 0, ""));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -239,6 +251,15 @@ public class FingerActivity extends BaseTestActivity {
 
     @Event(R.id.btn_getMB)
     private void onGetMBClicked(View view) {
+        hasMb = false;
+        mbBuffer = new byte[TZ_SIZE];
+        bImgBuf1 = new byte[IMAGE_SIZE_BIG];
+        bImgBuf2 = new byte[IMAGE_SIZE_BIG];
+        bImgBuf3 = new byte[IMAGE_SIZE_BIG];
+        iv_mb1.setImageBitmap(null);
+        iv_mb2.setImageBitmap(null);
+        iv_mb3.setImageBitmap(null);
+        hasTest = true;
         mbFlag = GET_MB_1;
         onDisableEvent(new DisableEvent(false));
         continueFlag = true;
@@ -253,6 +274,10 @@ public class FingerActivity extends BaseTestActivity {
                     re = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
                     if (0 != re) {
                         appendMessage("图像采集失败 " + re);
+                        if (-2 == re) {
+                            hasMb = false;
+                            return;
+                        }
                     } else {
                         getTzByMbFlag();
                     }
@@ -260,8 +285,10 @@ public class FingerActivity extends BaseTestActivity {
                 re = alg.mxGetMB512(tzBuffer1, tzBuffer2, tzBuffer3, mbBuffer);
                 if (re > 0) {
                     appendMessage("合成模板成功,得分 " + re);
+                    hasMb = true;
                 } else {
                     appendMessage("合成模板失败 " + re);
+                    hasMb = false;
                 }
             }
         }).start();
@@ -338,7 +365,7 @@ public class FingerActivity extends BaseTestActivity {
                         appendMessage("提取特征成功");
                         ret = alg.mxFingerMatch512(mbBuffer, vBuffer, LEVEL);
                         if (ret == 0) {
-                            appendMessage("比对成功");
+                            appendMessage("比对通过！");
                         } else {
                             appendMessage("比对失败 " + ret);
                         }
@@ -378,19 +405,22 @@ public class FingerActivity extends BaseTestActivity {
         btn_getDevVersion       .setEnabled(e.isFlag());
         btn_getDriverVersion    .setEnabled(e.isFlag());
         btn_getMB               .setEnabled(e.isFlag());
-        btn_verify              .setEnabled(e.isFlag());
         btn_cancel              .setEnabled(!e.isFlag());
+        if (!hasMb) {
+            btn_verify.setEnabled(false);
+        } else {
+            btn_verify.setEnabled(e.isFlag());
+        }
+        if (!hasTest) {
+            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
+            tv_pass.setClickable(false);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCommonEvent(CommonEvent e) {
         switch (e.getCode()) {
             case GET_IMAGE :
-                if (e.getResult() == 0) {
-                    bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
-                }
-                bus.post(new ScrollMessageEvent(e.getContent()));
-                bus.post(new DisableEvent(true));
                 break;
             case GET_DEVICE_VERSION :
                 tv_f_device_version.setText(e.getContent());
@@ -402,29 +432,19 @@ public class FingerActivity extends BaseTestActivity {
                 } else {
                     tv_f_device_version.setTextColor(getResources().getColor(R.color.red));
                     bus.post(new DisableEvent(false));
+                    btn_cancel.setEnabled(false);
                 }
                 break;
             case GET_DRIVER_VERSION :
                 tv_f_driver_version.setText(e.getContent());
-                bus.post(new DisableEvent(true));
+                if (null == e.getContent() || "".equals(e.getContent())) {
+                    bus.post(new DisableEvent(false));
+                } else {
+                    bus.post(new DisableEvent(true));
+                }
                 break;
         }
 
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMbEvent(MbEvent e) {
-        switch (e.getMbFlag()) {
-            case GET_MB_1 :
-
-                break;
-            case GET_MB_2 :
-
-                break;
-            case GET_MB_3 :
-
-                break;
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -436,13 +456,20 @@ public class FingerActivity extends BaseTestActivity {
         }
         m_bitmap = fingerDriver.Raw2Bimap(e.getImgBuff(), IMAGE_X_BIG, IMAGE_Y_BIG);
         if (m_bitmap != null) {
-            ((ImageView)findViewById(e.getIvId())).setImageBitmap(m_bitmap);
+            ImageView ivv = (ImageView)findViewById(e.getIvId());
+            if (ivv != null) {
+                ivv.setImageBitmap(m_bitmap);
+            }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScrollMessageevent(ScrollMessageEvent e){
         tv_message.append(e.getMessage() + "\r\n");
-        scrollView_show_msg.fullScroll(ScrollView.FOCUS_DOWN);
+        sv_show_msg.post(new Runnable() {
+            public void run() {
+                sv_show_msg.fullScroll(ScrollView.FOCUS_DOWN);      //滚动到底部
+            }
+        });
     }
 }

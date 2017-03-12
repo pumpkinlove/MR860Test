@@ -45,26 +45,44 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         if (item == null) {
             return;
         }
-
         holder.tv_name.setText(item.getName());
         if (item.getOpdate() != null)
             holder.tv_opdate.setText(item.getOpdate());
 
         switch (item.getStatus()) {
             case Constants.STATUS_PASS:
+                holder.tv_name.setTextColor(context.getResources().getColor(R.color.blue_band_dark));
                 holder.tv_status.setTextColor(context.getResources().getColor(R.color.green_dark));
                 holder.tv_status.setText("通过");
                 holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.green_light_aero));
+                holder.ll_item.setClickable(true);
                 break;
             case Constants.STAUTS_DENIED:
+                holder.tv_name.setTextColor(context.getResources().getColor(R.color.blue_band_dark));
                 holder.tv_status.setTextColor(context.getResources().getColor(R.color.red));
                 holder.tv_status.setText("不通过");
                 holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.red_light_aero));
+                holder.ll_item.setClickable(true);
+                break;
+            case Constants.STAUTS_UNABLE:
+                holder.tv_name.setTextColor(context.getResources().getColor(R.color.gray_dark));
+                holder.tv_status.setTextColor(context.getResources().getColor(R.color.gray_dark));
+                holder.tv_status.setText("不可用");
+                holder.ll_item.setClickable(false);
+                break;
+            case Constants.STAUTS_RECORD:
+                holder.tv_name.setTextColor(context.getResources().getColor(R.color.blue_band_dark));
+                holder.tv_status.setTextColor(context.getResources().getColor(R.color.green_dark));
+                holder.tv_status.setText("已记录");
+                holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.green_light_aero));
+                holder.ll_item.setClickable(true);
                 break;
             default:
+                holder.tv_name.setTextColor(context.getResources().getColor(R.color.blue_band_dark));
                 holder.tv_status.setTextColor(context.getResources().getColor(R.color.blue_band_dark2));
                 holder.tv_status.setText("未测试");
                 holder.v_aero.setBackgroundColor(context.getResources().getColor(R.color.aero));
+                holder.ll_item.setClickable(true);
                 break;
         }
 
@@ -85,6 +103,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
         @ViewInject(R.id.tv_status)     private TextView tv_status;
         @ViewInject(R.id.tv_opdate)     private TextView tv_opdate;
         @ViewInject(R.id.v_aero)        private View v_aero;
+        @ViewInject(R.id.ll_item)       private LinearLayout ll_item;
 
         private TestClickListenenr listener;
 

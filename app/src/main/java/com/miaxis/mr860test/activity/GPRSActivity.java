@@ -17,16 +17,24 @@ import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
+import com.miaxis.mr860test.app.MyApplication;
+import com.miaxis.mr860test.domain.CommonEvent;
+import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.domain.NetStatusEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
+
+import java.io.IOException;
+import java.net.Socket;
 
 @ContentView(R.layout.activity_gprs)
 public class GPRSActivity extends BaseTestActivity {
@@ -35,20 +43,28 @@ public class GPRSActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_eth_mac)        private TextView tv_eth_mac;
     @ViewInject(R.id.tv_eth_ip)         private TextView tv_eth_ip;
     @ViewInject(R.id.tv_eth_status)     private TextView tv_eth_state;
-    @ViewInject(R.id.wv_test)           private WebView  wv_test;
-    @ViewInject(R.id.et_url)            private EditText et_url;
+
+    @ViewInject(R.id.et_test_ip)        private EditText et_test_ip;
+    @ViewInject(R.id.et_test_port)      private EditText et_test_port;
+    @ViewInject(R.id.tv_test_result)    private TextView tv_test_result;
+
+    @ViewInject(R.id.tv_pass)           private TextView tv_pass;
+    @ViewInject(R.id.tv_deny)           private TextView tv_deny;
+
+    private static final int SPEED = 1000;
 
     private WifiManager wifiManager;
     private ConnectivityManager connManager;
 
     private SmdtManager smdtManager;
+    private EventBus bus;
+    private boolean flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         super.onCreate(savedInstanceState);
         x.view().inject(this);
-        EventBus.getDefault().register(this);
 
         initData();
         initView();
@@ -57,6 +73,8 @@ public class GPRSActivity extends BaseTestActivity {
 
     @Override
     protected void initData() {
+        bus = EventBus.getDefault();
+        bus.register(this);
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         smdtManager = SmdtManager.create(this);
@@ -64,27 +82,19 @@ public class GPRSActivity extends BaseTestActivity {
 
     @Override
     protected void initView() {
-        WebSettings s = wv_test.getSettings();
-        s.setBuiltInZoomControls(true);
-        s.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        s.setUseWideViewPort(true);
-        s.setLoadWithOverviewMode(true);
-        s.setSavePassword(true);
-        s.setSaveFormData(true);
-        s.setJavaScriptEnabled(true);
-        s.setGeolocationEnabled(true);
-        s.setDomStorageEnabled(true);
-
+        et_test_ip.setText(MyApplication.test_ip);
+        et_test_port.setText(MyApplication.test_port);
     }
 
     @Event(R.id.tv_test)
     private void test(View view) {
-        if (wifiManager.isWifiEnabled()) {
-            Toast.makeText(this, "禁用WIFI", Toast.LENGTH_LONG).show();
-            wifiManager.setWifiEnabled(false);
-        }
         try {
+            if (wifiManager.isWifiEnabled()) {
+                Toast.makeText(this, "正在关闭WIFI", Toast.LENGTH_LONG).show();
+                wifiManager.setWifiEnabled(false);
+            }
             String type = smdtManager.getCurrentNetType();
+            flag = false;
             tv_net_type.setTextColor(getResources().getColor(R.color.red));
             if ("null".equals(type)) {
                 tv_net_type.setText("无网络连接");
@@ -93,8 +103,9 @@ public class GPRSActivity extends BaseTestActivity {
             } else if ("3G".equals(type)) {
                 tv_net_type.setText("WCDM/EVDO网络 (3G)");
             } else if ("4G".equals(type)) {
-                tv_net_type.setTextColor(getResources().getColor(R.color.green_dark));
                 tv_net_type.setText("FDD网络 (4G)");
+                flag = true;
+                tv_net_type.setTextColor(getResources().getColor(R.color.green_dark));
             } else if ("WIFI".equals(type)) {
                 tv_net_type.setText("WIFI无线网络");
             } else if ("ETH".equals(type)) {
@@ -109,22 +120,16 @@ public class GPRSActivity extends BaseTestActivity {
             }
             tv_eth_ip.setText(smdtManager.smdtGetEthIPAddress());
             tv_eth_mac.setText(smdtManager.smdtGetEthMacAddress());
-
-            wv_test.loadUrl(et_url.getText().toString());
-            //覆盖WebView默认使用第三方或系统默认浏览器打开网页的行为，使网页用WebView打开
-            wv_test.setWebViewClient(new WebViewClient(){
+            new Thread(new Runnable() {
                 @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    // TODO Auto-generated method stub
-                    //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
-                    view.loadUrl(url);
-                    return true;
+                public void run() {
+                    bus.post(new CommonEvent(SPEED, 1, ""));      //刷新一下界面
+                    connectTomcat();
                 }
-            });
-
+            }).start();
         } catch (Exception e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            onDeny(null);
+            bus.post(new DisableEvent(false, true));
         }
 
     }
@@ -182,7 +187,28 @@ public class GPRSActivity extends BaseTestActivity {
 
     }
 
+    private void connectTomcat() {
+        try {
+            if (!flag) {
+                bus.post(new DisableEvent(false, true));
+                return;
+            }
+            String url = "http://" + et_test_ip.getText().toString() + ":" + et_test_port.getText().toString();
+            Document doc = Jsoup.connect(url).timeout(15000).get();
+            String result = doc.body().html();
+            if (result != null && result.length() > 0) {
+                bus.post(new CommonEvent(SPEED, 0, ""));
+                bus.post(new DisableEvent(true, true));
+            } else {
+                bus.post(new CommonEvent(SPEED, -1, ""));
+                bus.post(new DisableEvent(false, true));
+            }
+        } catch (Exception e) {
+            bus.post(new CommonEvent(SPEED, -1, ""));
+            bus.post(new DisableEvent(false, true));
+        }
 
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNetChangeEvent(NetStatusEvent event) {
@@ -191,7 +217,49 @@ public class GPRSActivity extends BaseTestActivity {
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
+        bus.unregister(this);
         super.onDestroy();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCommonEvent(CommonEvent e) {
+        switch (e.getCode()) {
+            case SPEED:
+                if (0 == e.getResult()) {
+                    tv_test_result.setText("连接成功");
+                    tv_test_result.setTextColor(getResources().getColor(R.color.green_dark));
+                } else if (1 == e.getResult()) {
+                    tv_test_result.setText("正在连接....");
+                    tv_test_result.setTextColor(getResources().getColor(R.color.gold_dark));
+                }else {
+                    tv_test_result.setText("连接失败");
+                    tv_test_result.setTextColor(getResources().getColor(R.color.red));
+                }
+                break;
+            default:
+                tv_test_result.setText("");
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDisableEvent(DisableEvent e) {
+        if (e.isFlag()) {
+            tv_pass.setEnabled(true);
+            tv_pass.setClickable(true);
+            tv_pass.setTextColor(getResources().getColor(R.color.green_dark));
+        } else {
+            tv_pass.setEnabled(false);
+            tv_pass.setClickable(false);
+            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
+        }
+        if (e.isFlag2()) {
+            tv_deny.setEnabled(true);
+            tv_deny.setClickable(true);
+            tv_deny.setTextColor(getResources().getColor(R.color.red));
+        } else {
+            tv_deny.setEnabled(false);
+            tv_deny.setClickable(false);
+            tv_deny.setTextColor(getResources().getColor(R.color.gray_dark));
+        }
     }
 }

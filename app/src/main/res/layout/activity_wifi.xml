@@ -259,7 +259,7 @@
 
                 <TextView
                     android:textSize="20sp"
-                    android:text="测试网页地址"
+                    android:text="测试服务器ip"
                     android:gravity="center"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
@@ -280,36 +280,106 @@
                 <EditText
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:text="http://www.baidu.com"
                     android:textColor="@color/dark"
                     android:textSize="18sp"
                     android:background="@null"
                     android:gravity="center"
-                    android:id="@+id/et_url"
+                    android:id="@+id/et_test_ip"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <View
-            android:background="@color/gray_light"
-            android:layout_width="match_parent"
-            android:layout_height="1px"/>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp">
-
-            <WebView
-                android:layout_margin="20dp"
-                android:id="@+id/wv_test"
+            <View
+                android:background="@color/gray_light"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="测试端口号"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <EditText
+                    android:id="@+id/et_test_port"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/dark"
+                    android:textSize="18sp"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+            <View
+                android:background="@color/gray_light"
+                android:layout_width="match_parent"
+                android:layout_height="1px"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <TextView
+                    android:textSize="20sp"
+                    android:text="测试结果"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:background="@color/gray_light"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <View
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/tv_test_result"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/dark"
+                    android:textSize="18sp"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

@@ -21,10 +21,12 @@
     <LinearLayout
         android:id="@+id/ll_progress"
         android:layout_below="@+id/tv_title"
-        android:layout_margin="20dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="70dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp">
 
         <TextView
             android:id="@+id/tv_old_open_led"
@@ -103,9 +105,11 @@
         android:orientation="vertical"
         android:layout_below="@+id/ll_progress"
         android:layout_above="@id/ll_buttons"
-        android:layout_margin="20dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
         <View
             android:background="@color/gray_dark"
@@ -117,8 +121,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <SurfaceView
-                android:id="@+id/sv_old_camera"
+            <View
+                android:background="@color/gray_dark"
+                android:layout_width="1px"
+                android:layout_height="match_parent"/>
+
+            <com.camera.simplewebcam.CameraPreview
+                android:visibility="invisible"
+                android:id="@+id/cp_old_camera"
                 android:layout_width="400dp"
                 android:layout_height="300dp" />
             
@@ -369,6 +379,11 @@
 
         </LinearLayout>
 
+        <View
+            android:background="@color/gray_dark"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -380,6 +395,64 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:textColor="@color/dark"
+                        android:textSize="20sp"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:textColor="@color/green_dark"
+                        android:textSize="24sp"
+                        android:text="成功次数"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:textColor="@color/red"
+                        android:textSize="24sp"
+                        android:text="失败次数"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                </LinearLayout>
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"/>
 
                 <LinearLayout
                     android:layout_weight="1"
@@ -571,6 +644,64 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:textColor="@color/dark"
+                        android:textSize="20sp"
+                        android:layout_weight="2"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:textColor="@color/green_dark"
+                        android:textSize="24sp"
+                        android:text="成功次数"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:textColor="@color/red"
+                        android:textSize="24sp"
+                        android:text="失败次数"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"/>
+
+                </LinearLayout>
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"/>
 
                 <LinearLayout
                     android:layout_weight="1"
@@ -792,7 +923,7 @@
             style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:text="通过"
+            android:text="保存记录并退出"
             android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -800,6 +931,7 @@
             android:id="@+id/tv_pass" />
 
         <TextView
+            android:visibility="gone"
             style="@style/stroke_button"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"

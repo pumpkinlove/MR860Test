@@ -99,7 +99,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.TestActivity"></activity>
+        <activity android:name=".activity.TestActivity" />
+        <activity android:name=".activity.Camera2Activity"></activity>
     </application>
 
 </manifest>

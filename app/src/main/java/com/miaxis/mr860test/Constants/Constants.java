@@ -23,15 +23,16 @@ public class Constants {
     public static final int ID_BT       = 15;
     public static final int ID_OLD      = 16;
 
-
-
-
     public static final int STATUS_PASS   = 1;
     public static final int STAUTS_DENIED = 2;
+    public static final int STAUTS_UNABLE = 3;
+    public static final int STAUTS_RECORD = 4;
 
     public static final String RESULT_PATH_NAME = "MR860Test.txt";
 
     public static final String ID_VERSION       = "MR-SAM100 V1.0.2U";
-    public static final String FINGER_VERSION   = "SM-80_High_HIDV1.0.3";
-
+    public static final String FINGER_VERSION   = "SM-80_High_HIDV2.0.0";
+    public static final String HAS_4G           = "4G=false";
+    public static final String TEST_IP          = "TEST_IP=192.168.11.250";
+    public static final String TEST_PORT        = "TEST_PORT=8899";
 }

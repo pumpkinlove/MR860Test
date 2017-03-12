@@ -2,25 +2,24 @@ package com.miaxis.mr860test.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Environment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.domain.DisableEvent;
-import com.miaxis.mr860test.domain.IdCardPhotoEvent;
 import com.miaxis.mr860test.domain.CommonEvent;
-import com.miaxis.mr860test.domain.IdFingerEvent;
+import com.miaxis.mr860test.domain.IdCardEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
 import com.miaxis.mr860test.utils.FileUtil;
-import com.miaxis.mr860test.utils.JNIUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -49,16 +48,25 @@ public class IdActivity extends BaseTestActivity {
 
     @ViewInject(R.id.tv_id_version)         private TextView tv_id_version;
     @ViewInject(R.id.tv_id_card_id)         private TextView tv_id_card_id;
-    @ViewInject(R.id.tv_id_info)            private TextView tv_id_info;
-    @ViewInject(R.id.tv_id_finger)          private TextView tv_id_finger;
-
-    @ViewInject(R.id.ll_finger_info)        private LinearLayout ll_finger_info;
 
     @ViewInject(R.id.iv_id_photo)           private ImageView iv_id_photo;
+    @ViewInject(R.id.tv_id_info)            private TextView tv_id_info;
+    @ViewInject(R.id.ll_id_info)            private LinearLayout ll_id_info;
+
+    @ViewInject(R.id.tv_name)               private TextView tv_name;
+    @ViewInject(R.id.tv_gender)             private TextView tv_gender;
+    @ViewInject(R.id.tv_race)               private TextView tv_race;
+    @ViewInject(R.id.tv_birthday)           private TextView tv_birthday;
+    @ViewInject(R.id.tv_cardNo)             private TextView tv_cardNo;
+    @ViewInject(R.id.tv_valid_time)         private TextView tv_valid_time;
+    @ViewInject(R.id.tv_address)            private TextView tv_address;
+    @ViewInject(R.id.tv_regOrg)             private TextView tv_regOrg;
+    @ViewInject(R.id.tv_finger0)            private TextView tv_finger0;
+    @ViewInject(R.id.tv_finger1)            private TextView tv_finger1;
+
 
     @ViewInject(R.id.btn_read_version)      private Button btn_read_version;
     @ViewInject(R.id.btn_read_id)           private Button btn_read_id;
-    @ViewInject(R.id.btn_read_info)         private Button btn_read_info;
     @ViewInject(R.id.btn_read_full_info)    private Button btn_read_full_info;
 
     @ViewInject(R.id.tv_pass)               private TextView tv_pass;
@@ -67,6 +75,8 @@ public class IdActivity extends BaseTestActivity {
     private EventBus bus;
 
     private IdCardDriver idCardDriver;
+
+    private boolean hasTest = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +127,14 @@ public class IdActivity extends BaseTestActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                int nRet = -1;
                 byte[] bDevVersion = new byte[64];
-                int nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                for (int i=0; i<20; i++) {
+                    nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                    if (nRet == 0) {
+                        break;
+                    }
+                }
                 if (nRet != 0) {
                     if (nRet == -100) {
                         bus.post(new CommonEvent(READ_VERSION, nRet, "无设备"));
@@ -126,84 +142,60 @@ public class IdActivity extends BaseTestActivity {
                     else {
                         bus.post(new CommonEvent(READ_VERSION, nRet, "失败"));
                     }
+                    bus.post(new DisableEvent(false));
                 } else {
                     bus.post(new CommonEvent(READ_VERSION, nRet, new String(bDevVersion)));
+                    bus.post(new DisableEvent(true));
                 }
-                bus.post(new DisableEvent(true));
             }
         }).start();
-
     }
 
     @Event(R.id.btn_read_id)
     private void OnClickCardId(View view) {
+        hasTest = true;
         onDisableEvent(new DisableEvent(false));
         tv_id_card_id.setText("");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                byte[] bCardId = new byte[64];
-                int nRet = idCardDriver.mxReadCardId(bCardId);
-                if (nRet != 0) {
-                    if (nRet == -100) {
-                        bus.post(new CommonEvent(READ_CARD_ID, nRet, "无设备"));
-                    } else {
-                        bus.post(new CommonEvent(READ_CARD_ID, nRet, "失败"));
-                    }
-                } else {
-                    String strTmp = null;
-                    for (int i = 0; i < bCardId.length; i++) {
-                        if(bCardId[i] == 0x00)
-                            break;
-                        if (i == 0) {
-                            strTmp = String.format("%02x ", bCardId[i]);
+                try {
+                    byte[] bCardId = new byte[64];
+                    int nRet = idCardDriver.mxReadCardId(bCardId);
+                    if (nRet != 0) {
+                        if (nRet == -100) {
+                            bus.post(new CommonEvent(READ_CARD_ID, nRet, "无设备"));
                         } else {
-                            strTmp += String.format("%02x ", bCardId[i]);
+                            bus.post(new CommonEvent(READ_CARD_ID, nRet, "失败"));
                         }
+                    } else {
+                        String strTmp = "";
+                        for (int i = 0; i < bCardId.length; i++) {
+                            if (bCardId[i] == 0x00)
+                                break;
+                            if (i == 0) {
+                                strTmp = String.format("%02x ", bCardId[i]);
+                            } else {
+                                strTmp += String.format("%02x ", bCardId[i]);
+                            }
+                        }
+                        bus.post(new CommonEvent(READ_CARD_ID, nRet, new String(strTmp)));
                     }
-                    bus.post(new CommonEvent(READ_CARD_ID, nRet, new String(strTmp)));
+                    bus.post(new DisableEvent(true));
+                } catch (Exception e) {
+                    Log.e(":__", e.getMessage());
+                    bus.post(new CommonEvent(READ_CARD_ID, -1, "失败" + e.getMessage()));
                 }
-                bus.post(new DisableEvent(true));
-            }
-        }).start();
-    }
-
-    public void GetCardInfo() {
-        byte[] bCardInfo = new byte[256 + 1024];
-        int nRet = idCardDriver.mxReadCardInfo(bCardInfo);
-        if (nRet != 0) {
-            if (nRet == -100) {
-                bus.post(new CommonEvent(READ_INFO, nRet, "无设备"));
-            }
-            else {
-                bus.post(new CommonEvent(READ_INFO, nRet, "失败"));
-            }
-        } else {
-            bus.post(new CommonEvent(READ_INFO, nRet, "成功" + bCardInfo.length));
-            showIdCardInfo(bCardInfo, true);
-        }
-        bus.post(new DisableEvent(true));
-    }
-
-    @Event(R.id.btn_read_info)
-    private void onReadInfoClicked(View view) {
-        tv_id_info.setText("");
-        tv_id_finger.setText("");
-        ll_finger_info.setVisibility(View.GONE);
-        onDisableEvent(new DisableEvent(false));
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                GetCardInfo();
             }
         }).start();
     }
 
     @Event(R.id.btn_read_full_info)
     private void OnClickCardFullInfo(View view) {
-        tv_id_info.setText("");
-        tv_id_finger.setText("");
-        ll_finger_info.setVisibility(View.GONE);
+        hasTest = true;
+        tv_id_info.setVisibility(View.GONE);
+        ll_id_info.setVisibility(View.INVISIBLE);
+        iv_id_photo.setVisibility(View.GONE);
         onDisableEvent(new DisableEvent(false));
         new Thread(new Runnable() {
             @Override
@@ -211,32 +203,21 @@ public class IdActivity extends BaseTestActivity {
                 try {
                     byte[] bCardFullInfo = new byte[256 + 1024 + 1024];
                     int nRet = idCardDriver.mxReadCardFullInfo(bCardFullInfo);
-                    if (nRet != 0) {
-                        if (nRet == -14) {
-                            GetCardInfo();
-                        } else if (nRet == -100) {
+                    switch (nRet) {
+                        case 0:
+                            anlyzeIdCard(bCardFullInfo, true);
+                            break;
+                        case 1:
+                            anlyzeIdCard(bCardFullInfo, false);
+                            break;
+                        case -100:
                             bus.post(new CommonEvent(READ_INFO, nRet, "无设备"));
-                        } else {
+                            break;
+                        default:
                             bus.post(new CommonEvent(READ_INFO, nRet, "失败"));
-                        }
-                    } else {
-                        showIdCardInfo(bCardFullInfo, true);
-                        byte[] bFingerData1 = new byte[mFingerDataSize];
-                        byte[] bFingerData2 = new byte[mFingerDataSize];
-                        byte[] bFingerData1_B64 = new byte[mFingerDataB64Size];
-                        byte[] bFingerData2_B64 = new byte[mFingerDataB64Size];
-                        for (int i = 0; i < bFingerData1.length; i++) {
-                            bFingerData1[i]=bCardFullInfo[256+1024+i];
-                        }
-                        for (int i = 0; i < bFingerData1.length; i++) {
-                            bFingerData2[i]=bCardFullInfo[256+1024+512+i];
-                        }
-                        idCardDriver.Base64Encode(bFingerData1,mFingerDataSize,bFingerData1_B64,mFingerDataB64Size);
-                        idCardDriver.Base64Encode(bFingerData2,mFingerDataSize,bFingerData2_B64,mFingerDataB64Size);
-                        bus.post(new IdFingerEvent(new String(bFingerData1_B64),  new String(bFingerData2_B64)));
                     }
                 } catch (Exception e) {
-
+                    bus.post(new CommonEvent(READ_INFO, -1, e.getMessage()));
                 }
             bus.post(new DisableEvent(true));
             }
@@ -271,9 +252,9 @@ public class IdActivity extends BaseTestActivity {
         return sb.toString();
     }
 
-    public void showIdCardInfo(byte[] bCardInfo, Boolean bShowImage) {
+    public void anlyzeIdCard(byte[] bCardInfo, boolean hasFinger) {
         try {
-            StringBuilder sb = new StringBuilder();
+            IdCardEvent e = new IdCardEvent();
             byte[] id_Name = new byte[30]; // 姓名
             byte[] id_Sex = new byte[2]; // 性别 1为男 其他为女
             byte[] id_Rev = new byte[4]; // 民族
@@ -290,7 +271,7 @@ public class IdActivity extends BaseTestActivity {
                 id_Name[i] = bCardInfo[i + iLen];
             }
             iLen = iLen + id_Name.length;
-            sb.append("姓名: " + unicode2String(id_Name));
+            e.setName(unicode2String(id_Name));
 
             for (int i = 0; i < id_Sex.length; i++) {
                 id_Sex[i] = bCardInfo[iLen + i];
@@ -298,9 +279,9 @@ public class IdActivity extends BaseTestActivity {
             iLen = iLen + id_Sex.length;
 
             if (id_Sex[0] == '1') {
-                sb.append("\n性别：男");
+                e.setGender("男");
             } else {
-                sb.append("\n性别：女");
+                e.setGender("女");
             }
 
             for (int i = 0; i < id_Rev.length; i++) {
@@ -308,31 +289,31 @@ public class IdActivity extends BaseTestActivity {
             }
             iLen = iLen + id_Rev.length;
             int iRev = Integer.parseInt(unicode2String(id_Rev));
-            sb.append("\n民族：" + FOLK[iRev - 1]);
+            e.setRace(FOLK[iRev - 1]);
 
             for (int i = 0; i < id_Born.length; i++) {
                 id_Born[i] = bCardInfo[iLen + i];
             }
             iLen = iLen + id_Born.length;
-            sb.append("\n出生日期：" + unicode2String(id_Born));
+            e.setBirthday(unicode2String(id_Born));
 
             for (int i = 0; i < id_Home.length; i++) {
                 id_Home[i] = bCardInfo[iLen + i];
             }
             iLen = iLen + id_Home.length;
-            sb.append("\n住址：" + unicode2String(id_Home));
+            e.setAddress(unicode2String(id_Home));
 
             for (int i = 0; i < id_Code.length; i++) {
                 id_Code[i] = bCardInfo[iLen + i];
             }
             iLen = iLen + id_Code.length;
-            sb.append("\n身份证号：" + unicode2String(id_Code));
+            e.setCardNo(unicode2String(id_Code));
 
             for (int i = 0; i < _RegOrg.length; i++) {
                 _RegOrg[i] = bCardInfo[iLen + i];
             }
             iLen = iLen + _RegOrg.length;
-            sb.append("\n签发机关：" + unicode2String(_RegOrg));
+            e.setRegOrg(unicode2String(_RegOrg));
 
             for (int i = 0; i < id_ValidPeriodStart.length; i++) {
                 id_ValidPeriodStart[i] = bCardInfo[iLen + i];
@@ -342,37 +323,51 @@ public class IdActivity extends BaseTestActivity {
                 id_ValidPeriodEnd[i] = bCardInfo[iLen + i];
             }
             iLen = iLen + id_ValidPeriodEnd.length;
-            sb.append("\n有效日期：" + unicode2String(id_ValidPeriodStart) + "-"
-                    + unicode2String(id_ValidPeriodEnd));
+            e.setValidPeriodStart(unicode2String(id_ValidPeriodStart));
+            e.setValidPeriodEnd(unicode2String(id_ValidPeriodEnd));
 
             for (int i = 0; i < id_NewAddr.length; i++) {
                 id_NewAddr[i] = bCardInfo[iLen + i];
             }
 
             iLen = iLen + id_NewAddr.length;
-            bus.post(new CommonEvent(READ_INFO, 0, sb.toString()));
-            if (bShowImage == true) {
-                for (int i = 0; i < id_pImage.length; i++) {
-                    id_pImage[i] = bCardInfo[i + iLen];
-                }
-                iLen = iLen + id_pImage.length;
-
-                byte[] bmp = new byte[mPhotoSize];
-                int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
-                if (re == 0) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-                    bus.post(new IdCardPhotoEvent(bitmap));
-                } else {
-                    bus.post(new IdCardPhotoEvent(null));
-                }
+            e.setRemark(unicode2String(id_NewAddr));
+            for (int i = 0; i < id_pImage.length; i++) {
+                id_pImage[i] = bCardInfo[i + iLen];
             }
+            iLen = iLen + id_pImage.length;
+            byte[] bmp = new byte[mPhotoSize];
+            int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
+            if (re == 0) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+                e.setPhoto(bitmap);
+            }
+            if (hasFinger) {
+                byte[] bFingerData1 = new byte[mFingerDataSize];
+                byte[] bFingerData2 = new byte[mFingerDataSize];
+                byte[] bFingerData1_B64 = new byte[mFingerDataB64Size];
+                byte[] bFingerData2_B64 = new byte[mFingerDataB64Size];
+                for (int i = 0; i < bFingerData1.length; i++) {
+                    bFingerData1[i] = bCardInfo[256 + 1024 + i];
+                }
+                for (int i = 0; i < bFingerData1.length; i++) {
+                    bFingerData2[i] = bCardInfo[256 + 1024 + 512 + i];
+                }
+                idCardDriver.Base64Encode(bFingerData1,mFingerDataSize,bFingerData1_B64,mFingerDataB64Size);
+                idCardDriver.Base64Encode(bFingerData2,mFingerDataSize,bFingerData2_B64,mFingerDataB64Size);
+                e.setFinger0(new String(bFingerData1_B64));
+                e.setFinger1(new String(bFingerData2_B64));
+                e.setFingerPosition0(getFingerPosition(bFingerData1[5]));
+                e.setFingerPosition1(getFingerPosition(bFingerData2[5]));
+            }
+            bus.post(e);
         } catch (Exception e) {
 
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIdEvent(CommonEvent event) {
+    public void onCommonEvent(CommonEvent event) {
         TextView tv = null;
         switch (event.getCode()) {
             case READ_VERSION:
@@ -394,23 +389,18 @@ public class IdActivity extends BaseTestActivity {
                 break;
             case READ_INFO:
                 tv = tv_id_info;
+                tv_id_info.setVisibility(View.VISIBLE);
+                ll_id_info.setVisibility(View.GONE);
                 break;
         }
         if (tv != null) {
             if (0 == event.getResult()) {
+                tv.setTextColor(getResources().getColor(R.color.green_dark));
                 tv.setText(event.getContent());
             } else {
+                tv.setTextColor(Color.RED);
                 tv.setText(event.getResult() + " " +event.getContent());
             }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIdCardPhotoEvent(IdCardPhotoEvent event) {
-        if (event.getBitmap() == null) {
-            tv_id_info.append("\n图片获取失败");
-        } else {
-            iv_id_photo.setImageBitmap(event.getBitmap());
         }
     }
 
@@ -420,28 +410,53 @@ public class IdActivity extends BaseTestActivity {
             tv_pass.            setTextColor(getResources().getColor(R.color.green_dark));
             btn_read_version.   setTextColor(getResources().getColor(R.color.dark));
             btn_read_id.        setTextColor(getResources().getColor(R.color.dark));
-            btn_read_info.      setTextColor(getResources().getColor(R.color.dark));
             btn_read_full_info. setTextColor(getResources().getColor(R.color.dark));
         } else {
             tv_pass.            setTextColor(getResources().getColor(R.color.gray_dark));
             btn_read_version.   setTextColor(getResources().getColor(R.color.gray_dark));
             btn_read_id.        setTextColor(getResources().getColor(R.color.gray_dark));
-            btn_read_info.      setTextColor(getResources().getColor(R.color.gray_dark));
             btn_read_full_info. setTextColor(getResources().getColor(R.color.gray_dark));
         }
         tv_pass.            setClickable(e.isFlag());
         tv_pass.            setEnabled(e.isFlag());
         btn_read_version.   setEnabled(e.isFlag());
         btn_read_id.        setEnabled(e.isFlag());
-        btn_read_info.      setEnabled(e.isFlag());
         btn_read_full_info. setEnabled(e.isFlag());
+        if (!hasTest) {
+            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
+            tv_pass.setClickable(false);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onIdFingerEvent(IdFingerEvent e) {
-        ll_finger_info.setVisibility(View.VISIBLE);
-        tv_id_finger.setText(e.getFinger0() + "\r\n" + e.getFinger1());
+    public void onIdCardEvent(IdCardEvent e) {
+        ll_id_info.setVisibility(View.VISIBLE);
+        tv_id_info.setVisibility(View.GONE);
+        tv_name.setText(e.getName());
+        tv_gender.setText(e.getGender());
+        tv_race.setText(e.getRace());
+        tv_birthday.setText(e.getBirthday());
+        tv_cardNo.setText(e.getCardNo());
+        tv_address.setText(e.getAddress());
+        tv_regOrg.setText(e.getRegOrg());
+        tv_valid_time.setText(e.getValidPeriodStart() + " - " + e.getValidPeriodEnd());
 
+        if (null != e.getPhoto()) {
+            iv_id_photo.setVisibility(View.VISIBLE);
+            iv_id_photo.setImageBitmap(e.getPhoto());
+        } else {
+            iv_id_photo.setVisibility(View.GONE);
+        }
+        if (null != e.getFinger0()) {
+            tv_finger0.setText(e.getFingerPosition0() + "\r\n" + e.getFinger0());
+        } else {
+            tv_finger0.setText("指纹一（未注册）");
+        }
+        if (null != e.getFinger1()) {
+            tv_finger1.setText(e.getFingerPosition1() + "\r\n" + e.getFinger1());
+        } else {
+            tv_finger1.setText("指纹二（未注册）");
+        }
     }
 
     @Override
@@ -452,16 +467,48 @@ public class IdActivity extends BaseTestActivity {
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_IDCARD, Constants.STATUS_PASS));
+        bus.post(new ResultEvent(Constants.ID_IDCARD, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_IDCARD, Constants.STAUTS_DENIED));
+        bus.post(new ResultEvent(Constants.ID_IDCARD, Constants.STAUTS_DENIED));
         finish();
     }
 
-
+    /* 获取指位信息 */
+    private String getFingerPosition(int f) {
+        switch (f) {
+            case 11:
+                return "右手拇指";
+            case 12:
+                return "右手食指";
+            case 13:
+                return "右手中指";
+            case 14:
+                return "右手环指";
+            case 15:
+                return "右手小指";
+            case 16:
+                return "左手拇指";
+            case 17:
+                return "左手食指";
+            case 18:
+                return "左手中指";
+            case 19:
+                return "左手环指";
+            case 20:
+                return "左手小指";
+            case 97:
+                return "右手不确定指位";
+            case 98:
+                return "左手不确定指位";
+            case 99:
+                return "其他不确定指位";
+            default:
+                return "";
+        }
+    }
 
 }

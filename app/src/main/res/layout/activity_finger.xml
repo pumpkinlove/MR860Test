@@ -185,7 +185,7 @@
                 android:background="@color/gold"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
-                android:id="@+id/scrollView_show_msg"
+                android:id="@+id/sv_show_msg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbarStyle="outsideOverlay" >
@@ -287,6 +287,33 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <Button
+                    android:id="@+id/btn_getDriverVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="驱动版本"
+                    android:onClick="OnClickGetDriverVersion"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btn_getDevVersion"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="设备版本"
+                    android:onClick="OnClickGetDevVersion"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
@@ -310,32 +337,6 @@
                     android:onClick="OnClickGetDriverVersion"
                     android:textSize="18sp" />
 
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <Button
-                    android:id="@+id/btn_getDriverVersion"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="驱动版本"
-                    android:onClick="OnClickGetDriverVersion"
-                    android:textSize="18sp" />
-
-                <Button
-                    android:id="@+id/btn_getDevVersion"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="设备版本"
-                    android:onClick="OnClickGetDevVersion"
-                    android:textSize="18sp" />
 
             </LinearLayout>
 

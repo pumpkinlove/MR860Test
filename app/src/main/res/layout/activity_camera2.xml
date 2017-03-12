@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_lcd"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.miaxis.mr860test.activity.CameraActivity">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:translationZ="1dp"
+        android:layout_marginLeft="20dp"
+        android:layout_alignLeft="@+id/ll_buttons"
+        android:text="摄像头测试"
+        android:textSize="35sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
+
+    <com.camera.simplewebcam.CameraPreview
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_margin="20dp"
+        android:id="@+id/cp_preview"
+        android:layout_width="640dp"
+        android:layout_height="480dp">
+
+    </com.camera.simplewebcam.CameraPreview>
+
+
+    <LinearLayout
+        android:id="@+id/ll_buttons"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_height="50dp">
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="测试"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_test" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="停止测试"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_stop_test" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="通过"
+            android:textColor="@color/green_dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_pass" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="不通过"
+            android:textColor="@color/red"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_deny" />
+
+    </LinearLayout>
+
+</RelativeLayout>

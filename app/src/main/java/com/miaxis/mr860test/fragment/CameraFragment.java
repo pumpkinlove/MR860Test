@@ -1,6 +1,7 @@
 package com.miaxis.mr860test.fragment;
 
 
+import android.app.smdt.SmdtManager;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.miaxis.mr860test.R;
+import com.miaxis.mr860test.domain.DisableEvent;
 
+import org.greenrobot.eventbus.EventBus;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
@@ -26,6 +29,9 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
     private SurfaceHolder surfaceHolder;
 
     private Camera camera;
+
+    private EventBus bus;
+    private SmdtManager smdtManager;
 
     private int preWidth;
     private int preHeight;
@@ -44,6 +50,9 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
         View v = inflater.inflate(R.layout.fragment_camera, container, false);
         x.view().inject(this, v);
 
+        bus = EventBus.getDefault();
+        smdtManager = SmdtManager.create(getActivity());
+
         surfaceHolder = sv_camera.getHolder();
         surfaceHolder.addCallback(this);
 
@@ -54,26 +63,21 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
 
         try {
+            smdtManager.smdtSetExtrnalGpioValue(2, true);
+            Thread.sleep(1000);
             camera = Camera.open(0);
             if (camera != null) {
-
-                camera.setDisplayOrientation(180);
-
-//                List<Camera.Size> sizeList = camera.getParameters().getSupportedPreviewSizes();
-//                for (int i=0; i<sizeList.size(); i++) {
-//
-//                }
+                bus.post(new DisableEvent(true, true));
+//                camera.setDisplayOrientation(180);
                 camera.setPreviewDisplay(surfaceHolder);
             } else {
                 Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();
+                bus.post(new DisableEvent(false, true));
             }
         } catch (Exception e) {
-            if (null != camera) {
-                camera.release();
-                camera = null;
-            }
+            closeCamera();
             Toast.makeText(getActivity(), "打开摄像头失败", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            bus.post(new DisableEvent(false, true));
         }
 
     }
@@ -85,10 +89,15 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        closeCamera();
+    }
+
+    private void closeCamera() {
         if (camera != null) {
             camera.stopPreview();
             camera.release();
             camera = null;
         }
+        smdtManager.smdtSetExtrnalGpioValue(2, false);
     }
 }

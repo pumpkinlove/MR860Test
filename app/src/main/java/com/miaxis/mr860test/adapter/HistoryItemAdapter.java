@@ -23,7 +23,7 @@ import java.util.List;
  * Created by xu.nan on 2016/12/19.
  */
 
-public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.HitoryItemViewHolder>{
+public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.HistoryItemViewHolder> {
 
     private List<TestItem> itemList;
     private Context context;
@@ -35,12 +35,12 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     }
 
     @Override
-    public HitoryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new HitoryItemViewHolder(LayoutInflater.from(context).inflate(R.layout.item_history, parent, false), listener);
+    public HistoryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new HistoryItemViewHolder(LayoutInflater.from(context).inflate(R.layout.item_history, parent, false), listener);
     }
 
     @Override
-    public void onBindViewHolder(HitoryItemViewHolder holder, int position) {
+    public void onBindViewHolder(HistoryItemViewHolder holder, int position) {
 
         TestItem item = itemList.get(itemList.size() - position - 1);
         if (item == null) {
@@ -66,7 +66,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
                 break;
         }
         if (null != item.getRemark() && !"null".equals(item.getRemark())) {
-            holder.tv_history_remark.setText(item.getRemark());
+            holder.tv_history_remark.setText("点击查看详细");
         }
 
     }
@@ -80,7 +80,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         }
     }
 
-    class HitoryItemViewHolder extends RecyclerView.ViewHolder {
+    class HistoryItemViewHolder extends RecyclerView.ViewHolder {
 
         @ViewInject(R.id.tv_history_opdate)     private TextView tv_history_opdate;
         @ViewInject(R.id.tv_history_name)       private TextView tv_history_name;
@@ -89,7 +89,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
         private TestClickListenenr listener;
 
-        public HitoryItemViewHolder(View itemView, TestClickListenenr listener) {
+        HistoryItemViewHolder(View itemView, TestClickListenenr listener) {
             super(itemView);
             this.listener = listener;
             x.view().inject(this, itemView);

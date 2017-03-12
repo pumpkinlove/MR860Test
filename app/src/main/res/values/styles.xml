@@ -18,4 +18,13 @@
 
     </style>
 
+    <style name="id_info">
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/dark</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:paddingStart">10dp</item>
+
+    </style>
+
 </resources>

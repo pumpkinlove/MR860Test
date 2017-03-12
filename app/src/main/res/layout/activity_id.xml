@@ -36,7 +36,7 @@
                     android:textSize="25sp"
                     android:text="配置版本号："
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingLeft="20dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
@@ -51,7 +51,7 @@
                     android:textSize="25sp"
                     android:id="@+id/tv_id_version_need"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingLeft="20dp"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
@@ -71,7 +71,7 @@
                     android:textSize="25sp"
                     android:text="实际版本号："
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingLeft="20dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
@@ -86,7 +86,7 @@
                     android:textSize="25sp"
                     android:id="@+id/tv_id_version"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingLeft="20dp"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
@@ -106,7 +106,7 @@
                     android:textSize="25sp"
                     android:text="身份证ID："
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingLeft="20dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
@@ -121,7 +121,7 @@
                     android:textSize="25sp"
                     android:id="@+id/tv_id_card_id"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingLeft="20dp"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
@@ -140,17 +140,32 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="wrap_content"
+                android:minHeight="350dp">
 
-                <TextView
-                    android:textSize="25sp"
-                    android:text="身份证信息："
-                    android:gravity="start"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginLeft="20dp"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:textSize="25sp"
+                        android:text="身份证信息："
+                        android:gravity="start"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp" />
+
+                    <ImageView
+                        android:id="@+id/iv_id_photo"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
 
                 <View
                     android:background="@color/gray_dark"
@@ -158,58 +173,305 @@
                     android:layout_height="match_parent"/>
 
                 <TextView
-                    android:textColor="@color/dark"
-                    android:textSize="20sp"
+                    android:visibility="gone"
+                    android:textSize="25sp"
+                    android:textColor="@color/red"
                     android:id="@+id/tv_id_info"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
-                    android:layout_weight="2"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-
-                <ImageView
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/iv_id_photo"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <View
-                android:background="@color/gray_dark"
-                android:layout_width="match_parent"
-                android:layout_height="1px"/>
-
-            <LinearLayout
-                android:id="@+id/ll_finger_info"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:textSize="25sp"
-                    android:text="指纹信息："
-                    android:gravity="start"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-
-                <View
-                    android:background="@color/gray_dark"
-                    android:layout_width="1px"
-                    android:layout_height="match_parent"/>
-
-                <TextView
-                    android:id="@+id/tv_id_finger"
-                    android:textColor="@color/dark"
-                    android:textSize="20sp"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
+                    android:paddingTop="5dp"
+                    android:paddingStart="20dp"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:visibility="invisible"
+                    android:id="@+id/ll_id_info"
+                    android:layout_weight="3"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                        <TextView
+                            android:text="姓名"
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_name"
+                            style="@style/id_info"
+                            android:layout_weight="2.5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:text="性别"
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_gender"
+                            style="@style/id_info"
+                            android:layout_weight="2.5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                        <TextView
+                            android:text="民族"
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_race"
+                            style="@style/id_info"
+                            android:layout_weight="2.5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:text="证件号码 "
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_cardNo"
+                            style="@style/id_info"
+                            android:layout_weight="2.5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                        <TextView
+                            android:text="出生日期"
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_birthday"
+                            style="@style/id_info"
+                            android:layout_weight="2.5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:text="签发机关 "
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_regOrg"
+                            style="@style/id_info"
+                            android:layout_weight="2.5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                        <TextView
+                            android:text="地址 "
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_address"
+                            style="@style/id_info"
+                            android:layout_weight="6"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                        <TextView
+                            android:text="有效期限 "
+                            style="@style/id_info"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_valid_time"
+                            style="@style/id_info"
+                            android:layout_weight="6"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp">
+
+                        <TextView
+                            android:id="@+id/tv_finger0"
+                            style="@style/id_info"
+                            android:gravity="start"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                        <TextView
+                            android:id="@+id/tv_finger1"
+                            style="@style/id_info"
+                            android:gravity="start"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent" />
+
+                        <View
+                            android:background="@color/gray_dark"
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -231,6 +493,7 @@
         android:layout_height="50dp">
 
         <Button
+            android:visibility="gone"
             android:clickable="true"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
@@ -261,20 +524,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:gravity="center"
-            android:text="读信息"
-            android:textSize="18sp"
-            android:textColor="@color/dark"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:id="@+id/btn_read_info" />
-
-        <Button
-            android:clickable="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center"
-            android:text="读全部信息"
+            android:text="读身份证信息"
             android:textSize="18sp"
             android:textColor="@color/dark"
             android:layout_weight="1"

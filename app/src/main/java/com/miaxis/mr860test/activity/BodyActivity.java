@@ -52,11 +52,11 @@ public class BodyActivity extends BaseTestActivity {
     @Override
     protected void initData() {
         manager = SmdtManager.create(this);
+        bus.post(new DisableEvent(false, false));
     }
 
     @Override
     protected void initView() {
-        onDisableEvent(new DisableEvent(true));
     }
 
     private class DetectThread extends Thread {
@@ -67,9 +67,14 @@ public class BodyActivity extends BaseTestActivity {
                     Thread.sleep(1000);
                     int re = manager.smdtReadGpioValue(1);
                     if (re == 1) {
+                        bus.post(new DisableEvent(true, true));
                         bus.post(new ScrollMessageEvent(re + "___有人"));
-                    } else {
+                    } else if (re == 0) {
+                        bus.post(new DisableEvent(true, true));
                         bus.post(new ScrollMessageEvent(re + "___没人"));
+                    } else {
+                        bus.post(new ScrollMessageEvent("错误： " + re));
+                        bus.post(new DisableEvent(false, true));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -79,7 +84,6 @@ public class BodyActivity extends BaseTestActivity {
     }
     @Event(R.id.tv_body_on)
     private void onTurnOn(View view) {
-        onDisableEvent(new DisableEvent(false));
         flag = true;
         if (detectThread == null) {
             detectThread = new DetectThread();
@@ -89,8 +93,8 @@ public class BodyActivity extends BaseTestActivity {
 
     @Event(R.id.tv_body_off)
     private void onTurnOff(View view) {
-        onDisableEvent(new DisableEvent(true));
         flag = false;
+        bus.post(new DisableEvent(tv_pass.isEnabled(), tv_deny.isEnabled()));
         if (detectThread != null && detectThread.isAlive()) {
             detectThread.interrupt();
             detectThread = null;
@@ -100,27 +104,37 @@ public class BodyActivity extends BaseTestActivity {
     @Event(R.id.tv_pass)
     private void onPass(View view) {
         if (flag) {
-            Toast.makeText(this, "请先关闭检测", Toast.LENGTH_SHORT).show();
-            return;
+            flag = false;
+            if (detectThread != null && detectThread.isAlive()) {
+                detectThread.interrupt();
+                detectThread = null;
+            }
         }
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_BODY, Constants.STATUS_PASS));
+        bus.post(new ResultEvent(Constants.ID_BODY, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
         if (flag) {
-            Toast.makeText(this, "请先关闭检测", Toast.LENGTH_SHORT).show();
-            return;
+            flag = false;
+            if (detectThread != null && detectThread.isAlive()) {
+                detectThread.interrupt();
+                detectThread = null;
+            }
         }
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_BODY, Constants.STAUTS_DENIED));
+        bus.post(new ResultEvent(Constants.ID_BODY, Constants.STAUTS_DENIED));
         finish();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScrollMessageevent(ScrollMessageEvent e) {
         tv_message.append(e.getMessage() + "\r\n");
-        sv_body.fullScroll(ScrollView.FOCUS_DOWN);
+        sv_body.post(new Runnable() {
+            public void run() {
+                sv_body.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 
     @Override
@@ -131,7 +145,7 @@ public class BodyActivity extends BaseTestActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDisableEvent(DisableEvent e) {
-        if (e.isFlag()) {
+        if (!flag) {
             tv_body_off.setClickable(false);
             tv_body_off.setTextColor(Color.GRAY);
             tv_body_on.setTextColor(getResources().getColor(R.color.blue_band_dark));
@@ -142,5 +156,25 @@ public class BodyActivity extends BaseTestActivity {
             tv_body_on.setTextColor(Color.GRAY);
             tv_body_on.setClickable(false);
         }
+
+        if (e.isFlag()) {
+            tv_pass.setEnabled(true);
+            tv_pass.setClickable(true);
+            tv_pass.setTextColor(getResources().getColor(R.color.green_dark));
+        } else {
+            tv_pass.setEnabled(false);
+            tv_pass.setClickable(false);
+            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
+        }
+        if (e.isFlag2()) {
+            tv_deny.setEnabled(true);
+            tv_deny.setClickable(true);
+            tv_deny.setTextColor(getResources().getColor(R.color.red));
+        } else {
+            tv_deny.setEnabled(false);
+            tv_deny.setClickable(false);
+            tv_deny.setTextColor(getResources().getColor(R.color.gray_dark));
+        }
+
     }
 }

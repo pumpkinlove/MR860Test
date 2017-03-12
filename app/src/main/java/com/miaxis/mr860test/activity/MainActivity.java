@@ -3,10 +3,12 @@ package com.miaxis.mr860test.activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,6 +34,7 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     @ViewInject(R.id.rv_items)  private RecyclerView rv_items;
     @ViewInject(R.id.tv_title)  private TextView tv_tiltle;
-
 
     private ConfirmDialog beforeDialog;
     private ConfirmDialog afterDialog;
@@ -62,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
         initData();
         initView();
-
     }
 
     private void initData() {
@@ -177,7 +178,10 @@ public class MainActivity extends AppCompatActivity {
         item.setOpdate(DateUtil.format(new Date()));
         item.setRemark("无");
         item.setId(Constants.ID_4G);
-        item.setName("4G模块");
+        item.setName("4G");
+        if (!initConfig()) {
+            item.setStatus(3);
+        }
         itemList.add(item);
 
         item = new TestItem();
@@ -219,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, TouchActivity.class));
                 break;
             case Constants.ID_CAMERA:
-                startActivity(new Intent(MainActivity.this, CameraActivity.class));
+                startActivity(new Intent(MainActivity.this, Camera2Activity.class));
                 break;
             case Constants.ID_LED:
                 startActivity(new Intent(MainActivity.this, LEDActivity.class));
@@ -355,6 +359,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Log.e("onDestroy","onDestroyMain");
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -390,4 +395,25 @@ public class MainActivity extends AppCompatActivity {
         return versionName;
     }
 
+    private boolean initConfig() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
+            if (!file.exists()) {
+                Toast.makeText(this, "版本配置文件缺失", Toast.LENGTH_LONG).show();
+            } else {
+                List<String> stringList = FileUtil.readFileToList(file);
+                if (stringList != null) {
+                    String has4G = stringList.get(2);
+                    String re = has4G.split("=")[1];
+                    if (TextUtils.equals(re, "true")) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
 }
