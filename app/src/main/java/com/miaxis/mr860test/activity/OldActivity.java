@@ -22,6 +22,7 @@ import com.miaxis.mr860test.domain.HideCpEvent;
 import com.miaxis.mr860test.domain.OldResult;
 import com.miaxis.mr860test.domain.ResultEvent;
 import com.miaxis.mr860test.domain.ShowCpEvent;
+import com.miaxis.mr860test.domain.ToastEvent;
 import com.miaxis.mr860test.utils.DateUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,7 +55,7 @@ public class OldActivity extends BaseTestActivity {
     private MXFingerDriver fingerDriver;
 
     private static final int INTERVAL_TIME = 1000;
-    private boolean continueFlag = true;
+    private boolean continueFlag = false;
 
     private OldThread oldThread;
 
@@ -78,6 +79,7 @@ public class OldActivity extends BaseTestActivity {
     private OldResult readFingerResult;
     private OldResult closeCameraResult;
     private OldResult closeLedResult;
+    private String startTime = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +89,11 @@ public class OldActivity extends BaseTestActivity {
 
         initData();
         initView();
-        enableButton(true);
+
+        bus.post(new DisableEvent(true, false, false));
+
+        oldThread = new OldThread();
+        oldThread.start();
     }
 
     @Override
@@ -120,50 +126,28 @@ public class OldActivity extends BaseTestActivity {
 
     @Event(R.id.tv_old_start)
     private void onStart(View view) {
-        preReadIdDevVersion();
-        tv_old_begin_time.setText(DateUtil.format(new Date()));
-        continueFlag = true;
-        if (oldThread != null && oldThread.isAlive()) {
-            return;
+        if (smdtManager != null && smdtManager.smdtReadExtrnalGpioValue(2) == 0) {
+            smdtManager.smdtSetExtrnalGpioValue(2, true);
         }
-        oldThread = new OldThread();
-        oldThread.start();
-        enableButton(false);
+        preReadIdDevVersion();
+        if (startTime == null) {
+            startTime = DateUtil.format(new Date());
+            tv_old_begin_time.setText(startTime);
+        }
+        continueFlag = true;
+        bus.post(new DisableEvent(false, true, false));
     }
 
     @Event(R.id.tv_old_stop)
     private void onStop(View view) {
         tv_old_end_time.setText(DateUtil.format(new Date()));
         continueFlag = false;
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (oldThread != null && oldThread.isAlive()) {
-            oldThread.interrupt();
-            oldThread = null;
-        }
-        enableButton(true);
+        bus.post(new DisableEvent(true, false, true));
     }
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        if (oldThread != null && oldThread.isAlive()) {
-            Toast.makeText(this, "请先停止老化测试", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_OLD, Constants.STAUTS_RECORD, getContent()));
-        finish();
-    }
-
-    @Event(R.id.tv_deny)
-    private void onDeny(View view) {
-        if (oldThread != null && oldThread.isAlive()) {
-            Toast.makeText(this, "请先停止老化测试", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        EventBus.getDefault().post(new ResultEvent(Constants.ID_OLD, Constants.STAUTS_DENIED, getContent()));
+        bus.post(new ResultEvent(Constants.ID_OLD, Constants.STAUTS_RECORD, getContent()));
         finish();
     }
 
@@ -193,23 +177,31 @@ public class OldActivity extends BaseTestActivity {
 
         @Override
         public void run() {
-            while (continueFlag) {
-                try {
-                    Thread.sleep(INTERVAL_TIME);
+            try {
+                while (true) {
                     if (continueFlag) {
-                        count++;
-                        bus.post(new CommonEvent(INIT_VIEW, count, ""));
+                        Thread.sleep(INTERVAL_TIME);
+                        if (continueFlag) {
+                            count++;
+                            bus.post(new CommonEvent(INIT_VIEW, count, ""));
+                        }
+                        openLed();
+                        openCamera();
+                        readId();
+                        readFinger();
+                        closeCamera();
+                        closeLed();
+                    } else {
+                        if (smdtManager != null && smdtManager.smdtReadExtrnalGpioValue(2) == 1) {
+                            smdtManager.smdtSetExtrnalGpioValue(2, false);
+                        }
+                        Thread.sleep(1000);
                     }
-                    openLed();
-                    openCamera();
-                    readId();
-                    readFinger();
-                    closeCamera();
-                    closeLed();
-                } catch (Exception e) {
-
                 }
+            } catch (Exception e) {
+                bus.post(new ToastEvent("系统错误! 请重新打开老化测试"));
             }
+
         }
 
     }
@@ -218,9 +210,6 @@ public class OldActivity extends BaseTestActivity {
         try {
             int re = smdtManager.smdtSetExtrnalGpioValue(3, true);
             bus.post(new CommonEvent(OPEN_LED, re, ""));
-            if (smdtManager != null) {
-                smdtManager.smdtSetExtrnalGpioValue(2, true);
-            }
             Thread.sleep(INTERVAL_TIME);
         } catch (InterruptedException ie) {
         } catch (Exception e) {
@@ -278,9 +267,6 @@ public class OldActivity extends BaseTestActivity {
             bus.post(new HideCpEvent());
             bus.post(new CommonEvent(CLOSE_CAMERA, 0, ""));
             Thread.sleep(INTERVAL_TIME);
-            if (smdtManager != null) {
-                smdtManager.smdtSetExtrnalGpioValue(2, false);
-            }
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
@@ -300,7 +286,7 @@ public class OldActivity extends BaseTestActivity {
 
     @Override
     public void onBackPressed() {
-        if (oldThread != null && oldThread.isAlive()) {
+        if (continueFlag) {
             Toast.makeText(this, "请先停止老化测试", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -314,34 +300,10 @@ public class OldActivity extends BaseTestActivity {
 
     @Override
     protected void onDestroy() {
-        if (oldThread != null) {
-            oldThread.interrupt();
-            oldThread = null;
-        }
+        smdtManager.smdtSetExtrnalGpioValue(2, false);
         smdtManager.smdtSetExtrnalGpioValue(3, false);
         bus.unregister(this);
         super.onDestroy();
-    }
-
-    private void enableButton(boolean flag) {
-        tv_old_start.setClickable(flag);
-        tv_old_stop.setClickable(!flag);
-        if (flag) {
-            tv_old_start.setTextColor(getResources().getColor(R.color.blue_band_dark));
-            tv_old_stop.setTextColor(Color.GRAY);
-            tv_pass.setClickable(true);
-            tv_pass.setTextColor(getResources().getColor(R.color.green_dark));
-            tv_deny.setClickable(true);
-            tv_deny.setTextColor(getResources().getColor(R.color.red));
-        } else {
-            tv_old_start.setTextColor(Color.GRAY);
-            tv_old_stop.setTextColor(getResources().getColor(R.color.blue_band_dark));
-            tv_pass.setClickable(false);
-            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
-            tv_deny.setClickable(false);
-            tv_deny.setTextColor(getResources().getColor(R.color.gray_dark));
-        }
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -384,6 +346,13 @@ public class OldActivity extends BaseTestActivity {
         cp_old_camera.setVisibility(View.INVISIBLE);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDisableEvent(DisableEvent e) {
+        enableButtons(e.isFlag(), tv_old_start, R.color.dark);
+        enableButtons(e.isFlag2(), tv_old_stop, R.color.dark);
+        enableButtons(e.isFlag3(), tv_pass, R.color.dark);
+    }
+
     private void showTvById(int re, OldResult oldResult) {
         TextView progressTv = (TextView) findViewById(oldResult.getProgressTvid());
 
@@ -421,4 +390,9 @@ public class OldActivity extends BaseTestActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        onStop(null);
+        super.onPause();
+    }
 }

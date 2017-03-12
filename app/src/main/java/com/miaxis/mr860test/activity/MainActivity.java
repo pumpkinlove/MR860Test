@@ -41,13 +41,16 @@ import java.util.Date;
 import java.util.List;
 
 @ContentView(R.layout.activity_main)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseTestActivity {
     private long mExitTime;
     private List<TestItem> itemList;
     private ItemAdapter adapter;
 
-    @ViewInject(R.id.rv_items)  private RecyclerView rv_items;
-    @ViewInject(R.id.tv_title)  private TextView tv_tiltle;
+    @ViewInject(R.id.rv_items)      private RecyclerView rv_items;
+    @ViewInject(R.id.tv_title)      private TextView tv_tiltle;
+    @ViewInject(R.id.tv_before)     private TextView tv_before;
+    @ViewInject(R.id.tv_after)      private TextView tv_after;
+    @ViewInject(R.id.tv_inspection) private TextView tv_inspection;
 
     private ConfirmDialog beforeDialog;
     private ConfirmDialog afterDialog;
@@ -64,9 +67,11 @@ public class MainActivity extends AppCompatActivity {
 
         initData();
         initView();
+        initDialogs();
     }
 
-    private void initData() {
+    @Override
+    protected void initData() {
         bus = EventBus.getDefault();
         bus.register(this);
         beforeDialog = new ConfirmDialog();
@@ -89,7 +94,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         rv_items.setLayoutManager(new GridLayoutManager(this, 4));
         rv_items.setAdapter(adapter);
         tv_tiltle.append("v " + getVersion());
@@ -214,6 +220,88 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void initDialogs() {
+        initBeforeDialog();
+        initAfterDialog();
+        initInspectDialog();
+    }
+
+    private void initBeforeDialog() {
+        File file = new File(Environment.getExternalStorageDirectory(), FileUtil.BEFORE_PATH);
+        if (file.exists()) {
+            beforeDialog.setContent("老化前 测试记录已存在，确定要 覆盖 吗？");
+            enableButtons(true, tv_after, R.color.dark);
+        } else {
+            beforeDialog.setContent("是否保存为 老化前 测试记录？");
+            enableButtons(false, tv_after, R.color.dark);
+        }
+
+        beforeDialog.setCancelListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                beforeDialog.dismiss();
+            }
+        });
+
+        beforeDialog.setConfirmListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bus.post(new SubmitEvent(itemList, FileUtil.BEFORE_PATH));
+                beforeDialog.dismiss();
+            }
+        });
+    }
+
+    private void initAfterDialog() {
+        File file = new File(Environment.getExternalStorageDirectory(), FileUtil.AFTER_PATH);
+        if (file.exists()) {
+            afterDialog.setContent("老化后 测试记录已存在，确定要 覆盖 吗？");
+            enableButtons(true, tv_inspection, R.color.dark);
+        } else {
+            afterDialog.setContent("是否保存为 老化后 测试记录？");
+            enableButtons(false, tv_inspection, R.color.dark);
+        }
+
+        afterDialog.setCancelListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                afterDialog.dismiss();
+            }
+        });
+
+        afterDialog.setConfirmListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bus.post(new SubmitEvent(itemList, FileUtil.AFTER_PATH));
+                afterDialog.dismiss();
+            }
+        });
+    }
+
+    private void initInspectDialog() {
+        File file = new File(Environment.getExternalStorageDirectory(), FileUtil.INSPECTION_PATH);
+        if (file.exists()) {
+            inspectionDialog.setContent("成品抽检 测试记录已存在，确定要 覆盖 吗？");
+        } else {
+            inspectionDialog.setContent("是否保存为 成品抽检 测试记录？");
+        }
+
+        inspectionDialog.setCancelListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                inspectionDialog.dismiss();
+            }
+        });
+
+        inspectionDialog.setConfirmListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bus.post(new SubmitEvent(itemList, FileUtil.INSPECTION_PATH));
+                inspectionDialog.dismiss();
+            }
+        });
+    }
+
     private void startTestById(int id) {
         switch (id) {
             case Constants.ID_LCD:
@@ -287,6 +375,7 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSubmitEvent(SubmitEvent e) {
         FileUtil.writeFile(e.getPath(), FileUtil.parseToString(e.getItemList()), false);
+        initDialogs();
     }
 
     @Event(R.id.tv_history)
@@ -296,64 +385,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Event(R.id.tv_before)
     private void onBeforeClick(View view) {
-
-        beforeDialog.setContent("您确定将测试结果保存到 老化前测试 吗？");
-        beforeDialog.setCancelListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                beforeDialog.dismiss();
-            }
-        });
-
-        beforeDialog.setConfirmListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bus.post(new SubmitEvent(itemList, FileUtil.BEFORE_PATH));
-                beforeDialog.dismiss();
-            }
-        });
         beforeDialog.show(getFragmentManager(), "onBeforeClick");
     }
 
     @Event(R.id.tv_after)
     private void onAfterClick(View view) {
-
-        afterDialog.setContent("您确定将测试结果保存到 老化后测试 吗？");
-        afterDialog.setCancelListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                afterDialog.dismiss();
-            }
-        });
-
-        afterDialog.setConfirmListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bus.post(new SubmitEvent(itemList, FileUtil.AFTER_PATH));
-                afterDialog.dismiss();
-            }
-        });
         afterDialog.show(getFragmentManager(), "onAfterClick");
     }
 
     @Event(R.id.tv_inspection)
     private void onInspectionClick(View view) {
-
-        inspectionDialog.setContent("您确定将测试结果保存到 成品抽检 吗？");
-        inspectionDialog.setCancelListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                inspectionDialog.dismiss();
-            }
-        });
-
-        inspectionDialog.setConfirmListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bus.post(new SubmitEvent(itemList, FileUtil.INSPECTION_PATH));
-                inspectionDialog.dismiss();
-            }
-        });
         inspectionDialog.show(getFragmentManager(), "onInspectionClick");
     }
 

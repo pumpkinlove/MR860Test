@@ -38,6 +38,7 @@ public class TouchActivity extends BaseTestActivity {
 
     @ViewInject(R.id.tv_pass)   private TextView tv_pass;
     @ViewInject(R.id.tv_deny)   private TextView tv_deny;
+    @ViewInject(R.id.tv_test)   private TextView tv_test;
 
     private Bitmap bitmap;
     private Canvas canvas;
@@ -52,6 +53,7 @@ public class TouchActivity extends BaseTestActivity {
         x.view().inject(this);
         initData();
         initView();
+        bus.post(new DisableEvent(true, false, false));
 
     }
 
@@ -65,7 +67,6 @@ public class TouchActivity extends BaseTestActivity {
         paint.setAntiAlias(true);
         bus = EventBus.getDefault();
         bus.register(this);
-        bus.post(new DisableEvent(false));
     }
 
     @Override
@@ -106,10 +107,8 @@ public class TouchActivity extends BaseTestActivity {
         ll_grid.setVisibility(View.VISIBLE);
         iv_touch.setVisibility(View.VISIBLE);
         btn_exit.setVisibility(View.VISIBLE);
-
         paintIntro();
-
-        bus.post(new DisableEvent(true));
+        bus.post(new DisableEvent(true, true, true));
     }
 
     private void paintIntro() {
@@ -157,21 +156,9 @@ public class TouchActivity extends BaseTestActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDisableEvent(DisableEvent e) {
-        if (e.isFlag()) {
-            tv_pass.setEnabled(true);
-            tv_pass.setClickable(true);
-            tv_pass.setTextColor(getResources().getColor(R.color.green_dark));
-            tv_deny.setEnabled(true);
-            tv_deny.setClickable(true);
-            tv_deny.setTextColor(getResources().getColor(R.color.red));
-        } else {
-            tv_pass.setEnabled(false);
-            tv_pass.setClickable(false);
-            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
-            tv_deny.setEnabled(false);
-            tv_deny.setClickable(false);
-            tv_deny.setTextColor(getResources().getColor(R.color.gray_dark));
-        }
+        enableButtons(e.isFlag(),  tv_test, R.color.dark);
+        enableButtons(e.isFlag2(), tv_pass, R.color.green_dark);
+        enableButtons(e.isFlag3(), tv_deny, R.color.red);
     }
 
     @Override

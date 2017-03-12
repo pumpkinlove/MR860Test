@@ -89,6 +89,7 @@ public class FingerActivity extends BaseTestActivity {
     @ViewInject(R.id.btn_verify)                private Button btn_verify;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
+    @ViewInject(R.id.tv_test)                   private TextView tv_test;
     @ViewInject(R.id.sv_show_msg)               private ScrollView sv_show_msg;
 
     @ViewInject(R.id.iv_finger)                 private ImageView iv_finger;
@@ -250,7 +251,7 @@ public class FingerActivity extends BaseTestActivity {
     boolean continueFlag = true;
 
     @Event(R.id.btn_getMB)
-    private void onGetMBClicked(View view) {
+    private void onGetMBClicked(final View view) {
         hasMb = false;
         mbBuffer = new byte[TZ_SIZE];
         bImgBuf1 = new byte[IMAGE_SIZE_BIG];
@@ -289,6 +290,9 @@ public class FingerActivity extends BaseTestActivity {
                 } else {
                     appendMessage("合成模板失败 " + re);
                     hasMb = false;
+                }
+                if (view == null) {     // 点击开始测试 会传进来null
+                    onVerifyClicked(null);
                 }
             }
         }).start();
@@ -392,6 +396,11 @@ public class FingerActivity extends BaseTestActivity {
         finish();
     }
 
+    @Event(R.id.tv_test)
+    private void onTest(View view) {
+        onGetMBClicked(null);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDisableEvent(DisableEvent e) {
         if (e.isFlag()) {
@@ -399,6 +408,7 @@ public class FingerActivity extends BaseTestActivity {
         } else {
             tv_pass             .setTextColor(getResources().getColor(R.color.gray_dark));
         }
+        enableButtons(e.isFlag(), tv_test, R.color.dark);
         tv_pass                 .setClickable(e.isFlag());
         tv_pass                 .setEnabled(e.isFlag());
         btn_getImage            .setEnabled(e.isFlag());
@@ -471,5 +481,11 @@ public class FingerActivity extends BaseTestActivity {
                 sv_show_msg.fullScroll(ScrollView.FOCUS_DOWN);      //滚动到底部
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        onCancelClicked(null);
+        super.onPause();
     }
 }

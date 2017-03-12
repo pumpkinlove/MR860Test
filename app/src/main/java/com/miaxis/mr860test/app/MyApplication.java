@@ -8,8 +8,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
-import com.miaxis.mr860test.domain.CommonEvent;
-import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.utils.FileUtil;
 
 import org.xutils.x;
@@ -72,9 +70,16 @@ public class MyApplication extends Application {
     }
 
     @Override
+    public void onTrimMemory(int level) {
+        smdtManager.smdtSetExtrnalGpioValue(2, false);
+        super.onTrimMemory(level);
+    }
+
+    @Override
     public void onTerminate() {
         Log.e("onTerminate","onTerminate");
         smdtManager.smdtSetExtrnalGpioValue(2, false);
         super.onTerminate();
     }
+
 }

@@ -77,7 +77,7 @@ public class CameraActivity extends BaseTestActivity {
                 .replace(R.id.fl_preview, fragment)
                 .commit();
 
-        /**调用系统摄像头*/
+//        /**调用系统摄像头*/
 //        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        startActivityForResult(i, 1);
     }

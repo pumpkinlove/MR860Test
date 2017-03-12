@@ -378,6 +378,16 @@
         <TextView
             style="@style/stroke_button"
             android:layout_marginRight="20dp"
+            android:text="开始测试"
+            android:textColor="@color/dark"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_test" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginRight="20dp"
             android:text="通过"
             android:textColor="@color/green_dark"
             android:layout_weight="1"

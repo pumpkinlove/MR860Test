@@ -49,7 +49,6 @@ public class LCDActivity extends BaseTestActivity {
     protected void initData() {
         bus = EventBus.getDefault();
         bus.register(this);
-        bus.post(new DisableEvent(false));
     }
 
     @Event(R.id.tv_test)

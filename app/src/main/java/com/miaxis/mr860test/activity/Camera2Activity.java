@@ -3,6 +3,7 @@ package com.miaxis.mr860test.activity;
 import android.app.smdt.SmdtManager;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -45,8 +46,7 @@ public class Camera2Activity extends BaseTestActivity {
         x.view().inject(this);
         initData();
         initView();
-        bus.post(new DisableEvent(false, false));
-
+        bus.post(new DisableEvent(true, false, false, false));
     }
 
     @Override
@@ -54,7 +54,6 @@ public class Camera2Activity extends BaseTestActivity {
         bus = EventBus.getDefault();
         bus.register(this);
         smdtManager = SmdtManager.create(this);
-
     }
 
     @Override
@@ -73,14 +72,17 @@ public class Camera2Activity extends BaseTestActivity {
             }
         }
         cp_preview.setVisibility(View.VISIBLE);
-        bus.post(new DisableEvent(true, true));
+        bus.post(new DisableEvent(false, true, true, true));
     }
 
     @Event(R.id.tv_stop_test)
     private void onStopTest(View view) {
-        cp_preview.setVisibility(View.GONE);
-        bus.post(new DisableEvent(true, false));
         if (smdtManager != null) {
+            if (0 == smdtManager.smdtReadExtrnalGpioValue(2)) {
+                return;
+            }
+            cp_preview.setVisibility(View.GONE);
+            bus.post(new DisableEvent(true, false, true, true));
             smdtManager.smdtSetExtrnalGpioValue(2, false);
         }
     }
@@ -101,31 +103,10 @@ public class Camera2Activity extends BaseTestActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDisableEvent(DisableEvent e) {
-        if (e.isFlag()) {
-            tv_pass.setEnabled(true);
-            tv_pass.setClickable(true);
-            tv_pass.setTextColor(getResources().getColor(R.color.green_dark));
-        } else {
-            tv_pass.setEnabled(false);
-            tv_pass.setClickable(false);
-            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
-        }
-        if (e.isFlag2()) {
-            tv_stop_test.setEnabled(true);
-            tv_stop_test.setClickable(true);
-            tv_stop_test.setTextColor(getResources().getColor(R.color.blue_band_dark));
-            tv_test.setEnabled(false);
-            tv_test.setClickable(false);
-            tv_test.setTextColor(getResources().getColor(R.color.gray_dark));
-        } else {
-            tv_stop_test.setEnabled(false);
-            tv_stop_test.setClickable(false);
-            tv_stop_test.setTextColor(getResources().getColor(R.color.gray_dark));
-            tv_test.setEnabled(true);
-            tv_test.setClickable(true);
-            tv_test.setTextColor(getResources().getColor(R.color.blue_band_dark));
-
-        }
+        enableButtons(e.isFlag(),   tv_test,        R.color.dark);
+        enableButtons(e.isFlag2(),  tv_stop_test,   R.color.dark);
+        enableButtons(e.isFlag3(),  tv_pass,        R.color.green_dark);
+        enableButtons(e.isFlag4(),  tv_deny,        R.color.red);
     }
 
     @Override
@@ -142,4 +123,9 @@ public class Camera2Activity extends BaseTestActivity {
         super.onDestroy();
     }
 
+    @Override
+    protected void onPause() {
+        onStopTest(null);
+        super.onPause();
+    }
 }

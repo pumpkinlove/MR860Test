@@ -67,7 +67,8 @@
                 android:layout_height="match_parent" />
 
             <EditText
-                android:text="ABCDEFG"
+                android:singleLine="true"
+                android:text="123456"
                 android:id="@+id/et_write"
                 android:textColor="@color/dark"
                 android:textSize="20sp"
