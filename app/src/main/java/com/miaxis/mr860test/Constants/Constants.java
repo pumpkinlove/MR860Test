@@ -23,6 +23,7 @@ public class Constants {
     public static final int ID_BT       = 15;
     public static final int ID_OLD      = 16;
 
+    public static final int STATUS_NOT_TEST   = 0;
     public static final int STATUS_PASS   = 1;
     public static final int STAUTS_DENIED = 2;
     public static final int STAUTS_UNABLE = 3;
@@ -35,4 +36,5 @@ public class Constants {
     public static final String HAS_4G           = "4G=false";
     public static final String TEST_IP          = "TEST_IP=192.168.11.250";
     public static final String TEST_PORT        = "TEST_PORT=8899";
+    public static final String DEVICE_CODE      = "DEVICE_CODE=";
 }

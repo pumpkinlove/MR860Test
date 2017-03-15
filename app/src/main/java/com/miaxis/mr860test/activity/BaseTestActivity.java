@@ -24,5 +24,4 @@ public abstract class BaseTestActivity extends AppCompatActivity {
         }
     }
 
-
 }

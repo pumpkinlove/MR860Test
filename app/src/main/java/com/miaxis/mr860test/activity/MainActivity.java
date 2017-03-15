@@ -1,5 +1,6 @@
 package com.miaxis.mr860test.activity;
 
+import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -47,7 +48,8 @@ public class MainActivity extends BaseTestActivity {
     private ItemAdapter adapter;
 
     @ViewInject(R.id.rv_items)      private RecyclerView rv_items;
-    @ViewInject(R.id.tv_title)      private TextView tv_tiltle;
+    @ViewInject(R.id.tv_title)      private TextView tv_title;
+    @ViewInject(R.id.tv_version)    private TextView tv_version;
     @ViewInject(R.id.tv_before)     private TextView tv_before;
     @ViewInject(R.id.tv_after)      private TextView tv_after;
     @ViewInject(R.id.tv_inspection) private TextView tv_inspection;
@@ -59,7 +61,7 @@ public class MainActivity extends BaseTestActivity {
     private EventBus bus;
 
     @Override
-        protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         super.onCreate(savedInstanceState);
 
@@ -98,7 +100,7 @@ public class MainActivity extends BaseTestActivity {
     protected void initView() {
         rv_items.setLayoutManager(new GridLayoutManager(this, 4));
         rv_items.setAdapter(adapter);
-        tv_tiltle.append("v " + getVersion());
+        tv_version.setText("版本号：" + getVersion());
     }
 
     private void initList() {
@@ -221,9 +223,9 @@ public class MainActivity extends BaseTestActivity {
     }
 
     private void initDialogs() {
-        initBeforeDialog();
-        initAfterDialog();
         initInspectDialog();
+        initAfterDialog();
+        initBeforeDialog();
     }
 
     private void initBeforeDialog() {
@@ -231,9 +233,22 @@ public class MainActivity extends BaseTestActivity {
         if (file.exists()) {
             beforeDialog.setContent("老化前 测试记录已存在，确定要 覆盖 吗？");
             enableButtons(true, tv_after, R.color.dark);
+            String content = FileUtil.readFile(file);
+            List<TestItem> list = FileUtil.parseFromString(content);
+            for (TestItem item : list) {
+                if (item.getId() == Constants.ID_OLD) {
+                    continue;
+                }
+                if (item.getStatus() == Constants.STATUS_NOT_TEST || item.getStatus() == Constants.STAUTS_DENIED) {
+                    enableButtons(false, tv_after, R.color.dark);
+                    enableButtons(false, tv_inspection, R.color.dark);
+                    break;
+                }
+            }
         } else {
             beforeDialog.setContent("是否保存为 老化前 测试记录？");
             enableButtons(false, tv_after, R.color.dark);
+            enableButtons(false, tv_inspection, R.color.dark);
         }
 
         beforeDialog.setCancelListener(new View.OnClickListener() {
@@ -257,6 +272,14 @@ public class MainActivity extends BaseTestActivity {
         if (file.exists()) {
             afterDialog.setContent("老化后 测试记录已存在，确定要 覆盖 吗？");
             enableButtons(true, tv_inspection, R.color.dark);
+            String content = FileUtil.readFile(file);
+            List<TestItem> list = FileUtil.parseFromString(content);
+            for (TestItem item : list) {
+                if (item.getStatus() == Constants.STATUS_NOT_TEST || item.getStatus() == Constants.STAUTS_DENIED) {
+                    enableButtons(false, tv_inspection, R.color.dark);
+                    break;
+                }
+            }
         } else {
             afterDialog.setContent("是否保存为 老化后 测试记录？");
             enableButtons(false, tv_inspection, R.color.dark);
@@ -398,8 +421,15 @@ public class MainActivity extends BaseTestActivity {
         inspectionDialog.show(getFragmentManager(), "onInspectionClick");
     }
 
+    @Event(R.id.tv_device_code)
+    private void onDeviceCode(View view) {
+        startActivity(new Intent(this, DeviceCodeActivity.class));
+    }
+
     @Override
     protected void onDestroy() {
+        SmdtManager.create(this).smdtSetExtrnalGpioValue(2, false);
+        SmdtManager.create(this).smdtSetExtrnalGpioValue(3, false);
         Log.e("onDestroy","onDestroyMain");
         EventBus.getDefault().unregister(this);
         super.onDestroy();

@@ -5,6 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -60,6 +63,7 @@ public class OldActivity extends BaseTestActivity {
     private OldThread oldThread;
 
     private EventBus bus;
+    private boolean backFlag;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
     @ViewInject(R.id.tv_deny)                   private TextView tv_deny;
@@ -91,9 +95,13 @@ public class OldActivity extends BaseTestActivity {
         initView();
 
         bus.post(new DisableEvent(true, false, false));
-
+        if (oldThread != null && oldThread.isAlive()) {
+            oldThread.interrupt();
+            oldThread = null;
+        }
         oldThread = new OldThread();
         oldThread.start();
+        backFlag = true;
     }
 
     @Override
@@ -135,18 +143,21 @@ public class OldActivity extends BaseTestActivity {
             tv_old_begin_time.setText(startTime);
         }
         continueFlag = true;
-        bus.post(new DisableEvent(false, true, false));
     }
 
     @Event(R.id.tv_old_stop)
     private void onStop(View view) {
         tv_old_end_time.setText(DateUtil.format(new Date()));
         continueFlag = false;
-        bus.post(new DisableEvent(true, false, true));
+        bus.post(new DisableEvent(false, false, false));
     }
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
+        if (oldThread != null && oldThread.isAlive()) {
+            oldThread.interrupt();
+            oldThread = null;
+        }
         bus.post(new ResultEvent(Constants.ID_OLD, Constants.STAUTS_RECORD, getContent()));
         finish();
     }
@@ -180,11 +191,12 @@ public class OldActivity extends BaseTestActivity {
             try {
                 while (true) {
                     if (continueFlag) {
-                        Thread.sleep(INTERVAL_TIME);
-                        if (continueFlag) {
-                            count++;
-                            bus.post(new CommonEvent(INIT_VIEW, count, ""));
+                        if (smdtManager != null && smdtManager.smdtReadExtrnalGpioValue(2) == 0) {
+                            smdtManager.smdtSetExtrnalGpioValue(2, true);
                         }
+                        bus.post(new DisableEvent(false, true, false));
+                        count++;
+                        bus.post(new CommonEvent(INIT_VIEW, count, ""));
                         openLed();
                         openCamera();
                         readId();
@@ -192,9 +204,8 @@ public class OldActivity extends BaseTestActivity {
                         closeCamera();
                         closeLed();
                     } else {
-                        if (smdtManager != null && smdtManager.smdtReadExtrnalGpioValue(2) == 1) {
-                            smdtManager.smdtSetExtrnalGpioValue(2, false);
-                        }
+                        smdtManager.smdtSetExtrnalGpioValue(2, false);
+                        bus.post(new DisableEvent(true, false, true));
                         Thread.sleep(1000);
                     }
                 }
@@ -219,6 +230,10 @@ public class OldActivity extends BaseTestActivity {
 
     private void openCamera() {
         try {
+            if (smdtManager.smdtReadExtrnalGpioValue(2) == 0) {
+                bus.post(new HideCpEvent());
+                throw new Exception();
+            }
             bus.post(new ShowCpEvent());
             bus.post(new CommonEvent(OPEN_CAMERA, 0, ""));
             Thread.sleep(INTERVAL_TIME);
@@ -250,11 +265,9 @@ public class OldActivity extends BaseTestActivity {
     private void readFinger() {
         int re = -1;
         try {
-            String ver = fingerDriver.mxGetDriverVersion();
-            if (ver != null) {
-                re = 0;
-            }
-            bus.post(new CommonEvent(READ_FINGER, re, ver));
+            byte[] bVersion = new byte[120];
+            re = fingerDriver.mxGetDevVersion(bVersion);
+            bus.post(new CommonEvent(READ_FINGER, re, new String(bVersion)));
             Thread.sleep(INTERVAL_TIME);
         } catch (InterruptedException ie) {
         } catch (Exception e) {
@@ -286,7 +299,7 @@ public class OldActivity extends BaseTestActivity {
 
     @Override
     public void onBackPressed() {
-        if (continueFlag) {
+        if (continueFlag || !backFlag) {
             Toast.makeText(this, "请先停止老化测试", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -295,11 +308,18 @@ public class OldActivity extends BaseTestActivity {
 
     @Override
     public void finish() {
+        if (oldThread != null && oldThread.isAlive()) {
+            oldThread.interrupt();
+            oldThread = null;
+        }
+        smdtManager.smdtSetExtrnalGpioValue(2, false);
+        smdtManager.smdtSetExtrnalGpioValue(3, false);
         super.finish();
     }
 
     @Override
     protected void onDestroy() {
+        Log.e("onPause","onPause");
         smdtManager.smdtSetExtrnalGpioValue(2, false);
         smdtManager.smdtSetExtrnalGpioValue(3, false);
         bus.unregister(this);
@@ -351,6 +371,7 @@ public class OldActivity extends BaseTestActivity {
         enableButtons(e.isFlag(), tv_old_start, R.color.dark);
         enableButtons(e.isFlag2(), tv_old_stop, R.color.dark);
         enableButtons(e.isFlag3(), tv_pass, R.color.dark);
+        backFlag = e.isFlag3();
     }
 
     private void showTvById(int re, OldResult oldResult) {
@@ -392,7 +413,14 @@ public class OldActivity extends BaseTestActivity {
 
     @Override
     protected void onPause() {
-        onStop(null);
+        Log.e("onPause","onPause");
         super.onPause();
     }
+
+    @Override
+    protected void onStop() {
+        Log.e("onStop","onStop");
+        super.onStop();
+    }
+
 }

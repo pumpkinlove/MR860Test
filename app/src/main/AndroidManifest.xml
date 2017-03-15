@@ -39,6 +39,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name = "android.permission.DISABLE_KEYGUARD"/>
 
     <application
         android:name=".app.MyApplication"
@@ -100,7 +101,11 @@
         </receiver>
 
         <activity android:name=".activity.TestActivity" />
-        <activity android:name=".activity.Camera2Activity"></activity>
+        <activity android:name=".activity.Camera2Activity" />
+        <activity
+            android:name=".activity.DeviceCodeActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
+
     </application>
 
 </manifest>

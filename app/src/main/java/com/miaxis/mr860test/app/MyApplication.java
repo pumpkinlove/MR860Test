@@ -51,6 +51,7 @@ public class MyApplication extends Application {
                             + Constants.HAS_4G + "\r\n"
                             + Constants.TEST_IP + "\r\n"
                             + Constants.TEST_PORT + "\r\n"
+                            + Constants.DEVICE_CODE + "\r\n"
                             , false);
                 } else {
                     Toast.makeText(this, "生成配置文件失败，请手动添加", Toast.LENGTH_LONG).show();
@@ -71,15 +72,9 @@ public class MyApplication extends Application {
 
     @Override
     public void onTrimMemory(int level) {
+        Log.e("onTrimMemory","level" + level);
         smdtManager.smdtSetExtrnalGpioValue(2, false);
         super.onTrimMemory(level);
-    }
-
-    @Override
-    public void onTerminate() {
-        Log.e("onTerminate","onTerminate");
-        smdtManager.smdtSetExtrnalGpioValue(2, false);
-        super.onTerminate();
     }
 
 }

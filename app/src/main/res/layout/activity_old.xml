@@ -131,7 +131,7 @@
                 android:id="@+id/cp_old_camera"
                 android:layout_width="400dp"
                 android:layout_height="300dp" />
-            
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"

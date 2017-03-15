@@ -1,5 +1,6 @@
 package com.camera.simplewebcam;
 
+import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -148,6 +149,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 					Thread.sleep(100); // wait for thread stopping
 				}catch(Exception e){}
 			}
+		}
+		if (SmdtManager.create(context).smdtReadExtrnalGpioValue(2) == 0) {
+			return;
 		}
 		stopCamera();
 	}  
