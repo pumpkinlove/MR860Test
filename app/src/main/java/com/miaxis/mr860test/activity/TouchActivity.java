@@ -54,7 +54,7 @@ public class TouchActivity extends BaseTestActivity {
         initData();
         initView();
         bus.post(new DisableEvent(true, false, false));
-
+        onTest(null);
     }
 
     @Override

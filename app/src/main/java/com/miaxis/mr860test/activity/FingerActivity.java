@@ -291,7 +291,7 @@ public class FingerActivity extends BaseTestActivity {
                     appendMessage("合成模板失败 " + re);
                     hasMb = false;
                 }
-                if (view == null) {     // 点击开始测试 会传进来null
+                if (view == null && hasMb) {     // 点击开始测试 会传进来null
                     onVerifyClicked(null);
                 }
             }

@@ -46,7 +46,9 @@ public class BodyActivity extends BaseTestActivity {
         bus.register(this);
         initData();
         initView();
-
+        detectThread = new DetectThread();
+        detectThread.start();
+        onTurnOn(null);
     }
 
     @Override
@@ -62,67 +64,50 @@ public class BodyActivity extends BaseTestActivity {
     private class DetectThread extends Thread {
         @Override
         public void run() {
-            while (flag) {
-                try {
-                    Thread.sleep(1000);
-                    int re = manager.smdtReadGpioValue(1);
-                    if (re == 1) {
-                        bus.post(new DisableEvent(true, true));
-                        bus.post(new ScrollMessageEvent(re + "___有人"));
-                    } else if (re == 0) {
-                        bus.post(new DisableEvent(true, true));
-                        bus.post(new ScrollMessageEvent(re + "___没人"));
+            try {
+                while (true) {
+                    if (flag) {
+                        Thread.sleep(1000);
+                        int re = manager.smdtReadGpioValue(1);
+                        if (re == 1) {
+                            bus.post(new DisableEvent(true, true));
+                            bus.post(new ScrollMessageEvent(re + "___有人"));
+                        } else if (re == 0) {
+                            bus.post(new DisableEvent(true, true));
+                            bus.post(new ScrollMessageEvent(re + "___没人"));
+                        } else {
+                            bus.post(new ScrollMessageEvent("错误： " + re));
+                            bus.post(new DisableEvent(false, true));
+                        }
                     } else {
-                        bus.post(new ScrollMessageEvent("错误： " + re));
-                        bus.post(new DisableEvent(false, true));
+                        Thread.sleep(1000);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
             }
         }
     }
     @Event(R.id.tv_body_on)
     private void onTurnOn(View view) {
         flag = true;
-        if (detectThread == null) {
-            detectThread = new DetectThread();
-            detectThread.start();
-        }
     }
 
     @Event(R.id.tv_body_off)
     private void onTurnOff(View view) {
         flag = false;
         bus.post(new DisableEvent(tv_pass.isEnabled(), tv_deny.isEnabled()));
-        if (detectThread != null && detectThread.isAlive()) {
-            detectThread.interrupt();
-            detectThread = null;
-        }
     }
 
     @Event(R.id.tv_pass)
     private void onPass(View view) {
-        if (flag) {
-            flag = false;
-            if (detectThread != null && detectThread.isAlive()) {
-                detectThread.interrupt();
-                detectThread = null;
-            }
-        }
+        flag = false;
         bus.post(new ResultEvent(Constants.ID_BODY, Constants.STATUS_PASS));
         finish();
     }
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
-        if (flag) {
-            flag = false;
-            if (detectThread != null && detectThread.isAlive()) {
-                detectThread.interrupt();
-                detectThread = null;
-            }
-        }
+        flag = false;
         bus.post(new ResultEvent(Constants.ID_BODY, Constants.STAUTS_DENIED));
         finish();
     }
@@ -176,5 +161,17 @@ public class BodyActivity extends BaseTestActivity {
             tv_deny.setTextColor(getResources().getColor(R.color.gray_dark));
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        flag = false;
+        if (detectThread != null && detectThread.isAlive()) {
+            detectThread.interrupt();
+            detectThread = null;
+            super.onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

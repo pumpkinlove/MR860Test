@@ -37,6 +37,7 @@ public class LCDActivity extends BaseTestActivity {
 
         initData();
         initView();
+        onTest(null);
 
     }
 

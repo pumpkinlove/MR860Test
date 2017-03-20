@@ -3,7 +3,10 @@ package com.miaxis.mr860test.activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -21,6 +24,9 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ContentView(R.layout.activity_voice)
 public class VoiceActivity extends BaseTestActivity {
 
@@ -28,6 +34,12 @@ public class VoiceActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_deny)       private TextView tv_deny;
 
     private EventBus bus;
+    private SoundPool soundPool;
+    private Map<Integer, Integer> soundMap;
+
+    public static final float LEFT_VOLUME =1.0f, RIGHT_VOLUME =1.0f;
+    public static final int PRIORITY =1, LOOP = 0;
+    public static final float SOUND_RATE =1.0f;//正常速率
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +49,12 @@ public class VoiceActivity extends BaseTestActivity {
 
         initData();
         initView();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        onTest(null);
 
     }
 
@@ -45,6 +63,9 @@ public class VoiceActivity extends BaseTestActivity {
         bus = EventBus.getDefault();
         bus.register(this);
         bus.post(new DisableEvent(false, false));
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundMap = new HashMap<>();
+        soundMap.put(1, soundPool.load(this, R.raw.success, 1));
     }
 
     @Override
@@ -55,11 +76,7 @@ public class VoiceActivity extends BaseTestActivity {
     @Event(R.id.tv_test)
     private void onTest(View view) {
         try {
-            NotificationManager manger = (NotificationManager)
-                    getSystemService(Context.NOTIFICATION_SERVICE);
-            Notification notification = new Notification();
-            notification.defaults=Notification.DEFAULT_SOUND;
-            manger.notify(1, notification);
+            playSound(1);
             bus.post(new DisableEvent(true, true));
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,6 +94,11 @@ public class VoiceActivity extends BaseTestActivity {
     private void onDeny(View view) {
         EventBus.getDefault().post(new ResultEvent(Constants.ID_VOICE, Constants.STAUTS_DENIED));
         finish();
+    }
+
+    private void playSound(int soundID) {
+        int re = soundPool.play(soundMap.get(soundID), LEFT_VOLUME, RIGHT_VOLUME, PRIORITY, LOOP, SOUND_RATE);
+        Log.e("",""+re);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -10,6 +10,10 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.miaxis.mr860test.domain.CameraFailEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
 	private static final boolean DEBUG = true;
@@ -128,12 +132,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		// /dev/videox (x=cameraId + cameraBase) is used
 		int ret = prepareCameraWithBase(cameraId, cameraBase);
 		
-		if(ret!=-1) cameraExists = true;
-		
+		if(ret!=-1)  cameraExists = true;
+		if (!cameraExists) {
+			EventBus.getDefault().post(new CameraFailEvent());
+		}
         mainLoop = new Thread(this);
-        mainLoop.start();		
+        mainLoop.start();
 	}
-	
+
+	public boolean isCameraExists() {
+		return cameraExists;
+	}
+
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		if(DEBUG) Log.d(TAG, "surfaceChanged");
@@ -150,13 +160,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				}catch(Exception e){}
 			}
 		}
-		if (SmdtManager.create(context).smdtReadExtrnalGpioValue(2) == 0) {
-			return;
-		}
 		stopCamera();
 	}  
-	
-	
-	
-	 
+
 }

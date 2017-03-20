@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.camera.simplewebcam.CameraPreview;
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
+import com.miaxis.mr860test.domain.CameraFailEvent;
+import com.miaxis.mr860test.domain.CommonEvent;
 import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.domain.ResultEvent;
 
@@ -26,7 +28,7 @@ import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
 @ContentView(R.layout.activity_camera2)
-public class Camera2Activity extends BaseTestActivity {
+public class Camera2Activity extends BaseTestActivity implements SurfaceHolder.Callback {
 
     @ViewInject(R.id.tv_test)       private TextView tv_test;
     @ViewInject(R.id.tv_stop_test)  private TextView tv_stop_test;
@@ -34,10 +36,12 @@ public class Camera2Activity extends BaseTestActivity {
     @ViewInject(R.id.tv_pass)       private TextView tv_pass;
     @ViewInject(R.id.tv_deny)       private TextView tv_deny;
 
-    @ViewInject(R.id.cp_preview)    private CameraPreview cp_preview;
+    @ViewInject(R.id.sv_preview)    private SurfaceView sv_preview;
 
     private EventBus bus;
     private SmdtManager smdtManager;
+    private Camera mCamera;
+    private SurfaceHolder sh_preview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +51,13 @@ public class Camera2Activity extends BaseTestActivity {
         initData();
         initView();
         bus.post(new DisableEvent(true, false, false, false));
+        onTest(null);
     }
 
     @Override
     protected void initData() {
+        sh_preview = sv_preview.getHolder();
+        sh_preview.addCallback(this);
         bus = EventBus.getDefault();
         bus.register(this);
         smdtManager = SmdtManager.create(this);
@@ -71,8 +78,8 @@ public class Camera2Activity extends BaseTestActivity {
                 e.printStackTrace();
             }
         }
-        cp_preview.setVisibility(View.VISIBLE);
-        bus.post(new DisableEvent(false, true, true, true));
+        sv_preview.setVisibility(View.VISIBLE);
+        bus.post(new DisableEvent(false, true, false, false));
     }
 
     @Event(R.id.tv_stop_test)
@@ -81,7 +88,7 @@ public class Camera2Activity extends BaseTestActivity {
             if (0 == smdtManager.smdtReadExtrnalGpioValue(2)) {
                 return;
             }
-            cp_preview.setVisibility(View.GONE);
+            sv_preview.setVisibility(View.GONE);
             bus.post(new DisableEvent(true, false, true, true));
             smdtManager.smdtSetExtrnalGpioValue(2, false);
         }
@@ -109,10 +116,15 @@ public class Camera2Activity extends BaseTestActivity {
         enableButtons(e.isFlag4(),  tv_deny,        R.color.red);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCameraFailEvent(CameraFailEvent e) {
+        enableButtons(false, tv_pass, R.color.green_dark);
+    }
+
     @Override
     public void finish() {
-        smdtManager.smdtSetExtrnalGpioValue(2, false);
         onStopTest(null);
+        smdtManager.smdtSetExtrnalGpioValue(2, false);
         super.finish();
     }
 
@@ -127,5 +139,44 @@ public class Camera2Activity extends BaseTestActivity {
     protected void onPause() {
         onStopTest(null);
         super.onPause();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        openCamera();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        closeCamera();
+    }
+
+    private void openCamera() {
+        try {
+            mCamera = Camera.open();
+            mCamera.setPreviewDisplay(sh_preview); // 通过SurfaceView显示取景画面
+            mCamera.setDisplayOrientation(180);
+            mCamera.startPreview(); // 开始预览
+            bus.post(new DisableEvent(false, true, true, true));
+        } catch (Exception e) {
+            bus.post(new DisableEvent(true, false, false, true));
+        }
+    }
+
+    private void closeCamera() {
+        try {
+            if (mCamera != null) {
+                mCamera.setPreviewCallback(null) ;
+                mCamera.setPreviewDisplay(null);
+                mCamera.stopPreview();
+                mCamera.release();
+                mCamera = null;
+            }
+        } catch (Exception e) {
+        }
     }
 }

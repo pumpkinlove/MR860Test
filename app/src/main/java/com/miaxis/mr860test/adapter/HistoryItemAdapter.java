@@ -61,12 +61,18 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
                 holder.tv_history_status.setTextColor(context.getResources().getColor(R.color.red));
                 holder.tv_history_status.setText("不通过");
                 break;
+            case Constants.STAUTS_RECORD:
+                holder.tv_history_status.setTextColor(context.getResources().getColor(R.color.green_dark));
+                holder.tv_history_status.setText("已记录");
+                break;
             default:
                 holder.tv_history_status.setTextColor(context.getResources().getColor(R.color.dark));
                 break;
         }
-        if (null != item.getRemark() && !"null".equals(item.getRemark())) {
+        if (item.getId() == Constants.ID_OLD && null != item.getRemark() && !"null".equals(item.getRemark())) {
             holder.tv_history_remark.setText("点击查看详细");
+        } else {
+            holder.tv_history_remark.setText("备注");
         }
 
     }

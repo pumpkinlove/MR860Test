@@ -126,9 +126,8 @@
                 android:layout_width="1px"
                 android:layout_height="match_parent"/>
 
-            <com.camera.simplewebcam.CameraPreview
-                android:visibility="invisible"
-                android:id="@+id/cp_old_camera"
+            <SurfaceView
+                android:id="@+id/sv_old_camera"
                 android:layout_width="400dp"
                 android:layout_height="300dp" />
 

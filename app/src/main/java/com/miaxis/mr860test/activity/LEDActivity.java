@@ -37,6 +37,7 @@ public class LEDActivity extends BaseTestActivity {
 
         initData();
         initView();
+        onTurnOn(null);
     }
 
     @Override

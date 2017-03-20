@@ -45,7 +45,6 @@
 
         <TextView
             android:id="@+id/tv_history_status"
-            android:hint="测试结果"
             android:textColor="@color/dark"
             android:gravity="center"
             android:layout_weight="1"

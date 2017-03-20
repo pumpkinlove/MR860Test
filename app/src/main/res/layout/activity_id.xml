@@ -4,7 +4,7 @@
     android:id="@+id/activity_lcd"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.miaxis.mr860test.activity.LCDActivity">
+    tools:context="com.miaxis.mr860test.activity.IdActivity">
 
     <ScrollView
         android:layout_below="@+id/tv_title"

@@ -1,22 +1,17 @@
 package com.miaxis.mr860test.activity;
 
 import android.app.smdt.SmdtManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.camera.simplewebcam.CameraPreview;
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.domain.CommonEvent;
@@ -41,7 +36,7 @@ import org.zz.mxhidfingerdriver.MXFingerDriver;
 import java.util.Date;
 
 @ContentView(R.layout.activity_old)
-public class OldActivity extends BaseTestActivity {
+public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callback {
 
     private static final int INIT_VIEW      = 2000;
     private static final int OPEN_LED       = 2001;
@@ -57,13 +52,15 @@ public class OldActivity extends BaseTestActivity {
     private IdCardDriver idCardDriver;
     private MXFingerDriver fingerDriver;
 
-    private static final int INTERVAL_TIME = 1000;
+    private static final int INTERVAL_TIME = 2000;
     private boolean continueFlag = false;
 
     private OldThread oldThread;
 
     private EventBus bus;
     private boolean backFlag;
+    private SurfaceHolder oldHolder;
+    private Camera mCamera;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
     @ViewInject(R.id.tv_deny)                   private TextView tv_deny;
@@ -75,7 +72,7 @@ public class OldActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_old_id_version)         private TextView tv_old_id_version;
     @ViewInject(R.id.tv_old_finger_version)     private TextView tv_old_finger_version;
 
-    @ViewInject(R.id.cp_old_camera)             private CameraPreview cp_old_camera;
+    @ViewInject(R.id.sv_old_camera)             private SurfaceView sv_old_camera;
 
     private OldResult openLedResult;
     private OldResult openCameraResult;
@@ -111,6 +108,8 @@ public class OldActivity extends BaseTestActivity {
         smdtManager  = SmdtManager.create(this);
         idCardDriver = new IdCardDriver(this);
         fingerDriver = new MXFingerDriver(this,true);
+        oldHolder = sv_old_camera.getHolder();
+        oldHolder.addCallback(this);
 
         openLedResult       = new OldResult(OPEN_LED,      0, 0, R.id.tv_open_led_success,     R.id.tv_open_led_fail,      R.id.tv_old_open_led);
         openCameraResult    = new OldResult(OPEN_CAMERA,   0, 0, R.id.tv_open_camera_success,  R.id.tv_open_camera_fail,   R.id.tv_old_open_camera);
@@ -134,7 +133,7 @@ public class OldActivity extends BaseTestActivity {
 
     @Event(R.id.tv_old_start)
     private void onStart(View view) {
-        if (smdtManager != null && smdtManager.smdtReadExtrnalGpioValue(2) == 0) {
+        if (smdtManager != null) {
             smdtManager.smdtSetExtrnalGpioValue(2, true);
         }
         preReadIdDevVersion();
@@ -184,24 +183,33 @@ public class OldActivity extends BaseTestActivity {
         return content.toString();
     }
 
-    class OldThread extends Thread  implements Runnable {
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+    }
 
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+    }
+
+    class OldThread extends Thread  implements Runnable {
         @Override
         public void run() {
             try {
                 while (true) {
+                    Thread.sleep(INTERVAL_TIME);
                     if (continueFlag) {
-                        if (smdtManager != null && smdtManager.smdtReadExtrnalGpioValue(2) == 0) {
-                            smdtManager.smdtSetExtrnalGpioValue(2, true);
-                        }
                         bus.post(new DisableEvent(false, true, false));
                         count++;
                         bus.post(new CommonEvent(INIT_VIEW, count, ""));
                         openLed();
-                        openCamera();
+                        oldOpenCamera();
                         readId();
                         readFinger();
-                        closeCamera();
+                        oldCloseCamera();
                         closeLed();
                     } else {
                         smdtManager.smdtSetExtrnalGpioValue(2, false);
@@ -212,31 +220,24 @@ public class OldActivity extends BaseTestActivity {
             } catch (Exception e) {
                 bus.post(new ToastEvent("系统错误! 请重新打开老化测试"));
             }
-
         }
-
     }
 
     private void openLed() {
         try {
+            Thread.sleep(INTERVAL_TIME);
             int re = smdtManager.smdtSetExtrnalGpioValue(3, true);
             bus.post(new CommonEvent(OPEN_LED, re, ""));
-            Thread.sleep(INTERVAL_TIME);
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(OPEN_LED, -1, e.getMessage()));
         }
     }
 
-    private void openCamera() {
+    private void oldOpenCamera() {
         try {
-            if (smdtManager.smdtReadExtrnalGpioValue(2) == 0) {
-                bus.post(new HideCpEvent());
-                throw new Exception();
-            }
-            bus.post(new ShowCpEvent());
-            bus.post(new CommonEvent(OPEN_CAMERA, 0, ""));
             Thread.sleep(INTERVAL_TIME);
+            openCamera();
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(OPEN_CAMERA, -1, e.getMessage()));
@@ -246,6 +247,7 @@ public class OldActivity extends BaseTestActivity {
     private void readId() {
         int re = -1;
         try {
+            Thread.sleep(INTERVAL_TIME);
             byte[] bDevVersion = new byte[64];
             for (int i=0; i<20; i++) {
                 Thread.sleep(INTERVAL_TIME / 10);
@@ -255,7 +257,6 @@ public class OldActivity extends BaseTestActivity {
                 }
             }
             bus.post(new CommonEvent(READ_ID, re, new String(bDevVersion)));
-            Thread.sleep(INTERVAL_TIME);
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(READ_ID, -1, "" + re));
@@ -265,21 +266,20 @@ public class OldActivity extends BaseTestActivity {
     private void readFinger() {
         int re = -1;
         try {
+            Thread.sleep(INTERVAL_TIME);
             byte[] bVersion = new byte[120];
             re = fingerDriver.mxGetDevVersion(bVersion);
             bus.post(new CommonEvent(READ_FINGER, re, new String(bVersion)));
-            Thread.sleep(INTERVAL_TIME);
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(READ_FINGER, -1, e.getMessage()));
         }
     }
 
-    private void closeCamera() {
+    private void oldCloseCamera() {
         try {
-            bus.post(new HideCpEvent());
-            bus.post(new CommonEvent(CLOSE_CAMERA, 0, ""));
             Thread.sleep(INTERVAL_TIME);
+            closeCamera();
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
@@ -288,9 +288,9 @@ public class OldActivity extends BaseTestActivity {
 
     private void closeLed() {
         try {
+            Thread.sleep(INTERVAL_TIME);
             int re = smdtManager.smdtSetExtrnalGpioValue(3, false);
             bus.post(new CommonEvent(CLOSE_LED, re, ""));
-            Thread.sleep(INTERVAL_TIME);
         } catch (InterruptedException ie) {
         } catch (Exception e) {
             bus.post(new CommonEvent(CLOSE_LED, -1, ""));
@@ -312,16 +312,14 @@ public class OldActivity extends BaseTestActivity {
             oldThread.interrupt();
             oldThread = null;
         }
-        smdtManager.smdtSetExtrnalGpioValue(2, false);
-        smdtManager.smdtSetExtrnalGpioValue(3, false);
+//        smdtManager.smdtSetExtrnalGpioValue(2, false);
+//        smdtManager.smdtSetExtrnalGpioValue(3, false);
         super.finish();
     }
 
     @Override
     protected void onDestroy() {
-        Log.e("onPause","onPause");
-        smdtManager.smdtSetExtrnalGpioValue(2, false);
-        smdtManager.smdtSetExtrnalGpioValue(3, false);
+        Log.e("onDestroy","onDestroy");
         bus.unregister(this);
         super.onDestroy();
     }
@@ -358,12 +356,12 @@ public class OldActivity extends BaseTestActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onShowCpEvent(ShowCpEvent e) {
-        cp_old_camera.setVisibility(View.VISIBLE);
+        sv_old_camera.setVisibility(View.VISIBLE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onHideCpEvent(HideCpEvent e) {
-        cp_old_camera.setVisibility(View.INVISIBLE);
+        sv_old_camera.setVisibility(View.INVISIBLE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -414,6 +412,7 @@ public class OldActivity extends BaseTestActivity {
     @Override
     protected void onPause() {
         Log.e("onPause","onPause");
+        onStop(null);
         super.onPause();
     }
 
@@ -421,6 +420,36 @@ public class OldActivity extends BaseTestActivity {
     protected void onStop() {
         Log.e("onStop","onStop");
         super.onStop();
+    }
+
+    private void openCamera() {
+        try {
+            mCamera = Camera.open();
+            mCamera.setDisplayOrientation(180);
+            mCamera.setPreviewDisplay(oldHolder); // 通过SurfaceView显示取景画面
+            mCamera.startPreview(); // 开始预览
+            bus.post(new CommonEvent(OPEN_CAMERA, 0, ""));
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            bus.post(new CommonEvent(OPEN_CAMERA, -1, ""));
+        }
+    }
+
+    private void closeCamera() {
+        try {
+            if (mCamera != null) {
+                mCamera.setPreviewCallback(null) ;
+                mCamera.setPreviewDisplay(null);
+                mCamera.stopPreview();
+                mCamera.release();
+                mCamera = null;
+                bus.post(new CommonEvent(CLOSE_CAMERA, 0, ""));
+            } else {
+                bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
+            }
+        } catch (Exception e) {
+            bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
+        }
     }
 
 }
