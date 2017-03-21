@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:id="@+id/activity_lcd"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.miaxis.mr860test.activity.OldActivity">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tv_title"
@@ -19,94 +18,61 @@
         android:layout_marginTop="20dp" />
 
     <LinearLayout
-        android:id="@+id/ll_progress"
-        android:layout_below="@+id/tv_title"
-        android:orientation="horizontal"
+        android:id="@+id/ll_buttons"
+        android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp">
+        android:layout_height="50dp">
 
         <TextView
-            android:id="@+id/tv_old_open_led"
-            android:layout_margin="5dp"
-            android:text="打开LED灯"
-            android:background="@color/gray_light"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:gravity="center"
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="开始老化测试"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent" />
+            android:layout_height="50dp"
+            android:id="@+id/tv_old_start" />
 
         <TextView
-            android:id="@+id/tv_old_open_camera"
-            android:layout_margin="5dp"
-            android:text="打开摄像头"
-            android:background="@color/gray_light"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:gravity="center"
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="停止老化测试"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent" />
+            android:layout_height="50dp"
+            android:id="@+id/tv_old_stop" />
 
         <TextView
-            android:id="@+id/tv_old_read_id"
-            android:layout_margin="5dp"
-            android:text="读二代证接口板版本"
-            android:background="@color/gray_light"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:gravity="center"
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="保存记录并退出"
+            android:textColor="@color/green_dark"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent"  />
+            android:layout_height="50dp"
+            android:id="@+id/tv_pass" />
 
         <TextView
-            android:id="@+id/tv_old_read_finger"
-            android:layout_margin="5dp"
-            android:text="读取指纹仪版本"
-            android:background="@color/gray_light"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:gravity="center"
+            android:visibility="gone"
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="不通过"
+            android:textColor="@color/red"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent" />
+            android:layout_height="50dp"
+            android:id="@+id/tv_deny" />
 
-        <TextView
-            android:id="@+id/tv_old_close_camera"
-            android:layout_margin="5dp"
-            android:text="关闭摄像头"
-            android:background="@color/gray_light"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:id="@+id/tv_old_close_led"
-            android:layout_margin="5dp"
-            android:text="关闭LED灯"
-            android:background="@color/gray_light"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent" />
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_below="@+id/ll_progress"
-        android:layout_above="@id/ll_buttons"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp">
@@ -892,55 +858,86 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll_buttons"
-        android:layout_marginBottom="20dp"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/ll_progress"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="70dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
         <TextView
-            style="@style/stroke_button"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:text="开始老化测试"
+            android:id="@+id/tv_old_open_led"
+            android:layout_margin="5dp"
+            android:text="打开LED灯"
+            android:background="@color/gray_light"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:id="@+id/tv_old_start" />
+            android:layout_height="match_parent" />
 
         <TextView
-            style="@style/stroke_button"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:text="停止老化测试"
+            android:id="@+id/tv_old_open_camera"
+            android:layout_margin="5dp"
+            android:text="打开摄像头"
+            android:background="@color/gray_light"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:id="@+id/tv_old_stop" />
+            android:layout_height="match_parent" />
 
         <TextView
-            style="@style/stroke_button"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:text="保存记录并退出"
-            android:textColor="@color/green_dark"
+            android:id="@+id/tv_old_read_id"
+            android:layout_margin="5dp"
+            android:text="读二代证接口板版本"
+            android:background="@color/gray_light"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:id="@+id/tv_pass" />
+            android:layout_height="match_parent"  />
 
         <TextView
-            android:visibility="gone"
-            style="@style/stroke_button"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:text="不通过"
-            android:textColor="@color/red"
+            android:id="@+id/tv_old_read_finger"
+            android:layout_margin="5dp"
+            android:text="读取指纹仪版本"
+            android:background="@color/gray_light"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:id="@+id/tv_deny" />
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/tv_old_close_camera"
+            android:layout_margin="5dp"
+            android:text="关闭摄像头"
+            android:background="@color/gray_light"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/tv_old_close_led"
+            android:layout_margin="5dp"
+            android:text="关闭LED灯"
+            android:background="@color/gray_light"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -58,8 +58,6 @@ public class FingerActivity extends BaseTestActivity {
     private byte[] bImgBuf2                     = new byte[IMAGE_SIZE_BIG];
     private byte[] bImgBuf3                     = new byte[IMAGE_SIZE_BIG];
 
-    private Bitmap m_bitmap                     = null;
-
     // 线程
     private GetImageThread        m_GetImageThread       = null;
     private GetDevVersionThread   m_GetDevVersionThread  = null;
@@ -250,37 +248,51 @@ public class FingerActivity extends BaseTestActivity {
 
     boolean continueFlag = true;
 
-    @Event(R.id.btn_getMB)
-    private void onGetMBClicked(final View view) {
+    private void initMb() {
         hasMb = false;
         mbBuffer = new byte[TZ_SIZE];
         bImgBuf1 = new byte[IMAGE_SIZE_BIG];
         bImgBuf2 = new byte[IMAGE_SIZE_BIG];
         bImgBuf3 = new byte[IMAGE_SIZE_BIG];
+        hasTest = true;
+        mbFlag = GET_MB_1;
+        continueFlag = true;
+    }
+
+    @Event(R.id.btn_getMB)
+    private void onGetMBClicked(final View view) {
         iv_mb1.setImageBitmap(null);
         iv_mb2.setImageBitmap(null);
         iv_mb3.setImageBitmap(null);
-        hasTest = true;
-        mbFlag = GET_MB_1;
+        initMb();
         onDisableEvent(new DisableEvent(false));
-        continueFlag = true;
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 int re = -10;
                 while (continueFlag) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     appendMessage("请按手指...");
                     bImgBuf = new byte[IMAGE_SIZE_BIG];
                     re = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
-                    if (0 != re) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (re == 0) {
+                        getTzByMbFlag(view);
+                    } else {
                         appendMessage("图像采集失败 " + re);
-                        if (-2 == re) {
+                        if (re == -2) {         //取消
                             hasMb = false;
+                            initMb();
                             return;
                         }
-                    } else {
-                        getTzByMbFlag();
                     }
                 }
                 re = alg.mxGetMB512(tzBuffer1, tzBuffer2, tzBuffer3, mbBuffer);
@@ -292,13 +304,13 @@ public class FingerActivity extends BaseTestActivity {
                     hasMb = false;
                 }
                 if (view == null && hasMb) {     // 点击开始测试 会传进来null
-                    onVerifyClicked(null);
+                    verifyFinger();
                 }
             }
         }).start();
     }
 
-    private void getTzByMbFlag() {
+    private void getTzByMbFlag(View view) {
         switch (mbFlag) {
             case GET_MB_1:
                 bImgBuf1 = bImgBuf;
@@ -336,7 +348,9 @@ public class FingerActivity extends BaseTestActivity {
                     bus.post(new FingerEvent(R.id.iv_mb3, bImgBuf3));
                     mbFlag = GET_MB_1;
                     continueFlag = false;
-                    bus.post(new DisableEvent(true));
+                    if (view != null) {
+                        bus.post(new DisableEvent(true));
+                    }
                 } else {
                     appendMessage("特征 3 提取失败" + re3);
                 }
@@ -355,33 +369,35 @@ public class FingerActivity extends BaseTestActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                appendMessage("请按手指...");
-                bImgBuf = new byte[IMAGE_SIZE_BIG];
-                int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
-                if (0 != ret) {
-                    appendMessage("指纹图像采集失败");
-                    return;
-                } else {
-                    appendMessage("指纹图像采集成功");
-                    bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
-                    ret = alg.mxGetTz512(bImgBuf, vBuffer);
-                    if (ret == 1) {
-                        appendMessage("提取特征成功");
-                        ret = alg.mxFingerMatch512(mbBuffer, vBuffer, LEVEL);
-                        if (ret == 0) {
-                            appendMessage("比对通过！");
-                        } else {
-                            appendMessage("比对失败 " + ret);
-                        }
-                    } else {
-                        appendMessage("提取特征失败 " + ret);
-                    }
-                }
-                bus.post(new DisableEvent(true));
+                verifyFinger();
             }
         }).start();
+    }
 
-
+    private void verifyFinger() {
+        appendMessage("请按手指...");
+        bImgBuf = new byte[IMAGE_SIZE_BIG];
+        int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+        if (0 != ret) {
+            appendMessage("指纹图像采集失败");
+            return;
+        } else {
+            appendMessage("指纹图像采集成功");
+            bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
+            ret = alg.mxGetTz512(bImgBuf, vBuffer);
+            if (ret == 1) {
+                appendMessage("提取特征成功");
+                ret = alg.mxFingerMatch512(mbBuffer, vBuffer, LEVEL);
+                if (ret == 0) {
+                    appendMessage("比对通过！");
+                } else {
+                    appendMessage("比对失败 " + ret);
+                }
+            } else {
+                appendMessage("提取特征失败 " + ret);
+            }
+        }
+        bus.post(new DisableEvent(true));
     }
 
     @Event(R.id.tv_pass)
@@ -459,16 +475,11 @@ public class FingerActivity extends BaseTestActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFingerEvent(FingerEvent e) {
-        if (m_bitmap != null) {
-            if (!m_bitmap.isRecycled()) {
-                m_bitmap.recycle();
-            }
-        }
-        m_bitmap = fingerDriver.Raw2Bimap(e.getImgBuff(), IMAGE_X_BIG, IMAGE_Y_BIG);
-        if (m_bitmap != null) {
+        Bitmap bitmap = fingerDriver.Raw2Bimap(e.getImgBuff(), IMAGE_X_BIG, IMAGE_Y_BIG);
+        if (bitmap != null) {
             ImageView ivv = (ImageView)findViewById(e.getIvId());
             if (ivv != null) {
-                ivv.setImageBitmap(m_bitmap);
+                ivv.setImageBitmap(bitmap);
             }
         }
     }

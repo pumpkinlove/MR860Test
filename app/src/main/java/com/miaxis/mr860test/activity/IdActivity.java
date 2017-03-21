@@ -142,10 +142,10 @@ public class IdActivity extends BaseTestActivity {
                     else {
                         bus.post(new CommonEvent(READ_VERSION, nRet, "失败"));
                     }
-                    bus.post(new DisableEvent(false));
+                    bus.post(new DisableEvent(false, false));
                 } else {
                     bus.post(new CommonEvent(READ_VERSION, nRet, new String(bDevVersion)));
-                    bus.post(new DisableEvent(true));
+                    bus.post(new DisableEvent(true, true));
                 }
             }
         }).start();
@@ -168,6 +168,7 @@ public class IdActivity extends BaseTestActivity {
                         } else {
                             bus.post(new CommonEvent(READ_CARD_ID, nRet, "失败"));
                         }
+                        bus.post(new DisableEvent(true, false));
                     } else {
                         String strTmp = "";
                         for (int i = 0; i < bCardId.length; i++) {
@@ -180,8 +181,9 @@ public class IdActivity extends BaseTestActivity {
                             }
                         }
                         bus.post(new CommonEvent(READ_CARD_ID, nRet, new String(strTmp)));
+                        bus.post(new DisableEvent(true, true));
                     }
-                    bus.post(new DisableEvent(true));
+
                 } catch (Exception e) {
                     Log.e(":__", e.getMessage());
                     bus.post(new CommonEvent(READ_CARD_ID, -1, "失败" + e.getMessage()));
@@ -206,20 +208,23 @@ public class IdActivity extends BaseTestActivity {
                     switch (nRet) {
                         case 0:
                             anlyzeIdCard(bCardFullInfo, true);
+                            bus.post(new DisableEvent(true, true));
                             break;
                         case 1:
                             anlyzeIdCard(bCardFullInfo, false);
+                            bus.post(new DisableEvent(true, true));
                             break;
                         case -100:
                             bus.post(new CommonEvent(READ_INFO, nRet, "无设备"));
+                            bus.post(new DisableEvent(true, false));
                             break;
                         default:
                             bus.post(new CommonEvent(READ_INFO, nRet, "失败"));
+                            bus.post(new DisableEvent(true, false));
                     }
                 } catch (Exception e) {
                     bus.post(new CommonEvent(READ_INFO, -1, e.getMessage()));
                 }
-            bus.post(new DisableEvent(true));
             }
         }).start();
     }
@@ -361,8 +366,9 @@ public class IdActivity extends BaseTestActivity {
                 e.setFingerPosition1(getFingerPosition(bFingerData2[5]));
             }
             bus.post(e);
+            bus.post(new DisableEvent(true, true));
         } catch (Exception e) {
-
+            bus.post(new DisableEvent(true, false));
         }
     }
 
@@ -400,6 +406,8 @@ public class IdActivity extends BaseTestActivity {
             } else {
                 tv.setTextColor(Color.RED);
                 tv.setText(event.getResult() + " " +event.getContent());
+                tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
+                tv_pass.setClickable(false);
             }
         }
     }
@@ -422,7 +430,7 @@ public class IdActivity extends BaseTestActivity {
         btn_read_version.   setEnabled(e.isFlag());
         btn_read_id.        setEnabled(e.isFlag());
         btn_read_full_info. setEnabled(e.isFlag());
-        if (!hasTest) {
+        if (!hasTest || !e.isFlag2()) {
             tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
             tv_pass.setClickable(false);
         }

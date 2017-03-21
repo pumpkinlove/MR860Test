@@ -134,7 +134,26 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
     @Event(R.id.tv_old_start)
     private void onStart(View view) {
         if (smdtManager != null) {
-            smdtManager.smdtSetExtrnalGpioValue(2, true);
+            for (int i =0; i<3; i++) {
+                smdtManager.smdtSetExtrnalGpioValue(2, true);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (smdtManager.smdtReadExtrnalGpioValue(2) == 1) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                if (i == 2) {
+                    Toast.makeText(this, "摄像头上电失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
         }
         preReadIdDevVersion();
         if (startTime == null) {
@@ -211,8 +230,10 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
                         readFinger();
                         oldCloseCamera();
                         closeLed();
+                        if (continueFlag == false) {
+                            smdtManager.smdtSetExtrnalGpioValue(2, false);
+                        }
                     } else {
-                        smdtManager.smdtSetExtrnalGpioValue(2, false);
                         bus.post(new DisableEvent(true, false, true));
                         Thread.sleep(1000);
                     }
@@ -227,6 +248,7 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
         try {
             Thread.sleep(INTERVAL_TIME);
             int re = smdtManager.smdtSetExtrnalGpioValue(3, true);
+            Thread.sleep(500);
             bus.post(new CommonEvent(OPEN_LED, re, ""));
         } catch (InterruptedException ie) {
         } catch (Exception e) {
@@ -237,6 +259,8 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
     private void oldOpenCamera() {
         try {
             Thread.sleep(INTERVAL_TIME);
+            Log.e("GPIO______",smdtManager.smdtReadExtrnalGpioValue(2)+"");
+            Thread.sleep(500);
             openCamera();
         } catch (InterruptedException ie) {
         } catch (Exception e) {
@@ -250,7 +274,7 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
             Thread.sleep(INTERVAL_TIME);
             byte[] bDevVersion = new byte[64];
             for (int i=0; i<20; i++) {
-                Thread.sleep(INTERVAL_TIME / 10);
+                Thread.sleep(100);
                 re = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
                 if (re == 0) {
                     break;
@@ -281,8 +305,9 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
             Thread.sleep(INTERVAL_TIME);
             closeCamera();
         } catch (InterruptedException ie) {
+            bus.post(new CommonEvent(CLOSE_CAMERA, -1, ie.getMessage()));
         } catch (Exception e) {
-            bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
+            bus.post(new CommonEvent(CLOSE_CAMERA, -1, e.getMessage()));
         }
     }
 
@@ -290,6 +315,7 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
         try {
             Thread.sleep(INTERVAL_TIME);
             int re = smdtManager.smdtSetExtrnalGpioValue(3, false);
+            Thread.sleep(1000);
             bus.post(new CommonEvent(CLOSE_LED, re, ""));
         } catch (InterruptedException ie) {
         } catch (Exception e) {
@@ -319,6 +345,10 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
 
     @Override
     protected void onDestroy() {
+        if (oldThread != null && oldThread.isAlive()) {
+            oldThread.interrupt();
+            oldThread = null;
+        }
         Log.e("onDestroy","onDestroy");
         bus.unregister(this);
         super.onDestroy();
@@ -335,6 +365,9 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
                 showTvById(e.getResult(), openLedResult);
                 break;
             case OPEN_CAMERA :
+                if (e.getResult() != 0) {
+                    Toast.makeText(this, e.getContent(), Toast.LENGTH_SHORT).show();
+                }
                 showTvById(e.getResult(), openCameraResult);
                 break;
             case READ_ID :
@@ -429,27 +462,31 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
             mCamera.setPreviewDisplay(oldHolder); // 通过SurfaceView显示取景画面
             mCamera.startPreview(); // 开始预览
             bus.post(new CommonEvent(OPEN_CAMERA, 0, ""));
-            Thread.sleep(1000);
         } catch (Exception e) {
-            bus.post(new CommonEvent(OPEN_CAMERA, -1, ""));
+            bus.post(new CommonEvent(OPEN_CAMERA, -1, e.getMessage()));
         }
     }
 
     private void closeCamera() {
         try {
             if (mCamera != null) {
+                mCamera.stopPreview();
                 mCamera.setPreviewCallback(null) ;
                 mCamera.setPreviewDisplay(null);
-                mCamera.stopPreview();
                 mCamera.release();
                 mCamera = null;
                 bus.post(new CommonEvent(CLOSE_CAMERA, 0, ""));
             } else {
-                bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
+                bus.post(new CommonEvent(CLOSE_CAMERA, -1, "mCamera==null"));
             }
         } catch (Exception e) {
-            bus.post(new CommonEvent(CLOSE_CAMERA, -1, ""));
+            bus.post(new CommonEvent(CLOSE_CAMERA, -1, e.getMessage()));
         }
+    }
+
+    @Event(R.id.btn_exit)
+    private void onExit(View view) {
+        finish();
     }
 
 }

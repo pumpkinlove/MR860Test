@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.camera.simplewebcam.CameraPreview;
 import com.miaxis.mr860test.Constants.Constants;
@@ -71,11 +72,25 @@ public class Camera2Activity extends BaseTestActivity implements SurfaceHolder.C
     @Event(R.id.tv_test)
     private void onTest(View view) {
         if (smdtManager != null) {
-            smdtManager.smdtSetExtrnalGpioValue(2, true);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for (int i =0; i<3; i++) {
+                smdtManager.smdtSetExtrnalGpioValue(2, true);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (smdtManager.smdtReadExtrnalGpioValue(2) == 1) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                if (i == 2) {
+                    Toast.makeText(this, "摄像头上电失败", Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         }
         sv_preview.setVisibility(View.VISIBLE);
@@ -85,12 +100,8 @@ public class Camera2Activity extends BaseTestActivity implements SurfaceHolder.C
     @Event(R.id.tv_stop_test)
     private void onStopTest(View view) {
         if (smdtManager != null) {
-            if (0 == smdtManager.smdtReadExtrnalGpioValue(2)) {
-                return;
-            }
             sv_preview.setVisibility(View.GONE);
             bus.post(new DisableEvent(true, false, true, true));
-            smdtManager.smdtSetExtrnalGpioValue(2, false);
         }
     }
 
@@ -125,12 +136,16 @@ public class Camera2Activity extends BaseTestActivity implements SurfaceHolder.C
     public void finish() {
         onStopTest(null);
         smdtManager.smdtSetExtrnalGpioValue(2, false);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         super.finish();
     }
 
     @Override
     protected void onDestroy() {
-        smdtManager.smdtSetExtrnalGpioValue(2, false);
         bus.unregister(this);
         super.onDestroy();
     }
@@ -170,13 +185,20 @@ public class Camera2Activity extends BaseTestActivity implements SurfaceHolder.C
     private void closeCamera() {
         try {
             if (mCamera != null) {
+                mCamera.stopPreview();
                 mCamera.setPreviewCallback(null) ;
                 mCamera.setPreviewDisplay(null);
-                mCamera.stopPreview();
                 mCamera.release();
                 mCamera = null;
             }
         } catch (Exception e) {
         }
+        smdtManager.smdtSetExtrnalGpioValue(2, false);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
 }
