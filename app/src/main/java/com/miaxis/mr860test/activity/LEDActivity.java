@@ -57,7 +57,7 @@ public class LEDActivity extends BaseTestActivity {
     private void onTurnOn(View view) {
         try {
             int re = smdt.smdtSetExtrnalGpioValue(3, true);
-            Thread.sleep(1000);
+            Thread.sleep(100);
             if (re == 0) {
                 bus.post(new DisableEvent(true, true));
             } else {
@@ -73,7 +73,7 @@ public class LEDActivity extends BaseTestActivity {
     private void onTurnOff(View view) {
         try {
             int re = smdt.smdtSetExtrnalGpioValue(3, false);
-            Thread.sleep(500);
+            Thread.sleep(100);
             if (re == 0) {
                 bus.post(new DisableEvent(true, true));
             } else {
@@ -123,7 +123,7 @@ public class LEDActivity extends BaseTestActivity {
     public void finish() {
         smdt.smdtSetExtrnalGpioValue(3, false);
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
+@Deprecated
 public class TestActivity extends AppCompatActivity {
 
     private MXFingerDriver fingerDriver;

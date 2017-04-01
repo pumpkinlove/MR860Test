@@ -24,6 +24,7 @@ import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 
+@Deprecated
 @ContentView(R.layout.activity_camera)
 public class CameraActivity extends BaseTestActivity {
 

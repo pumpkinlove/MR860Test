@@ -67,9 +67,9 @@ public class BodyActivity extends BaseTestActivity {
             try {
                 while (true) {
                     if (flag) {
-                        Thread.sleep(500);
+                        Thread.sleep(100);
                         int re = manager.smdtReadGpioValue(1);
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                         if (re == 1) {
                             bus.post(new DisableEvent(true, true));
                             bus.post(new ScrollMessageEvent(re + "___有人"));

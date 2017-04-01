@@ -1,5 +1,6 @@
 package com.miaxis.mr860test.activity;
 
+import android.annotation.SuppressLint;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -71,6 +72,7 @@ public class WifiActivity extends BaseTestActivity {
         test(null);
     }
 
+    @SuppressLint("WifiManagerLeak")
     @Override
     protected void initData() {
         bus = EventBus.getDefault();

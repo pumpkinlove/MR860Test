@@ -68,15 +68,13 @@ public class FingerActivity extends BaseTestActivity {
     private int mbFlag = GET_MB_1;
     private boolean hasMb = false;
     private boolean hasTest = false;
+    private boolean fingerPass = false;
 
     private byte[] tzBuffer1 = new byte[TZ_SIZE];
     private byte[] tzBuffer2 = new byte[TZ_SIZE];
     private byte[] tzBuffer3 = new byte[TZ_SIZE];
     private byte[] mbBuffer  = new byte[TZ_SIZE];
     private byte[] vBuffer   = new byte[TZ_SIZE];
-
-
-
     private EventBus bus;
 
     @ViewInject(R.id.btn_getDevVersion)         private Button btn_getDevVersion;
@@ -303,8 +301,12 @@ public class FingerActivity extends BaseTestActivity {
                     appendMessage("合成模板失败 " + re);
                     hasMb = false;
                 }
-                if (view == null && hasMb) {     // 点击开始测试 会传进来null
-                    verifyFinger();
+                if (view == null) {     // 点击开始测试 会传进来null
+                    if (hasMb) {
+                        verifyFinger();
+                    } else {
+                        onCancelClicked(null);
+                    }
                 }
             }
         }).start();
@@ -355,7 +357,6 @@ public class FingerActivity extends BaseTestActivity {
                     appendMessage("特征 3 提取失败" + re3);
                 }
                 break;
-
         }
     }
 
@@ -390,6 +391,7 @@ public class FingerActivity extends BaseTestActivity {
                 ret = alg.mxFingerMatch512(mbBuffer, vBuffer, LEVEL);
                 if (ret == 0) {
                     appendMessage("比对通过！");
+                    fingerPass = true;
                 } else {
                     appendMessage("比对失败 " + ret);
                 }
@@ -437,7 +439,7 @@ public class FingerActivity extends BaseTestActivity {
         } else {
             btn_verify.setEnabled(e.isFlag());
         }
-        if (!hasTest) {
+        if (!hasTest || !fingerPass) {
             tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
             tv_pass.setClickable(false);
         }
