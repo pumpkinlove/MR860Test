@@ -1,5 +1,6 @@
 package com.miaxis.mr860test.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -70,11 +71,9 @@ public class DeviceCodeActivity extends BaseTestActivity {
                     throw new Exception();
                 }
             }
-            tv_error_info.setVisibility(View.INVISIBLE);
-            tv_error_info.setText("");
         } catch (Exception e) {
-            tv_error_info.setVisibility(View.VISIBLE);
             tv_error_info.setText("配置文件错误, 请检查配置文件");
+            tv_error_info.setTextColor(Color.RED);
         }
     }
 
@@ -83,11 +82,10 @@ public class DeviceCodeActivity extends BaseTestActivity {
         try {
             String code = et_device_code.getText().toString();
             if (!checkCode(code)) {
-                tv_error_info.setVisibility(View.VISIBLE);
-                tv_error_info.setText("编码格式错误，序列号为8位，纯数字，前2位年份（范围：17~99）第3、4位几周（范围：1~53），后4位序列号（范围：0001~9999)");
+                tv_error_info.setTextColor(Color.RED);
                 return;
             } else {
-                tv_error_info.setVisibility(View.INVISIBLE);
+                tv_error_info.setTextColor(getResources().getColor(R.color.dark));
             }
             File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
             FileUtil.writeFile(file, stringList.get(0) + "\r\n"

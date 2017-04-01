@@ -37,7 +37,7 @@
             android:digits="0123456789"
             android:inputType="number"
             android:maxLength="8"
-            android:hint="序列号为8位，纯数字，前2位年份（17~99）第3、4位几周（1~53），后4位序列号（0001~9999)"
+            android:hint="点击输入序列号"
             style="@style/stroke_button"
             android:layout_weight="3"
             android:layout_width="0dp"
@@ -53,7 +53,8 @@
 
         <TextView
             android:id="@+id/tv_error_info"
-            android:textColor="@color/red"
+            android:textColor="@color/dark"
+            android:text="序列号为8位，纯数字，前2位年份（17~99）第3、4位几周（1~53），后4位序列号（0001~9999)"
             android:textSize="18sp"
             android:gravity="start|center_vertical"
             android:layout_width="match_parent"
