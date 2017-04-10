@@ -138,7 +138,7 @@ public class FingerActivity extends BaseTestActivity {
         }
     }
 
-    public void getFinger() {
+    public int getFinger() {
         bus.post(new DisableEvent(false, true, false, false));
         colImgBuf = new byte[IMAGE_SIZE_BIG];
         int ret = fingerDriver.mxAutoGetImage(colImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
@@ -155,6 +155,7 @@ public class FingerActivity extends BaseTestActivity {
             appendMessage("采集图像", Constants.FAIL_HTML);
         }
         bus.post(new DisableEvent(true, false, true, true));
+        return ret;
     }
 
     private class GetDevVersionThread extends Thread {
@@ -184,7 +185,7 @@ public class FingerActivity extends BaseTestActivity {
         if (iRet == 0) {
             bus.post(new CommonEvent(GET_DEVICE_VERSION, iRet, new String(bVersion)));
         } else {
-            bus.post(new CommonEvent(GET_DEVICE_VERSION, iRet, new String("获取设备版本失败")));
+            bus.post(new CommonEvent(GET_DEVICE_VERSION, iRet, "获取设备版本失败"));
         }
     }
 
@@ -292,8 +293,10 @@ public class FingerActivity extends BaseTestActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                getFinger();
-                verifyFinger();
+                int ret = getFinger();
+                if (ret != -2) {            //取消
+                    verifyFinger();
+                }
             }
         }).start();
     }
