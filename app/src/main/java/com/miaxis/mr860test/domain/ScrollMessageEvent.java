@@ -5,20 +5,40 @@ package com.miaxis.mr860test.domain;
  */
 
 public class ScrollMessageEvent {
-    private String message;
+    private CharSequence message;
+    private CharSequence type;
 
     public ScrollMessageEvent() {
     }
 
-    public ScrollMessageEvent(String message) {
+    public ScrollMessageEvent(CharSequence message) {
         this.message = message;
     }
 
-    public String getMessage() {
+    public ScrollMessageEvent(CharSequence message, CharSequence type) {
+        this.message = message;
+        this.type = type;
+    }
+
+    public void setMessage(CharSequence message) {
+        this.message = message;
+    }
+
+    public CharSequence getType() {
+        return type;
+    }
+
+    public void setType(CharSequence type) {
+        this.type = type;
+    }
+
+    public CharSequence getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
     }
+
+
 }

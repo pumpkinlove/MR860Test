@@ -13,8 +13,10 @@ import org.xutils.x;
 import org.zz.mxhidfingerdriver.MXFingerDriver;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -35,15 +37,8 @@ import org.zz.jni.zzFingerAlg;
 @ContentView(R.layout.activity_finger)
 public class FingerActivity extends BaseTestActivity {
 
-    private static final int GET_IMAGE          = 10001;
     private static final int GET_DEVICE_VERSION = 10002;
     private static final int GET_DRIVER_VERSION = 10003;
-    private static final int GET_MB             = 10004;
-    private static final int VERIFY             = 10005;
-    private static final int CANCEL             = 10006;
-    private static final int GET_MB_1           = 10007;
-    private static final int GET_MB_2           = 10008;
-    private static final int GET_MB_3           = 10009;
 
     private static final int LEVEL              = 2;
     // 图像
@@ -53,48 +48,32 @@ public class FingerActivity extends BaseTestActivity {
     private static final int IMAGE_SIZE_BIG     = IMAGE_X_BIG * IMAGE_Y_BIG;
     private static final int TZ_SIZE            = 512;
 
-    private byte[] bImgBuf                      = new byte[IMAGE_SIZE_BIG];
-    private byte[] bImgBuf1                     = new byte[IMAGE_SIZE_BIG];
-    private byte[] bImgBuf2                     = new byte[IMAGE_SIZE_BIG];
-    private byte[] bImgBuf3                     = new byte[IMAGE_SIZE_BIG];
+    private byte[] colImgBuf                    = new byte[IMAGE_SIZE_BIG];
+    private byte[] printImgBuf                  = new byte[IMAGE_SIZE_BIG];
 
     // 线程
-    private GetImageThread        m_GetImageThread       = null;
-    private GetDevVersionThread   m_GetDevVersionThread  = null;
+    private Thread mGetFingerThread       = null;
+    private Thread mGetDevVersionThread  = null;
 
     // 中正指纹仪驱动
     private MXFingerDriver fingerDriver;
     private zzFingerAlg alg;
-    private int mbFlag = GET_MB_1;
-    private boolean hasMb = false;
     private boolean hasTest = false;
     private boolean fingerPass = false;
 
-    private byte[] tzBuffer1 = new byte[TZ_SIZE];
-    private byte[] tzBuffer2 = new byte[TZ_SIZE];
-    private byte[] tzBuffer3 = new byte[TZ_SIZE];
-    private byte[] mbBuffer  = new byte[TZ_SIZE];
-    private byte[] vBuffer   = new byte[TZ_SIZE];
+    private byte[] colTzBuffer   = new byte[TZ_SIZE];
+    private byte[] printTzBuffer = new byte[TZ_SIZE];
     private EventBus bus;
 
-    @ViewInject(R.id.btn_getDevVersion)         private Button btn_getDevVersion;
-    @ViewInject(R.id.btn_getDriverVersion)      private Button btn_getDriverVersion;
-    @ViewInject(R.id.btn_getImage)              private Button btn_getImage;
+    @ViewInject(R.id.btn_getFinger)             private Button btn_getFinger;
     @ViewInject(R.id.btn_cancel)                private Button btn_cancel;
-    @ViewInject(R.id.btn_getMB)                 private Button btn_getMB;
     @ViewInject(R.id.btn_verify)                private Button btn_verify;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
     @ViewInject(R.id.tv_test)                   private TextView tv_test;
     @ViewInject(R.id.sv_show_msg)               private ScrollView sv_show_msg;
 
-    @ViewInject(R.id.iv_finger)                 private ImageView iv_finger;
-    @ViewInject(R.id.iv_mb1)                    private ImageView iv_mb1;
-    @ViewInject(R.id.iv_mb2)                    private ImageView iv_mb2;
-    @ViewInject(R.id.iv_mb3)                    private ImageView iv_mb3;
-
     @ViewInject(R.id.tv_message)                private TextView tv_message;
-    @ViewInject(R.id.tv_score)                  private TextView tv_score;
 
     @ViewInject(R.id.tv_f_device_version_need)  private TextView tv_f_device_version_need;
     @ViewInject(R.id.tv_f_device_version)       private TextView tv_f_device_version;
@@ -118,7 +97,9 @@ public class FingerActivity extends BaseTestActivity {
 
     @Override
     protected void initData() {
-        fingerDriver = new MXFingerDriver(this,true);
+        int pid = 0x0202;
+        int vid = 0x821B;
+        fingerDriver = new MXFingerDriver(this, pid, vid);
         alg = new zzFingerAlg();
         bus = EventBus.getDefault();
         bus.register(this);
@@ -147,26 +128,33 @@ public class FingerActivity extends BaseTestActivity {
         }
     }
 
-    private class GetImageThread extends Thread {
+    private class GetFingerThread extends Thread {
         public void run() {
             try {
-                GetImage();
+                getFinger();
             } catch (Exception e) {
-                appendMessage("采集图像异常" + e.getMessage());
+                appendMessage("采集图像", Constants.FAIL_HTML);
             }
         }
     }
 
-    public void GetImage() {
-        bImgBuf = new byte[IMAGE_SIZE_BIG];
-        int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+    public void getFinger() {
+        bus.post(new DisableEvent(false, true, false, false));
+        colImgBuf = new byte[IMAGE_SIZE_BIG];
+        int ret = fingerDriver.mxAutoGetImage(colImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
         if (ret == 0) {
-            bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
-            appendMessage("采集图像成功");
+            bus.post(new FingerEvent(R.id.iv_col_finger, colImgBuf));
+            appendMessage("采集图像", Constants.SUCCESS_HTML);
+            ret = alg.mxGetTz512(colImgBuf, colTzBuffer);
+            if (ret == 1) {
+                appendMessage("提取特征", Constants.SUCCESS_HTML);
+            } else {
+                appendMessage("提取特征", Constants.FAIL_HTML);
+            }
         } else {
-            appendMessage("采集图像失败 " + ret);
+            appendMessage("采集图像", Constants.FAIL_HTML);
         }
-        bus.post(new DisableEvent(true));
+        bus.post(new DisableEvent(true, false, true, true));
     }
 
     private class GetDevVersionThread extends Thread {
@@ -200,34 +188,20 @@ public class FingerActivity extends BaseTestActivity {
         }
     }
 
-    @Event(R.id.btn_getImage)
-    private void onGetImageClicked(View view) {
-        hasTest = true;
-        appendMessage("请按手指...");
-        onDisableEvent(new DisableEvent(false));
-        if (m_GetImageThread != null) {
-            m_GetImageThread.interrupt();
-            m_GetImageThread = null;
-        }
-        m_GetImageThread = new GetImageThread();
-        m_GetImageThread.start();
-    }
-
     @Event(R.id.btn_getDevVersion)
     private void onGetDevVersionClicked(View view) {
-        onDisableEvent(new DisableEvent(false));
-        if (m_GetDevVersionThread != null) {
-            m_GetDevVersionThread.interrupt();
-            m_GetDevVersionThread = null;
+        onDisableEvent(new DisableEvent(false, false, false, false));
+        if (mGetDevVersionThread != null) {
+            mGetDevVersionThread.interrupt();
+            mGetDevVersionThread = null;
         }
-        m_GetDevVersionThread = new GetDevVersionThread();
-        m_GetDevVersionThread.start();
+        mGetDevVersionThread = new GetDevVersionThread();
+        mGetDevVersionThread.start();
     }
 
     @Event(R.id.btn_getDriverVersion)
     private void onGetDriverVersionClicked(View view) {
-        onDisableEvent(new DisableEvent(false));
-        bus.post(new CommonEvent(GET_DRIVER_VERSION, 0, ""));
+        onDisableEvent(new DisableEvent(false, false, false, false));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -237,136 +211,34 @@ public class FingerActivity extends BaseTestActivity {
         }).start();
     }
 
+    @Event(R.id.btn_getFinger)
+    private void onGetFingerClicked(View view) {
+        hasTest = true;
+        appendMessage("请按手指...", "");
+        if (mGetFingerThread != null) {
+            mGetFingerThread.interrupt();
+            mGetFingerThread = null;
+        }
+        mGetFingerThread = new GetFingerThread();
+        mGetFingerThread.start();
+    }
+
     @Event(R.id.btn_cancel)
     private void onCancelClicked(View view) {
-        continueFlag = false;
         fingerDriver.mxCancelGetImage();
-        bus.post(new DisableEvent(true));
     }
 
-    boolean continueFlag = true;
-
-    private void initMb() {
-        hasMb = false;
-        mbBuffer = new byte[TZ_SIZE];
-        bImgBuf1 = new byte[IMAGE_SIZE_BIG];
-        bImgBuf2 = new byte[IMAGE_SIZE_BIG];
-        bImgBuf3 = new byte[IMAGE_SIZE_BIG];
-        hasTest = true;
-        mbFlag = GET_MB_1;
-        continueFlag = true;
-    }
-
-    @Event(R.id.btn_getMB)
-    private void onGetMBClicked(final View view) {
-        iv_mb1.setImageBitmap(null);
-        iv_mb2.setImageBitmap(null);
-        iv_mb3.setImageBitmap(null);
-        initMb();
-        onDisableEvent(new DisableEvent(false));
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int re = -10;
-                while (continueFlag) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    appendMessage("请按手指...");
-                    bImgBuf = new byte[IMAGE_SIZE_BIG];
-                    re = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if (re == 0) {
-                        getTzByMbFlag(view);
-                    } else {
-                        appendMessage("图像采集失败 " + re);
-                        if (re == -2) {         //取消
-                            hasMb = false;
-                            initMb();
-                            return;
-                        }
-                    }
-                }
-                re = alg.mxGetMB512(tzBuffer1, tzBuffer2, tzBuffer3, mbBuffer);
-                if (re > 0) {
-                    appendMessage("合成模板成功,得分 " + re);
-                    hasMb = true;
-                } else {
-                    appendMessage("合成模板失败 " + re);
-                    hasMb = false;
-                }
-                if (view == null) {     // 点击开始测试 会传进来null
-                    if (hasMb) {
-                        verifyFinger();
-                    } else {
-                        onCancelClicked(null);
-                    }
-                }
-            }
-        }).start();
-    }
-
-    private void getTzByMbFlag(View view) {
-        switch (mbFlag) {
-            case GET_MB_1:
-                bImgBuf1 = bImgBuf;
-                bus.post(new FingerEvent(R.id.iv_finger, bImgBuf1));
-                appendMessage("图像采集成功");
-                int re1 = alg.mxGetTz512(bImgBuf1, tzBuffer1);
-                if (re1 == 1) {
-                    appendMessage("特征 1 提取成功");
-                    bus.post(new FingerEvent(R.id.iv_mb1, bImgBuf1));
-                    mbFlag = GET_MB_2;
-                } else {
-                    appendMessage("特征 1 提取失败" + re1);
-                }
-                break;
-            case GET_MB_2:
-                bImgBuf2 = bImgBuf;
-                bus.post(new FingerEvent(R.id.iv_finger, bImgBuf2));
-                appendMessage("图像采集成功");
-                int re2 = alg.mxGetTz512(bImgBuf2, tzBuffer2);
-                if (re2 == 1) {
-                    appendMessage("特征 2 提取成功");
-                    bus.post(new FingerEvent(R.id.iv_mb2, bImgBuf2));
-                    mbFlag = GET_MB_3;
-                } else {
-                    appendMessage("特征 2 提取失败" + re2);
-                }
-                break;
-            case GET_MB_3:
-                bImgBuf3 = bImgBuf;
-                bus.post(new FingerEvent(R.id.iv_finger, bImgBuf3));
-                appendMessage("图像采集成功");
-                int re3 = alg.mxGetTz512(bImgBuf3, tzBuffer3);
-                if (re3 == 1) {
-                    appendMessage("特征 3 提取成功");
-                    bus.post(new FingerEvent(R.id.iv_mb3, bImgBuf3));
-                    mbFlag = GET_MB_1;
-                    continueFlag = false;
-                    if (view != null) {
-                        bus.post(new DisableEvent(true));
-                    }
-                } else {
-                    appendMessage("特征 3 提取失败" + re3);
-                }
-                break;
-        }
-    }
-
-    private void appendMessage(String message) {
-        bus.post(new ScrollMessageEvent(message));
+    private void appendMessage(CharSequence message, CharSequence type) {
+        bus.post(new ScrollMessageEvent(message, type));
     }
 
     @Event(R.id.btn_verify)
     private void onVerifyClicked(View view) {
-        onDisableEvent(new DisableEvent(false));
+        fingerPass = false;
+        if (colTzBuffer == null || colTzBuffer.length != TZ_SIZE) {
+            appendMessage("请先采集指纹", "");
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -376,30 +248,30 @@ public class FingerActivity extends BaseTestActivity {
     }
 
     private void verifyFinger() {
-        appendMessage("请按手指...");
-        bImgBuf = new byte[IMAGE_SIZE_BIG];
-        int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+        bus.post(new DisableEvent(false, true, false, false));
+        appendMessage("请按手指...", "");
+        printImgBuf = new byte[IMAGE_SIZE_BIG];
+        int ret = fingerDriver.mxAutoGetImage(printImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
         if (0 != ret) {
-            appendMessage("指纹图像采集失败");
-            return;
+            appendMessage("指纹图像采集", Constants.FAIL_HTML);
         } else {
-            appendMessage("指纹图像采集成功");
-            bus.post(new FingerEvent(R.id.iv_finger, bImgBuf));
-            ret = alg.mxGetTz512(bImgBuf, vBuffer);
+            appendMessage("指纹图像采集", Constants.SUCCESS_HTML);
+            bus.post(new FingerEvent(R.id.iv_print_finger, printImgBuf));
+            ret = alg.mxGetTz512(printImgBuf, printTzBuffer);
             if (ret == 1) {
-                appendMessage("提取特征成功");
-                ret = alg.mxFingerMatch512(mbBuffer, vBuffer, LEVEL);
+                appendMessage("提取特征", Constants.SUCCESS_HTML);
+                ret = alg.mxFingerMatch512(colTzBuffer, printTzBuffer, LEVEL);
                 if (ret == 0) {
-                    appendMessage("比对通过！");
+                    appendMessage("比对", Constants.SUCCESS_HTML);
                     fingerPass = true;
                 } else {
-                    appendMessage("比对失败 " + ret);
+                    appendMessage("比对 ", Constants.FAIL_HTML);
                 }
             } else {
-                appendMessage("提取特征失败 " + ret);
+                appendMessage("提取特征", Constants.FAIL_HTML);
             }
         }
-        bus.post(new DisableEvent(true));
+        bus.post(new DisableEvent(true, false, true, true));
     }
 
     @Event(R.id.tv_pass)
@@ -410,69 +282,55 @@ public class FingerActivity extends BaseTestActivity {
 
     @Event(R.id.tv_deny)
     private void onDeny(View view) {
+        fingerDriver.mxCancelGetImage();
         bus.post(new ResultEvent(Constants.ID_FINGER, Constants.STAUTS_DENIED));
         finish();
     }
 
     @Event(R.id.tv_test)
     private void onTest(View view) {
-        onGetMBClicked(null);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getFinger();
+                verifyFinger();
+            }
+        }).start();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDisableEvent(DisableEvent e) {
-        if (e.isFlag()) {
-            tv_pass             .setTextColor(getResources().getColor(R.color.green_dark));
-        } else {
-            tv_pass             .setTextColor(getResources().getColor(R.color.gray_dark));
-        }
-        enableButtons(e.isFlag(), tv_test, R.color.dark);
-        tv_pass                 .setClickable(e.isFlag());
-        tv_pass                 .setEnabled(e.isFlag());
-        btn_getImage            .setEnabled(e.isFlag());
-        btn_getDevVersion       .setEnabled(e.isFlag());
-        btn_getDriverVersion    .setEnabled(e.isFlag());
-        btn_getMB               .setEnabled(e.isFlag());
-        btn_cancel              .setEnabled(!e.isFlag());
-        if (!hasMb) {
-            btn_verify.setEnabled(false);
-        } else {
-            btn_verify.setEnabled(e.isFlag());
-        }
-        if (!hasTest || !fingerPass) {
-            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
-            tv_pass.setClickable(false);
-        }
+        enableButtons(e.isFlag(), btn_getFinger, R.color.dark);
+        enableButtons(e.isFlag2(), btn_cancel, R.color.dark);
+        enableButtons(e.isFlag3(), btn_verify, R.color.dark);
+        enableButtons(e.isFlag4(), tv_test, R.color.dark);
+        enableButtons(fingerPass, tv_pass, R.color.green_dark);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCommonEvent(CommonEvent e) {
         switch (e.getCode()) {
-            case GET_IMAGE :
-                break;
             case GET_DEVICE_VERSION :
                 tv_f_device_version.setText(e.getContent());
                 String v_need = tv_f_device_version_need.getText().toString().trim();
                 String v = e.getContent().trim();
                 if (v.equals(v_need)) {
                     tv_f_device_version.setTextColor(getResources().getColor(R.color.green_dark));
-                    bus.post(new DisableEvent(true));
+                    onDisableEvent(new DisableEvent(true, false, true, true));
                 } else {
                     tv_f_device_version.setTextColor(getResources().getColor(R.color.red));
-                    bus.post(new DisableEvent(false));
-                    btn_cancel.setEnabled(false);
+                    onDisableEvent(new DisableEvent(false, false, false, false));
                 }
                 break;
             case GET_DRIVER_VERSION :
                 tv_f_driver_version.setText(e.getContent());
                 if (null == e.getContent() || "".equals(e.getContent())) {
-                    bus.post(new DisableEvent(false));
+                    onDisableEvent(new DisableEvent(false, false, false, false));
                 } else {
-                    bus.post(new DisableEvent(true));
+                    onDisableEvent(new DisableEvent(true, true, true, true));
                 }
                 break;
         }
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -488,7 +346,13 @@ public class FingerActivity extends BaseTestActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onScrollMessageevent(ScrollMessageEvent e){
-        tv_message.append(e.getMessage() + "\r\n");
+        if (e.getType() != null && e.getType().equals(Constants.FAIL_HTML)) {
+            fingerPass = false;
+            enableButtons(false, tv_pass, Color.GREEN);
+        }
+        tv_message.append(e.getMessage());
+        tv_message.append(Html.fromHtml(e.getType().toString()));
+        tv_message.append("\r\n");
         sv_show_msg.post(new Runnable() {
             public void run() {
                 sv_show_msg.fullScroll(ScrollView.FOCUS_DOWN);      //滚动到底部

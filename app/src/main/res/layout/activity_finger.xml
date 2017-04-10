@@ -204,7 +204,7 @@
                         android:background="@null"
                         android:scrollbars="vertical"
                         android:textColor="@color/dark"
-                        android:textSize="20sp" >
+                        android:textSize="24sp" >
                     </TextView>
 
                 </LinearLayout>
@@ -225,63 +225,69 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="0dp"
-                android:padding="5dp"
                 android:background="@drawable/band_strke_white_bg"
                 android:layout_weight="3.5"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:orientation="vertical">
+                android:layout_gravity="center">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent">
 
+                    <TextView
+                        android:textColor="@color/dark"
+                        android:textSize="18sp"
+                        android:gravity="center"
+                        android:text="采集指纹"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" />
+
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
                     <ImageView
-                        android:layout_gravity="center"
-                        android:id="@+id/iv_finger"
+                        android:layout_margin="5dp"
+                        android:id="@+id/iv_col_finger"
                         android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"/>
+                </LinearLayout>
+
+                <View
+                    android:background="@color/gray_dark"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent">
 
                     <TextView
-                        android:visibility="gone"
-                        android:layout_gravity="center"
-                        android:id="@+id/tv_score"
-                        android:layout_weight="1"
-                        android:textSize="50sp"
-                        android:gravity="center"
-                        android:textStyle="bold"
                         android:textColor="@color/dark"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"/>
+                        android:textSize="18sp"
+                        android:gravity="center"
+                        android:text="比对指纹"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" />
 
-                    <LinearLayout
-                        android:orientation="vertical"
+                    <View
+                        android:background="@color/gray_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"/>
+
+                    <ImageView
+                        android:layout_margin="5dp"
+                        android:id="@+id/iv_print_finger"
                         android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:id="@+id/iv_mb1"
-                            android:layout_weight="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp" />
-
-                        <ImageView
-                            android:id="@+id/iv_mb2"
-                            android:layout_weight="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp" />
-
-                        <ImageView
-                            android:id="@+id/iv_mb3"
-                            android:layout_weight="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp" />
-
-                    </LinearLayout>
-
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -320,23 +326,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp">
                 <Button
-                    android:id="@+id/btn_getImage"
+                    android:id="@+id/btn_getFinger"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="采集图像"
+                    android:text="采集指纹"
                     android:onClick="OnClickGetImage"
                     android:textSize="18sp" />
 
                 <Button
-                    android:id="@+id/btn_getMB"
+                    android:id="@+id/btn_cancel"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="采集模板"
-                    android:onClick="OnClickGetDriverVersion"
+                    android:text="取消"
                     android:textSize="18sp" />
-
 
             </LinearLayout>
 
@@ -353,15 +357,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="指纹比对"
-                    android:textSize="18sp" />
-
-                <Button
-                    android:id="@+id/btn_cancel"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="取消"
+                    android:text="比对指纹"
                     android:textSize="18sp" />
 
             </LinearLayout>

@@ -32,9 +32,12 @@ public class Constants {
     public static final String RESULT_PATH_NAME = "MR860Test.txt";
 
     public static final String ID_VERSION       = "MR-SAM100 V1.0.2U";
-    public static final String FINGER_VERSION   = "SM-80_High_HIDV2.0.0";
+    public static final String FINGER_VERSION   = "SM-80_HighHID_V2.0.2";
     public static final String HAS_4G           = "4G=false";
     public static final String TEST_IP          = "TEST_IP=192.168.11.250";
     public static final String TEST_PORT        = "TEST_PORT=8899";
     public static final String DEVICE_CODE      = "DEVICE_CODE=";
+
+    public static final String SUCCESS_HTML = "<font color=\"#217821\"> 成功</font>";
+    public static final String FAIL_HTML    = "<font color=\"#ff0000\"> 失败</font>";
 }

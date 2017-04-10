@@ -3,6 +3,9 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/app/src/main/java/org/zz/idcard_hid_driver/BMP.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/org/zz/idcard_hid_driver/UsbBase.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/org/zz/jni/zzFingerAlg.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/org/zz/jni/zzFingerAlg.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/org/zz/jni/zzFingerAlg.java" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

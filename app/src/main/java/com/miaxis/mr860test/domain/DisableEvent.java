@@ -9,6 +9,7 @@ public class DisableEvent {
     boolean flag2;
     boolean flag3;
     boolean flag4;
+    boolean flag5;
 
 
     public DisableEvent() {
@@ -34,6 +35,14 @@ public class DisableEvent {
         this.flag2 = flag2;
         this.flag3 = flag3;
         this.flag4 = flag4;
+    }
+
+    public DisableEvent(boolean flag, boolean flag2, boolean flag3, boolean flag4, boolean flag5) {
+        this.flag = flag;
+        this.flag2 = flag2;
+        this.flag3 = flag3;
+        this.flag4 = flag4;
+        this.flag5 = flag5;
     }
 
     public boolean isFlag() {
@@ -66,5 +75,13 @@ public class DisableEvent {
 
     public void setFlag4(boolean flag4) {
         this.flag4 = flag4;
+    }
+
+    public boolean isFlag5() {
+        return flag5;
+    }
+
+    public void setFlag5(boolean flag5) {
+        this.flag5 = flag5;
     }
 }

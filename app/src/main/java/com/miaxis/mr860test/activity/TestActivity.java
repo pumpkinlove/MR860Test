@@ -100,7 +100,7 @@ public class TestActivity extends AppCompatActivity {
             //fingeralg.mxImgToIso(imagebuf,  IMAGE_DPI, IMAGE_WIDTH, IMAGEG_HEIGTH, isoImagebuf);
             //ret = fingeralg.mxGetTzBase64FromISO(isoImagebuf, bTz);
             //ret = fingeralg.mxGetTz512(imagebuf, bTz);
-            ret = alg.mxGetTzBase64(imagebuf, bTz);
+//            ret = alg.mxGetTzBase64(imagebuf, bTz);
         } catch (Resources.NotFoundException e) {
             Toast.makeText(this, "文本文件不存在", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
