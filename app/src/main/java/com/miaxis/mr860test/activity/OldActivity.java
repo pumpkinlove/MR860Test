@@ -52,7 +52,7 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
     private IdCardDriver idCardDriver;
     private MXFingerDriver fingerDriver;
 
-    private static final int INTERVAL_TIME = 2000;
+    private static final int INTERVAL_TIME = 1500;
     private boolean continueFlag = false;
 
     private OldThread oldThread;
@@ -107,7 +107,9 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
         bus.register(this);
         smdtManager  = SmdtManager.create(this);
         idCardDriver = new IdCardDriver(this);
-        fingerDriver = new MXFingerDriver(this,true);
+        int pid = 0x0202;
+        int vid = 0x821B;
+        fingerDriver = new MXFingerDriver(this, pid, vid);
         oldHolder = sv_old_camera.getHolder();
         oldHolder.addCallback(this);
 

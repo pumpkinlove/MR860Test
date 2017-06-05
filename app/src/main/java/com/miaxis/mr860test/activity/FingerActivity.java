@@ -58,7 +58,6 @@ public class FingerActivity extends BaseTestActivity {
     // 中正指纹仪驱动
     private MXFingerDriver fingerDriver;
     private zzFingerAlg alg;
-    private boolean hasTest = false;
     private boolean fingerPass = false;
 
     private byte[] colTzBuffer   = new byte[TZ_SIZE];
@@ -140,6 +139,7 @@ public class FingerActivity extends BaseTestActivity {
 
     public int getFinger() {
         bus.post(new DisableEvent(false, true, false, false));
+        appendMessage("请按手指...", "");
         colImgBuf = new byte[IMAGE_SIZE_BIG];
         int ret = fingerDriver.mxAutoGetImage(colImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
         if (ret == 0) {
@@ -214,8 +214,6 @@ public class FingerActivity extends BaseTestActivity {
 
     @Event(R.id.btn_getFinger)
     private void onGetFingerClicked(View view) {
-        hasTest = true;
-        appendMessage("请按手指...", "");
         if (mGetFingerThread != null) {
             mGetFingerThread.interrupt();
             mGetFingerThread = null;
