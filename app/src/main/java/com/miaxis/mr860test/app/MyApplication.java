@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.miaxis.mr860test.Constants.Constants;
+import com.miaxis.mr860test.domain.CommonEvent;
+import com.miaxis.mr860test.domain.DisableEvent;
 import com.miaxis.mr860test.utils.FileUtil;
 
 import org.xutils.x;
@@ -37,6 +39,8 @@ public class MyApplication extends Application {
         mxFingerDriver = new MXFingerDriver(this);
         smdtManager = SmdtManager.create(this);
         initConfig();
+        preReadId();
+
     }
 
     private void initConfig() {
@@ -68,6 +72,25 @@ public class MyApplication extends Application {
             test_ip = "";
             test_port = "";
         }
+    }
+
+    private void preReadId() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int nRet = -1;
+                    byte[] bDevVersion = new byte[64];
+                    for (int i=0; i<20; i++) {
+                        nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                        if (nRet == 0) {
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }).start();
     }
 
     @Override
