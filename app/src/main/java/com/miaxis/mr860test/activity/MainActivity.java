@@ -53,6 +53,7 @@ public class MainActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_before)     private TextView tv_before;
     @ViewInject(R.id.tv_after)      private TextView tv_after;
     @ViewInject(R.id.tv_inspection) private TextView tv_inspection;
+    @ViewInject(R.id.tv_config)     private TextView tv_config;
 
     private ConfirmDialog beforeDialog;
     private ConfirmDialog afterDialog;
@@ -101,6 +102,27 @@ public class MainActivity extends BaseTestActivity {
         rv_items.setLayoutManager(new GridLayoutManager(this, 4));
         rv_items.setAdapter(adapter);
         tv_version.setText("版本号：" + getVersion());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!hasFinger()) {
+            itemList.get(5).setStatus(Constants.STAUTS_UNABLE);
+        } else if (itemList.get(5).getStatus() == Constants.STAUTS_UNABLE) {
+            itemList.get(5).setStatus(Constants.STATUS_NOT_TEST);
+        }
+        if (!hasIdCard()) {
+            itemList.get(6).setStatus(Constants.STAUTS_UNABLE);
+        } else if (itemList.get(6).getStatus() == Constants.STAUTS_UNABLE) {
+            itemList.get(6).setStatus(Constants.STATUS_NOT_TEST);
+        }
+        if (!has4G()) {
+            itemList.get(11).setStatus(Constants.STAUTS_UNABLE);
+        } else if (itemList.get(11).getStatus() == Constants.STAUTS_UNABLE) {
+            itemList.get(11).setStatus(Constants.STATUS_NOT_TEST);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     private void initList() {
@@ -187,9 +209,6 @@ public class MainActivity extends BaseTestActivity {
         item.setRemark("无");
         item.setId(Constants.ID_4G);
         item.setName("4G");
-        if (!initConfig()) {
-            item.setStatus(3);
-        }
         itemList.add(item);
 
         item = new TestItem();
@@ -230,25 +249,40 @@ public class MainActivity extends BaseTestActivity {
 
     private void initBeforeDialog() {
         File file = new File(Environment.getExternalStorageDirectory(), FileUtil.BEFORE_PATH);
-        if (file.exists()) {
-            beforeDialog.setContent("老化前 测试记录已存在，确定要 覆盖 吗？");
-            enableButtons(true, tv_after, R.color.dark);
-            String content = FileUtil.readFile(file);
-            List<TestItem> list = FileUtil.parseFromString(content);
-            for (TestItem item : list) {
-                if (item.getId() == Constants.ID_OLD) {
-                    continue;
-                }
-                if (item.getStatus() == Constants.STATUS_NOT_TEST || item.getStatus() == Constants.STAUTS_DENIED) {
-                    enableButtons(false, tv_after, R.color.dark);
-                    enableButtons(false, tv_inspection, R.color.dark);
-                    break;
-                }
-            }
-        } else {
+        if (!file.exists()) {
             beforeDialog.setContent("是否保存为 老化前 测试记录？");
             enableButtons(false, tv_after, R.color.dark);
             enableButtons(false, tv_inspection, R.color.dark);
+        } else {
+            String content = FileUtil.readFile(file);
+            if (TextUtils.isEmpty(content.trim())) {
+                file.delete();
+                beforeDialog.setContent("是否保存为 老化前 测试记录？");
+                enableButtons(false, tv_after, R.color.dark);
+                enableButtons(false, tv_inspection, R.color.dark);
+            } else {
+                beforeDialog.setContent("老化前 测试记录已存在，确定要 覆盖 吗？");
+                List<TestItem> list = FileUtil.parseFromString(content);
+                enableButtons(true, tv_after, R.color.dark);
+                for (TestItem item : list) {
+                    if (item == null) {
+                        beforeDialog.setContent("是否保存为 老化前 测试记录？");
+                        Toast.makeText(this, "老化前测试记录错误", Toast.LENGTH_LONG).show();
+                        file.delete();
+                        enableButtons(false, tv_after, R.color.dark);
+                        enableButtons(false, tv_inspection, R.color.dark);
+                        break;
+                    }
+                    if (item.getId() == Constants.ID_OLD) {
+                        continue;
+                    }
+                    if (item.getStatus() == Constants.STATUS_NOT_TEST || item.getStatus() == Constants.STAUTS_DENIED) {
+                        enableButtons(false, tv_after, R.color.dark);
+                        enableButtons(false, tv_inspection, R.color.dark);
+                        break;
+                    }
+                }
+            }
         }
 
         beforeDialog.setCancelListener(new View.OnClickListener() {
@@ -269,20 +303,33 @@ public class MainActivity extends BaseTestActivity {
 
     private void initAfterDialog() {
         File file = new File(Environment.getExternalStorageDirectory(), FileUtil.AFTER_PATH);
-        if (file.exists()) {
-            afterDialog.setContent("老化后 测试记录已存在，确定要 覆盖 吗？");
-            enableButtons(true, tv_inspection, R.color.dark);
-            String content = FileUtil.readFile(file);
-            List<TestItem> list = FileUtil.parseFromString(content);
-            for (TestItem item : list) {
-                if (item.getStatus() == Constants.STATUS_NOT_TEST || item.getStatus() == Constants.STAUTS_DENIED) {
-                    enableButtons(false, tv_inspection, R.color.dark);
-                    break;
-                }
-            }
-        } else {
+        if (!file.exists()) {
             afterDialog.setContent("是否保存为 老化后 测试记录？");
             enableButtons(false, tv_inspection, R.color.dark);
+        } else {
+            String content = FileUtil.readFile(file);
+            if (TextUtils.isEmpty(content.trim())) {
+                file.delete();
+                afterDialog.setContent("是否保存为 老化后 测试记录？");
+                enableButtons(false, tv_inspection, R.color.dark);
+            } else {
+                afterDialog.setContent("老化后 测试记录已存在，确定要 覆盖 吗？");
+                enableButtons(true, tv_inspection, R.color.dark);
+                List<TestItem> list = FileUtil.parseFromString(content);
+                for (TestItem item : list) {
+                    if (item == null) {
+                        afterDialog.setContent("是否保存为 老化后 测试记录？");
+                        Toast.makeText(this, "老化后测试记录错误", Toast.LENGTH_LONG).show();
+                        file.delete();
+                        enableButtons(false, tv_inspection, R.color.dark);
+                        break;
+                    }
+                    if (item.getStatus() == Constants.STATUS_NOT_TEST || item.getStatus() == Constants.STAUTS_DENIED) {
+                        enableButtons(false, tv_inspection, R.color.dark);
+                        break;
+                    }
+                }
+            }
         }
 
         afterDialog.setCancelListener(new View.OnClickListener() {
@@ -426,6 +473,11 @@ public class MainActivity extends BaseTestActivity {
         startActivity(new Intent(this, DeviceCodeActivity.class));
     }
 
+    @Event(R.id.tv_config)
+    private void onConfig(View view) {
+        startActivity(new Intent(this, ConfigActivity.class));
+    }
+
     @Override
     protected void onDestroy() {
         SmdtManager.create(this).smdtSetExtrnalGpioValue(2, false);
@@ -466,7 +518,7 @@ public class MainActivity extends BaseTestActivity {
         return versionName;
     }
 
-    private boolean initConfig() {
+    private boolean has4G() {
         try {
             File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
             if (!file.exists()) {
@@ -476,11 +528,43 @@ public class MainActivity extends BaseTestActivity {
                 if (stringList != null) {
                     String has4G = stringList.get(2);
                     String re = has4G.split("=")[1];
-                    if (TextUtils.equals(re, "true")) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return TextUtils.equals(re, "true");
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    private boolean hasFinger() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
+            if (!file.exists()) {
+                Toast.makeText(this, "版本配置文件缺失", Toast.LENGTH_LONG).show();
+            } else {
+                List<String> stringList = FileUtil.readFileToList(file);
+                if (stringList != null) {
+                    String hasFinger = stringList.get(6);
+                    String re = hasFinger.split("=")[1];
+                    return TextUtils.equals(re, "true");
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    private boolean hasIdCard() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
+            if (!file.exists()) {
+                Toast.makeText(this, "版本配置文件缺失", Toast.LENGTH_LONG).show();
+            } else {
+                List<String> stringList = FileUtil.readFileToList(file);
+                if (stringList != null) {
+                    String hasIdCard = stringList.get(7);
+                    String re = hasIdCard.split("=")[1];
+                    return TextUtils.equals(re, "true");
                 }
             }
         } catch (Exception e) {

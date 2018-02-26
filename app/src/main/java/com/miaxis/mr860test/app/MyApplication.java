@@ -2,6 +2,7 @@ package com.miaxis.mr860test.app;
 
 import android.app.Application;
 import android.app.smdt.SmdtManager;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,7 +41,18 @@ public class MyApplication extends Application {
         smdtManager = SmdtManager.create(this);
         initConfig();
         preReadId();
+        try {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                smdtManager.smdtSetGpioDirection(1, 0);
+                Thread.sleep(100);
+                smdtManager.smdtSetGpioDirection(2, 1);
+                Thread.sleep(100);
+                smdtManager.smdtSetGpioDirection(3, 1);
+                Thread.sleep(100);
+            }
+        } catch (Exception e) {
 
+        }
     }
 
     private void initConfig() {
@@ -56,9 +68,29 @@ public class MyApplication extends Application {
                             + Constants.TEST_IP + "\r\n"
                             + Constants.TEST_PORT + "\r\n"
                             + Constants.DEVICE_CODE + "\r\n"
+                            + Constants.HAS_FINGER + "\r\n"
+                            + Constants.HAS_ID + "\r\n"
                             , false);
                 } else {
                     Toast.makeText(this, "生成配置文件失败，请手动添加", Toast.LENGTH_LONG).show();
+                }
+            } else if (FileUtil.readFileToList(file).size() != 8) {
+                if (file.delete()) {
+                    if (file.createNewFile()) {
+                        FileUtil.writeFile(file, Constants.ID_VERSION + "\r\n"
+                                        + Constants.FINGER_VERSION + "\r\n"
+                                        + Constants.HAS_4G + "\r\n"
+                                        + Constants.TEST_IP + "\r\n"
+                                        + Constants.TEST_PORT + "\r\n"
+                                        + Constants.DEVICE_CODE + "\r\n"
+                                        + Constants.HAS_FINGER + "\r\n"
+                                        + Constants.HAS_ID + "\r\n"
+                                , false);
+                    } else {
+                        Toast.makeText(this, "生成配置文件失败，请手动添加", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "删除旧配置文件失败，请手动删除", Toast.LENGTH_LONG).show();
                 }
             } else {
                 List<String> stringList = FileUtil.readFileToList(file);

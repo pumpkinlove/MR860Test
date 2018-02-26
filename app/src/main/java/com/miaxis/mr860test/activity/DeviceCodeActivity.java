@@ -125,6 +125,8 @@ public class DeviceCodeActivity extends BaseTestActivity {
                             + stringList.get(3) + "\r\n"
                             + stringList.get(4) + "\r\n"
                             + "DEVICE_CODE=" + code + "\r\n"
+                            + stringList.get(6) + "\r\n"
+                            + stringList.get(7) + "\r\n"
                     , false);
             Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
             finish();

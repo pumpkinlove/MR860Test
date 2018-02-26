@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,11 @@ public class InspectionFragment extends Fragment {
             return;
         }
         String content = FileUtil.readFile(file);
+        if (TextUtils.isEmpty(content)) {
+            file.delete();
+            Toast.makeText(getContext(), "成品抽检测试记录不存在", Toast.LENGTH_SHORT).show();
+            return;
+        }
         itemList = FileUtil.parseFromString(content);
         adapter = new ItemAdapter(itemList, getContext());
 

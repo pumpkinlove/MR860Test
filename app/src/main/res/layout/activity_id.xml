@@ -492,19 +492,19 @@
         android:layout_marginBottom="20dp"
         android:layout_height="50dp">
 
-        <Button
-            android:visibility="gone"
-            android:clickable="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center"
-            android:text="读版本"
-            android:textSize="18sp"
-            android:textColor="@color/dark"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:id="@+id/btn_read_version" />
+        <!--<Button-->
+            <!--android:visibility="gone"-->
+            <!--android:clickable="true"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--android:gravity="center"-->
+            <!--android:text="读版本"-->
+            <!--android:textSize="18sp"-->
+            <!--android:textColor="@color/dark"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="60dp"-->
+            <!--android:id="@+id/btn_read_version" />-->
 
         <Button
             android:clickable="true"

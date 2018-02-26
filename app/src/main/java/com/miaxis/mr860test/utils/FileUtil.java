@@ -39,14 +39,18 @@ public class FileUtil {
     }
 
     public static TestItem parseItemFromString(String str) {
-        TestItem item = new TestItem();
-        String[] fields = str.split("_");
-        item.setId(Integer.valueOf(fields[0]));
-        item.setOpdate(fields[1]);
-        item.setName(fields[2]);
-        item.setStatus(Integer.valueOf(fields[3]));
-        item.setRemark(fields[4]);
-        return item;
+        try {
+            TestItem item = new TestItem();
+            String[] fields = str.split("_");
+            item.setId(Integer.valueOf(fields[0]));
+            item.setOpdate(fields[1]);
+            item.setName(fields[2]);
+            item.setStatus(Integer.valueOf(fields[3]));
+            item.setRemark(fields[4]);
+            return item;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static String parseToString(List<TestItem> list) {

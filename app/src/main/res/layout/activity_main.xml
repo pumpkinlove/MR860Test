@@ -74,16 +74,22 @@
         <TextView
             style="@style/stroke_button"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:text="成品抽检记录保存"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_inspection" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
         <TextView
             style="@style/stroke_button"
-            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:text="查看测试记录"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -93,11 +99,21 @@
         <TextView
             style="@style/stroke_button"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:text="设备序列号"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:id="@+id/tv_device_code" />
+
+        <TextView
+            style="@style/stroke_button"
+            android:layout_marginLeft="20dp"
+            android:text="配置"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:id="@+id/tv_config" />
 
     </LinearLayout>
 

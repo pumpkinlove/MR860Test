@@ -65,7 +65,7 @@ public class IdActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_finger1)            private TextView tv_finger1;
 
 
-    @ViewInject(R.id.btn_read_version)      private Button btn_read_version;
+//    @ViewInject(R.id.btn_read_version)      private Button btn_read_version;
     @ViewInject(R.id.btn_read_id)           private Button btn_read_id;
     @ViewInject(R.id.btn_read_full_info)    private Button btn_read_full_info;
 
@@ -76,7 +76,9 @@ public class IdActivity extends BaseTestActivity {
 
     private IdCardDriver idCardDriver;
 
-    private boolean hasTest = false;
+    private boolean isVersionPass = false;
+    private boolean isReadIdPass = false;
+    private boolean isReadInfoPass = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,38 +116,40 @@ public class IdActivity extends BaseTestActivity {
                 }
             }
             OnClickDevVersion(null);
-
         } catch (Exception e) {
 
         }
     }
 
-    @Event(R.id.btn_read_version)
+//    @Event(R.id.btn_read_version)
     private void OnClickDevVersion(View view) {
-        onDisableEvent(new DisableEvent(false));
+        onDisableEvent(new DisableEvent(false, false, false ,false));
         tv_id_version.setText("");
         new Thread(new Runnable() {
             @Override
             public void run() {
+                StringBuilder contentSb = new StringBuilder();
                 int nRet = -1;
-                byte[] bDevVersion = new byte[64];
-                for (int i=0; i<20; i++) {
-                    nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                try {
+                    byte[] bDevVersion = new byte[64];
+                    for (int i=0; i<20; i++) {
+                        nRet = idCardDriver.mxGetIdCardModuleVersion(bDevVersion);
+                        if (nRet == 0) {
+                            break;
+                        }
+                    }
                     if (nRet == 0) {
-                        break;
+                        contentSb.append(new String(bDevVersion));
+                    } else if (nRet == -100) {
+                        contentSb.append("无设备");
+                    } else {
+                        contentSb.append("失败");
                     }
-                }
-                if (nRet != 0) {
-                    if (nRet == -100) {
-                        bus.post(new CommonEvent(READ_VERSION, nRet, "无设备"));
-                    }
-                    else {
-                        bus.post(new CommonEvent(READ_VERSION, nRet, "失败"));
-                    }
-                    bus.post(new DisableEvent(false, false));
-                } else {
-                    bus.post(new CommonEvent(READ_VERSION, nRet, new String(bDevVersion)));
-                    bus.post(new DisableEvent(true, true));
+                } catch (Exception ex) {
+                    nRet = -1;
+                    contentSb.append(ex.getMessage());
+                } finally {
+                    bus.post(new CommonEvent(READ_VERSION, nRet, contentSb.toString()));
                 }
             }
         }).start();
@@ -153,40 +157,42 @@ public class IdActivity extends BaseTestActivity {
 
     @Event(R.id.btn_read_id)
     private void OnClickCardId(View view) {
-        hasTest = true;
-        onDisableEvent(new DisableEvent(false));
+        onDisableEvent(new DisableEvent(false, false, false, false));
         tv_id_card_id.setText("");
         new Thread(new Runnable() {
             @Override
             public void run() {
+                StringBuilder contentSb = new StringBuilder();
+                int nRet = -1;
                 try {
                     byte[] bCardId = new byte[64];
-                    int nRet = idCardDriver.mxReadCardId(bCardId);
-                    if (nRet != 0) {
-                        if (nRet == -100) {
-                            bus.post(new CommonEvent(READ_CARD_ID, nRet, "无设备"));
-                        } else {
-                            bus.post(new CommonEvent(READ_CARD_ID, nRet, "失败"));
-                        }
-                        bus.post(new DisableEvent(true, false));
-                    } else {
-                        String strTmp = "";
-                        for (int i = 0; i < bCardId.length; i++) {
-                            if (bCardId[i] == 0x00)
-                                break;
-                            if (i == 0) {
-                                strTmp = String.format("%02x ", bCardId[i]);
-                            } else {
-                                strTmp += String.format("%02x ", bCardId[i]);
+                    nRet = idCardDriver.mxReadCardId(bCardId);
+                    switch (nRet) {
+                        case 0:
+                            String strTmp = "";
+                            for (int i = 0; i < bCardId.length; i++) {
+                                if (bCardId[i] == 0x00)
+                                    break;
+                                if (i == 0) {
+                                    strTmp = String.format("%02x ", bCardId[i]);
+                                } else {
+                                    strTmp += String.format("%02x ", bCardId[i]);
+                                }
                             }
-                        }
-                        bus.post(new CommonEvent(READ_CARD_ID, nRet, new String(strTmp)));
-                        bus.post(new DisableEvent(true, true));
+                            contentSb.append(strTmp);
+                            break;
+                        case -100:
+                            contentSb.append("无设备");
+                            break;
+                        default:
+                            contentSb.append("失败");
+                            break;
                     }
-
                 } catch (Exception e) {
-                    Log.e(":__", e.getMessage());
-                    bus.post(new CommonEvent(READ_CARD_ID, -1, "失败" + e.getMessage()));
+                    nRet = -1;
+                    contentSb.append(e.getMessage());
+                } finally {
+                    bus.post(new CommonEvent(READ_CARD_ID, nRet, contentSb.toString()));
                 }
             }
         }).start();
@@ -194,36 +200,36 @@ public class IdActivity extends BaseTestActivity {
 
     @Event(R.id.btn_read_full_info)
     private void OnClickCardFullInfo(View view) {
-        hasTest = true;
         tv_id_info.setVisibility(View.GONE);
         ll_id_info.setVisibility(View.INVISIBLE);
         iv_id_photo.setVisibility(View.GONE);
-        onDisableEvent(new DisableEvent(false));
+        onDisableEvent(new DisableEvent(false, false, false, false));
         new Thread(new Runnable() {
             @Override
             public void run() {
+                StringBuilder contentSb = new StringBuilder();
+                int nRet = -1;
                 try {
                     byte[] bCardFullInfo = new byte[256 + 1024 + 1024];
-                    int nRet = idCardDriver.mxReadCardFullInfo(bCardFullInfo);
+                    nRet = idCardDriver.mxReadCardFullInfo(bCardFullInfo);
                     switch (nRet) {
                         case 0:
                             anlyzeIdCard(bCardFullInfo, true);
-                            bus.post(new DisableEvent(true, true));
                             break;
                         case 1:
                             anlyzeIdCard(bCardFullInfo, false);
-                            bus.post(new DisableEvent(true, true));
                             break;
                         case -100:
-                            bus.post(new CommonEvent(READ_INFO, nRet, "无设备"));
-                            bus.post(new DisableEvent(true, false));
+                            contentSb.append("无设备");
                             break;
                         default:
-                            bus.post(new CommonEvent(READ_INFO, nRet, "失败"));
-                            bus.post(new DisableEvent(true, false));
+                            contentSb.append("失败");
+                            break;
                     }
                 } catch (Exception e) {
-                    bus.post(new CommonEvent(READ_INFO, -1, e.getMessage()));
+                    contentSb.append("异常：" + e.getMessage());
+                } finally {
+                    bus.post(new CommonEvent(READ_INFO, nRet, contentSb.toString()));
                 }
             }
         }).start();
@@ -257,8 +263,7 @@ public class IdActivity extends BaseTestActivity {
         return sb.toString();
     }
 
-    public void anlyzeIdCard(byte[] bCardInfo, boolean hasFinger) {
-        try {
+    public void anlyzeIdCard(byte[] bCardInfo, boolean hasFinger) throws Exception {
             IdCardEvent e = new IdCardEvent();
             byte[] id_Name = new byte[30]; // 姓名
             byte[] id_Sex = new byte[2]; // 性别 1为男 其他为女
@@ -366,74 +371,77 @@ public class IdActivity extends BaseTestActivity {
                 e.setFingerPosition1(getFingerPosition(bFingerData2[5]));
             }
             bus.post(e);
-            bus.post(new DisableEvent(true, true));
-        } catch (Exception e) {
-            bus.post(new DisableEvent(true, false));
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCommonEvent(CommonEvent event) {
-        TextView tv = null;
         switch (event.getCode()) {
             case READ_VERSION:
-                tv = tv_id_version;
                 if (event.getResult() == 0) {
                     String v_need = tv_id_version_need.getText().toString().trim();
                     String v = event.getContent().trim();
-                    if (!v.equals(v_need)) {
-                        tv_id_version.setTextColor(getResources().getColor(R.color.red));
-                        bus.post(new DisableEvent(false));
-                    } else {
+                    if (v.equals(v_need)) {
+                        isVersionPass = true;
                         tv_id_version.setTextColor(getResources().getColor(R.color.green_dark));
-                        bus.post(new DisableEvent(true));
+                        onDisableEvent(new DisableEvent(true, true, false, true));
+                    } else {
+                        isVersionPass = false;
+                        tv_id_version.setTextColor(getResources().getColor(R.color.red));
+                        onDisableEvent(new DisableEvent(false, false, false, true));
                     }
+                    tv_id_version.setText(event.getContent());
+                } else {
+                    isVersionPass = false;
+                    tv_id_version.setTextColor(getResources().getColor(R.color.red));
+                    tv_id_version.setText(event.getResult() + " " + event.getContent());
+                    onDisableEvent(new DisableEvent(false, false, isVersionPass, true));
                 }
                 break;
             case READ_CARD_ID:
-                tv = tv_id_card_id;
+                if (0 == event.getResult()) {
+                    tv_id_card_id.setTextColor(getResources().getColor(R.color.green_dark));
+                    tv_id_card_id.setText(event.getContent());
+                    isReadIdPass = true;
+                } else {
+                    tv_id_card_id.setTextColor(getResources().getColor(R.color.red));
+                    tv_id_card_id.setText(event.getResult() + " " +event.getContent());
+                    isReadIdPass = false;
+                }
+                onDisableEvent(new DisableEvent(true, true, isReadIdPass, true));
                 break;
             case READ_INFO:
-                tv = tv_id_info;
-                tv_id_info.setVisibility(View.VISIBLE);
-                ll_id_info.setVisibility(View.GONE);
+                if (0 == event.getResult() || 1 == event.getResult()) {
+                    tv_id_info.setVisibility(View.GONE);
+                    ll_id_info.setVisibility(View.VISIBLE);
+                    isReadInfoPass = true;
+                } else {
+                    tv_id_info.setVisibility(View.VISIBLE);
+                    ll_id_info.setVisibility(View.GONE);
+                    iv_id_photo.setVisibility(View.GONE);
+                    tv_id_info.setTextColor(getResources().getColor(R.color.red));
+                    tv_id_info.setText(event.getResult() + " " + event.getContent());
+                    isReadInfoPass = false;
+                }
+                onDisableEvent(new DisableEvent(true, true, isReadInfoPass, true));
                 break;
-        }
-        if (tv != null) {
-            if (0 == event.getResult()) {
-                tv.setTextColor(getResources().getColor(R.color.green_dark));
-                tv.setText(event.getContent());
-            } else {
-                tv.setTextColor(Color.RED);
-                tv.setText(event.getResult() + " " +event.getContent());
-                tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
-                tv_pass.setClickable(false);
-            }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDisableEvent(DisableEvent e) {
-        if (e.isFlag()) {
-            tv_pass.            setTextColor(getResources().getColor(R.color.green_dark));
-            btn_read_version.   setTextColor(getResources().getColor(R.color.dark));
-            btn_read_id.        setTextColor(getResources().getColor(R.color.dark));
-            btn_read_full_info. setTextColor(getResources().getColor(R.color.dark));
+
+        btn_read_id.setEnabled(e.isFlag());
+        btn_read_full_info.setEnabled(e.isFlag2());
+
+        enableButtons(e.isFlag3(), tv_pass, R.color.green_dark);
+        enableButtons(e.isFlag4(), tv_deny, R.color.red);
+
+        if (isVersionPass && isReadIdPass && isReadInfoPass && e.isFlag3()) {
+            enableButtons(true, tv_pass, R.color.green_dark);
         } else {
-            tv_pass.            setTextColor(getResources().getColor(R.color.gray_dark));
-            btn_read_version.   setTextColor(getResources().getColor(R.color.gray_dark));
-            btn_read_id.        setTextColor(getResources().getColor(R.color.gray_dark));
-            btn_read_full_info. setTextColor(getResources().getColor(R.color.gray_dark));
+            enableButtons(false, tv_pass, R.color.green_dark);
         }
-        tv_pass.            setClickable(e.isFlag());
-        tv_pass.            setEnabled(e.isFlag());
-        btn_read_version.   setEnabled(e.isFlag());
-        btn_read_id.        setEnabled(e.isFlag());
-        btn_read_full_info. setEnabled(e.isFlag());
-        if (!hasTest || !e.isFlag2()) {
-            tv_pass.setTextColor(getResources().getColor(R.color.gray_dark));
-            tv_pass.setClickable(false);
-        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -206,13 +206,10 @@ public class NetActivity extends BaseTestActivity {
                 bus.post(new CommonEvent(SPEED, -1, ""));
                 bus.post(new DisableEvent(false, true));
             }
-
         } catch (IOException e) {
             bus.post(new CommonEvent(SPEED, -1, ""));
             bus.post(new DisableEvent(false, true));
         }
-
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
