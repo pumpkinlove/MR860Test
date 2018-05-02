@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ivsign.android.IDCReader.IDCReaderSDK;
 import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
 import com.miaxis.mr860test.domain.DisableEvent;
@@ -214,10 +215,10 @@ public class IdActivity extends BaseTestActivity {
                     nRet = idCardDriver.mxReadCardFullInfo(bCardFullInfo);
                     switch (nRet) {
                         case 0:
-                            anlyzeIdCard(bCardFullInfo, true);
+                            analyzeIdCard(bCardFullInfo, true);
                             break;
                         case 1:
-                            anlyzeIdCard(bCardFullInfo, false);
+                            analyzeIdCard(bCardFullInfo, false);
                             break;
                         case -100:
                             contentSb.append("无设备");
@@ -227,6 +228,7 @@ public class IdActivity extends BaseTestActivity {
                             break;
                     }
                 } catch (Exception e) {
+                    nRet = -1;
                     contentSb.append("异常：" + e.getMessage());
                 } finally {
                     bus.post(new CommonEvent(READ_INFO, nRet, contentSb.toString()));
@@ -263,7 +265,7 @@ public class IdActivity extends BaseTestActivity {
         return sb.toString();
     }
 
-    public void anlyzeIdCard(byte[] bCardInfo, boolean hasFinger) throws Exception {
+    public void analyzeIdCard(byte[] bCardInfo, boolean hasFinger) throws Exception {
             IdCardEvent e = new IdCardEvent();
             byte[] id_Name = new byte[30]; // 姓名
             byte[] id_Sex = new byte[2]; // 性别 1为男 其他为女
@@ -345,12 +347,12 @@ public class IdActivity extends BaseTestActivity {
             for (int i = 0; i < id_pImage.length; i++) {
                 id_pImage[i] = bCardInfo[i + iLen];
             }
-            iLen = iLen + id_pImage.length;
-            byte[] bmp = new byte[mPhotoSize];
-            int re = idCardDriver.Wlt2Bmp(id_pImage, bmp);
-            if (re == 0) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+            int rr = decodeIdPhoto(id_pImage);
+            if (rr == 0) {
+                Bitmap bitmap = BitmapFactory.decodeFile(FileUtil.getAvailableImgPath(this) + File.separator + "zp.bmp");
                 e.setPhoto(bitmap);
+            } else {
+                throw new Exception("二代证图像解码失败");
             }
             if (hasFinger) {
                 byte[] bFingerData1 = new byte[mFingerDataSize];
@@ -524,6 +526,21 @@ public class IdActivity extends BaseTestActivity {
                 return "其他不确定指位";
             default:
                 return "";
+        }
+    }
+
+    private int decodeIdPhoto(byte[] wltdata) {
+        String filepath = FileUtil.getAvailableImgPath(this);
+        try {
+            int ret = IDCReaderSDK.wltInit(filepath);
+            if (ret != 0) {
+                return -1;
+            } else {
+                ret = IDCReaderSDK.unpack(wltdata);
+                return ret != 1 ? -2 : 0;
+            }
+        } catch (Exception e) {
+            return -3;
         }
     }
 

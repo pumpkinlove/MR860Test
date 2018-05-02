@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -15,17 +16,15 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.miaxis.mr860test.Constants.Constants;
 import com.miaxis.mr860test.R;
-import com.miaxis.mr860test.domain.ToastEvent;
 import com.miaxis.mr860test.utils.FileUtil;
 
-import org.greenrobot.eventbus.EventBus;
 import org.xutils.view.annotation.ContentView;
 import org.xutils.view.annotation.Event;
 import org.xutils.view.annotation.ViewInject;
 import org.xutils.x;
 import org.zz.idcard_hid_driver.IdCardDriver;
+import org.zz.mxhidfingerdriver.MXFingerDriver;
 
 import java.io.File;
 import java.util.List;
@@ -37,10 +36,14 @@ public class DeviceCodeActivity extends BaseTestActivity {
     @ViewInject(R.id.tv_error_info)     private TextView tv_error_info;
     @ViewInject(R.id.iv_dev_code)       private ImageView iv_dev_code;
     @ViewInject(R.id.iv_id_dev_code)    private ImageView iv_id_dev_code;
+    @ViewInject(R.id.iv_finger_dev_sn)  private ImageView iv_finger_dev_sn;
     @ViewInject(R.id.tv_id_dev_code)    private TextView tv_id_dev_code;
+    @ViewInject(R.id.tv_finger_dev_sn)  private TextView tv_finger_dev_sn;
 
     private IdCardDriver idCardDriver;
     private List<String> stringList;
+    private MXFingerDriver fingerDriver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
@@ -50,11 +53,15 @@ public class DeviceCodeActivity extends BaseTestActivity {
         initData();
         initView();
         onRead(null);
-        onReadidDevNo(null);
+        onReadIdDevNo(null);
+        onReadFingerSN(null);
     }
 
     @Override
     protected void initData() {
+        int pid = 0x0202;
+        int vid = 0x821B;
+        fingerDriver = new MXFingerDriver(this, pid, vid);
         idCardDriver = new IdCardDriver(this);
     }
 
@@ -75,7 +82,7 @@ public class DeviceCodeActivity extends BaseTestActivity {
                     String[] strs = stringList.get(5).split("=");       //第五个是序列号， 顺序看MyApplication的默认写入顺序
                     if (strs.length == 2) {
                         et_device_code.setText(strs[1].trim());
-                        Bitmap codeBmp = CreateOneDCode(strs[1].trim());
+                        Bitmap codeBmp = createOneDCode(strs[1].trim());
                         iv_dev_code.setImageBitmap(codeBmp);
                     } else if (strs.length == 1 && strs[0].equals("DEVICE_CODE")){
                         et_device_code.setText("");
@@ -93,17 +100,42 @@ public class DeviceCodeActivity extends BaseTestActivity {
     }
 
     @Event(R.id.tv_read_idDevNo)
-    private void onReadidDevNo(View view) {
-        String SAMId = idCardDriver.mxReadSAMId();
-
-        SAMId = SAMId.replace(".", "");
-        SAMId = SAMId.replace("-", "");
-        SAMId = SAMId.substring(0, 22);
-        tv_id_dev_code.setText(SAMId);
+    private void onReadIdDevNo(View view) {
         try {
+            String SAMId = idCardDriver.mxReadSAMId();
+            if (TextUtils.isEmpty(SAMId)) {
+                for (int i = 0; i < 10; i ++) {
+                    SAMId = idCardDriver.mxReadSAMId();
+                }
+            }
+            SAMId = SAMId.replace(".", "");
+            SAMId = SAMId.replace("-", "");
+            SAMId = SAMId.substring(0, 22);
+            tv_id_dev_code.setText(SAMId);
             Bitmap bitmap = createTwoDCode(SAMId);
             iv_id_dev_code.setImageBitmap(bitmap);
-        } catch (WriterException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Event(R.id.tv_read_finger_sn)
+    private void onReadFingerSN(View view) {
+        try {
+            byte[] bVersion = new byte[100];
+            int re = fingerDriver.mxGetDevSN(bVersion);
+            if (re == 0) {
+                String sn = new String(bVersion);
+                sn = sn.replace(".", "");
+                sn = sn.replace("-", "");
+                sn = sn.replace(" ", "");
+                sn = sn.substring(0, 20);
+                tv_finger_dev_sn.setText(sn);
+                Bitmap bitmap = createOneDCode(sn);
+                iv_finger_dev_sn.setImageBitmap(bitmap);
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -152,7 +184,7 @@ public class DeviceCodeActivity extends BaseTestActivity {
         return !(no < 1 || no > 9999);
     }
 
-    public Bitmap CreateOneDCode(String content) throws WriterException {
+    public Bitmap createOneDCode(String content) throws WriterException {
         // 生成一维条码,编码时指定大小,不要生成了图片以后再进行缩放,这样会模糊导致识别失败
         BitMatrix matrix = new MultiFormatWriter().encode(content,
                 BarcodeFormat.CODE_128, 500, 200);
@@ -195,4 +227,9 @@ public class DeviceCodeActivity extends BaseTestActivity {
         return bitmap;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fingerDriver.unRegUsbMonitor();
+    }
 }

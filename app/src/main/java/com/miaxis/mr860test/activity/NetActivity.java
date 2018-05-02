@@ -192,6 +192,7 @@ public class NetActivity extends BaseTestActivity {
 
     private void connectTomcat() {
         if (!flag) {
+            bus.post(new CommonEvent(SPEED, -1, ""));
             bus.post(new DisableEvent(false, true));
             return;
         }

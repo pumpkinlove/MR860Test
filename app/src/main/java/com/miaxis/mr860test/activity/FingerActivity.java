@@ -141,7 +141,7 @@ public class FingerActivity extends BaseTestActivity {
         bus.post(new DisableEvent(false, true, false, false));
         appendMessage("请按手指...", "");
         colImgBuf = new byte[IMAGE_SIZE_BIG];
-        int ret = fingerDriver.mxAutoGetImage(colImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+        int ret = fingerDriver.mxAutoGetImage(colImgBuf, new int[]{IMAGE_X_BIG}, new int[]{IMAGE_Y_BIG}, TIME_OUT, 0);
         if (ret == 0) {
             bus.post(new FingerEvent(R.id.iv_col_finger, colImgBuf));
             appendMessage("采集图像", Constants.SUCCESS_HTML);
@@ -250,7 +250,7 @@ public class FingerActivity extends BaseTestActivity {
         bus.post(new DisableEvent(false, true, false, false));
         appendMessage("请按手指...", "");
         printImgBuf = new byte[IMAGE_SIZE_BIG];
-        int ret = fingerDriver.mxAutoGetImage(printImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+        int ret = fingerDriver.mxAutoGetImage(printImgBuf, new int[]{IMAGE_X_BIG}, new int[]{IMAGE_Y_BIG}, TIME_OUT, 0);
         if (0 != ret) {
             appendMessage("指纹图像采集", Constants.FAIL_HTML);
         } else {
@@ -346,7 +346,7 @@ public class FingerActivity extends BaseTestActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onScrollMessageevent(ScrollMessageEvent e){
+    public void onScrollMessageevent(ScrollMessageEvent e) {
         if (e.getType() != null && e.getType().equals(Constants.FAIL_HTML)) {
             fingerPass = false;
             enableButtons(false, tv_pass, Color.GREEN);
@@ -365,5 +365,11 @@ public class FingerActivity extends BaseTestActivity {
     protected void onPause() {
         onCancelClicked(null);
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fingerDriver.unRegUsbMonitor();
     }
 }

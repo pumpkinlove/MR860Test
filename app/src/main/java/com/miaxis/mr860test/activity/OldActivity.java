@@ -4,6 +4,8 @@ import android.app.smdt.SmdtManager;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -22,6 +24,7 @@ import com.miaxis.mr860test.domain.ResultEvent;
 import com.miaxis.mr860test.domain.ShowCpEvent;
 import com.miaxis.mr860test.domain.ToastEvent;
 import com.miaxis.mr860test.utils.DateUtil;
+import com.miaxis.mr860test.utils.FileUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,7 +36,9 @@ import org.xutils.x;
 import org.zz.idcard_hid_driver.IdCardDriver;
 import org.zz.mxhidfingerdriver.MXFingerDriver;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 @ContentView(R.layout.activity_old)
 public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callback {
@@ -61,6 +66,8 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
     private boolean backFlag;
     private SurfaceHolder oldHolder;
     private Camera mCamera;
+    private boolean hasFinger;
+    private boolean hasIdCard;
 
     @ViewInject(R.id.tv_pass)                   private TextView tv_pass;
     @ViewInject(R.id.tv_deny)                   private TextView tv_deny;
@@ -135,28 +142,12 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
 
     @Event(R.id.tv_old_start)
     private void onStart(View view) {
+        hasFinger = hasFinger();
+        hasIdCard = hasIdCard();
         if (smdtManager != null) {
-            for (int i =0; i<3; i++) {
-                smdtManager.smdtSetExtrnalGpioValue(2, true);
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (smdtManager.smdtReadExtrnalGpioValue(2) == 1) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-                if (i == 2) {
-                    Toast.makeText(this, "摄像头上电失败", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            }
+            smdtManager.smdtSetGpioValue(2, true);
         }
+
         preReadIdDevVersion();
         if (startTime == null) {
             startTime = DateUtil.format(new Date());
@@ -185,21 +176,21 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
     private String getContent() {
         StringBuilder content = new StringBuilder();
 
-        content.append(tv_old_begin_time.   getText().toString() + "$");
-        content.append(tv_old_end_time.     getText().toString() + "$");
-        content.append(tv_old_count.        getText().toString() + "$");
-        content.append(openLedResult.       getSuccessCount()    + "$");
-        content.append(openLedResult.       getFailCount()       + "$");
-        content.append(openCameraResult.    getSuccessCount()    + "$");
-        content.append(openCameraResult.    getFailCount()       + "$");
-        content.append(readIdResult.        getSuccessCount()    + "$");
-        content.append(readIdResult.        getFailCount()       + "$");
-        content.append(readFingerResult.    getSuccessCount()    + "$");
-        content.append(readFingerResult.    getFailCount()       + "$");
-        content.append(closeCameraResult.   getSuccessCount()    + "$");
-        content.append(closeCameraResult.   getFailCount()       + "$");
-        content.append(closeLedResult.      getSuccessCount()    + "$");
-        content.append(closeLedResult.      getFailCount()            );
+        content.append(tv_old_begin_time    .getText().toString()).append("$");
+        content.append(tv_old_end_time      .getText().toString()).append("$");
+        content.append(tv_old_count         .getText().toString()).append("$");
+        content.append(openLedResult        .getSuccessCount())   .append("$");
+        content.append(openLedResult        .getFailCount())      .append("$");
+        content.append(openCameraResult     .getSuccessCount())   .append("$");
+        content.append(openCameraResult     .getFailCount())      .append("$");
+        content.append(readIdResult         .getSuccessCount())   .append("$");
+        content.append(readIdResult         .getFailCount())      .append("$");
+        content.append(readFingerResult     .getSuccessCount())   .append("$");
+        content.append(readFingerResult     .getFailCount())      .append("$");
+        content.append(closeCameraResult    .getSuccessCount())   .append("$");
+        content.append(closeCameraResult    .getFailCount())      .append("$");
+        content.append(closeLedResult       .getSuccessCount())   .append("$");
+        content.append(closeLedResult       .getFailCount());
 
         return content.toString();
     }
@@ -228,11 +219,15 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
                         bus.post(new CommonEvent(INIT_VIEW, count, ""));
                         openLed();
                         oldOpenCamera();
-                        readId();
-                        readFinger();
+                        if (hasIdCard) {
+                            readId();
+                        }
+                        if (hasFinger) {
+                            readFinger();
+                        }
                         oldCloseCamera();
                         closeLed();
-                        if (continueFlag == false) {
+                        if (!continueFlag) {
                             smdtManager.smdtSetExtrnalGpioValue(2, false);
                         }
                     } else {
@@ -261,7 +256,6 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
     private void oldOpenCamera() {
         try {
             Thread.sleep(INTERVAL_TIME);
-            Log.e("GPIO______",smdtManager.smdtReadExtrnalGpioValue(2)+"");
             Thread.sleep(500);
             openCamera();
         } catch (InterruptedException ie) {
@@ -491,4 +485,39 @@ public class OldActivity extends BaseTestActivity implements SurfaceHolder.Callb
         finish();
     }
 
+    private boolean hasFinger() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
+            if (!file.exists()) {
+                Toast.makeText(this, "版本配置文件缺失", Toast.LENGTH_LONG).show();
+            } else {
+                List<String> stringList = FileUtil.readFileToList(file);
+                if (stringList != null) {
+                    String hasFinger = stringList.get(6);
+                    String re = hasFinger.split("=")[1];
+                    return TextUtils.equals(re, "true");
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    private boolean hasIdCard() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), FileUtil.VERSION_CONFIG_PATH);
+            if (!file.exists()) {
+                Toast.makeText(this, "版本配置文件缺失", Toast.LENGTH_LONG).show();
+            } else {
+                List<String> stringList = FileUtil.readFileToList(file);
+                if (stringList != null) {
+                    String hasIdCard = stringList.get(7);
+                    String re = hasIdCard.split("=")[1];
+                    return TextUtils.equals(re, "true");
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
 }

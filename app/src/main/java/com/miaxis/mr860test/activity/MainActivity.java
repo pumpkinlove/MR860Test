@@ -99,6 +99,7 @@ public class MainActivity extends BaseTestActivity {
 
     @Override
     protected void initView() {
+        SmdtManager.create(this).smdtSetStatusBar(this, true);
         rv_items.setLayoutManager(new GridLayoutManager(this, 4));
         rv_items.setAdapter(adapter);
         tv_version.setText("版本号：" + getVersion());
@@ -166,7 +167,7 @@ public class MainActivity extends BaseTestActivity {
         item.setOpdate(DateUtil.format(new Date()));
         item.setRemark("无");
         item.setId(Constants.ID_FINGER);
-        item.setName("指纹仪");
+        item.setName("指纹模块");
         itemList.add(item);
 
         item = new TestItem();

@@ -14,7 +14,7 @@
 
         <TextView
             android:translationZ="1dp"
-            android:text="指纹仪测试"
+            android:text="指纹模块测试"
             android:textSize="35sp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

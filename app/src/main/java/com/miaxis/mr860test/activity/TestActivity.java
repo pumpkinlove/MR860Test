@@ -52,7 +52,7 @@ public class TestActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int ret = fingerDriver.mxAutoGetImage(bImgBuf, IMAGE_X_BIG, IMAGE_Y_BIG, TIME_OUT, 0);
+                int ret = fingerDriver.mxAutoGetImage(bImgBuf, new int[]{IMAGE_X_BIG}, new int[]{IMAGE_Y_BIG}, TIME_OUT, 0);
 
                 int re = -1;
                 byte[] version = new byte[100];

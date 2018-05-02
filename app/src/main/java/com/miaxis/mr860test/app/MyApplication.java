@@ -40,15 +40,20 @@ public class MyApplication extends Application {
         mxFingerDriver = new MXFingerDriver(this);
         smdtManager = SmdtManager.create(this);
         initConfig();
+        int re = initHsIdPhotoDecodeLib();
+        if (re != 0) {
+            Toast.makeText(this, "初始化二代证图像解码库失败！", Toast.LENGTH_LONG).show();
+        }
         preReadId();
         try {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
                 smdtManager.smdtSetGpioDirection(1, 0);
                 Thread.sleep(100);
                 smdtManager.smdtSetGpioDirection(2, 1);
                 Thread.sleep(100);
-                smdtManager.smdtSetGpioDirection(3, 1);
-                Thread.sleep(100);
+//                smdtManager.smdtSetGpioDirection(3, 1);
+//                Thread.sleep(100);
+//                smdtManager.smdtSetGpioValue(3, false);
             }
         } catch (Exception e) {
 
@@ -130,6 +135,31 @@ public class MyApplication extends Application {
         Log.e("onTrimMemory","level" + level);
         smdtManager.smdtSetExtrnalGpioValue(2, false);
         super.onTrimMemory(level);
+    }
+
+    /**
+     * 复制宇松二代证解码库的授权文件到指定目录
+     * @return
+     */
+    private int initHsIdPhotoDecodeLib() {
+
+        String hsLibDirName = "wltlib";
+        String hsFile1 = "base.dat";
+        String hsFile2 = "license.lic";
+        String hsFile3 = "test.dat";
+        String hsFile4 = "zp.wlt";
+        File wltlibDir = new File(FileUtil.getAvailableImgPath(this));
+        if (!wltlibDir.exists()) {
+            if (!wltlibDir.mkdirs()) {
+                return -1;
+            }
+        }
+        FileUtil.copyAssetsFile(this, hsLibDirName + File.separator + hsFile1,wltlibDir + File.separator + hsFile1);
+        FileUtil.copyAssetsFile(this, hsLibDirName + File.separator + hsFile2,wltlibDir + File.separator + hsFile2);
+        FileUtil.copyAssetsFile(this, hsLibDirName + File.separator + hsFile3,wltlibDir + File.separator + hsFile3);
+        FileUtil.copyAssetsFile(this, hsLibDirName + File.separator + hsFile4,wltlibDir + File.separator + hsFile4);
+        FileUtil.copyAssetsFile(this, "testPhoto.jpg", FileUtil.getAvailableImgPath(this) + File.separator + "testPhoto.jpg");
+        return 0;
     }
 
 }

@@ -73,23 +73,11 @@ public class Camera2Activity extends BaseTestActivity implements SurfaceHolder.C
     private void onTest(View view) {
         if (smdtManager != null) {
             for (int i =0; i<3; i++) {
-                smdtManager.smdtSetExtrnalGpioValue(2, true);
+                smdtManager.smdtSetGpioValue(2, true);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
-                if (smdtManager.smdtReadExtrnalGpioValue(2) == 1) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-                if (i == 2) {
-                    Toast.makeText(this, "摄像头上电失败", Toast.LENGTH_SHORT).show();
-                    return;
                 }
             }
         }
